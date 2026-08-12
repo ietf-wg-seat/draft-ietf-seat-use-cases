@@ -1,4 +1,4 @@
-re---
+---
 title: "Security Goals and Use Cases for Integrating Remote Attestation with Secure Channel Protocols"
 abbrev: "SEAT Use Cases"
 category: info
@@ -186,6 +186,7 @@ variants of the replay and relay attacks addressed by the freshness and channel-
 goals in this document.
 
 ## Key Substitution
+
 A peer presents valid Evidence from a Target Environment together with
 the private key it uses to authenticate the TLS connection, but that private key
 was not generated or protected within the attested environment.
@@ -513,7 +514,6 @@ Use case: See {{I-D.aylward-aiga-2}} for details. Contrary to {{sec-operation-tr
 
 # Security Considerations
 
-<!-- [**CHANGE**] Second sentence added to point at the new Attacker Model section. -->
 This whole document is about security. The adversary considered by this document
 and the attack vectors that motivate its security goals are described in
 {{attacker-model}}.
