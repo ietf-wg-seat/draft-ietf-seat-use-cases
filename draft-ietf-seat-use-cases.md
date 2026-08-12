@@ -1,4 +1,4 @@
----
+re---
 title: "Security Goals and Use Cases for Integrating Remote Attestation with Secure Channel Protocols"
 abbrev: "SEAT Use Cases"
 category: info
@@ -58,6 +58,7 @@ informative:
      target: https://github.com/intel/MigTD
     I-D.ietf-tls-rfc8446bis:
     I-D.ietf-tls-rfc9147bis:
+    I-D.ietf-tls-extended-key-update:
     CVE-2026-33697:
      title: CVE-2026-33697
      target: https://www.cve.org/CVERecord?id=CVE-2026-33697
@@ -157,7 +158,86 @@ system/network state. Its configuration (e.g., model choice, tool enablement,
 prompt template) can change independently of the binary/image and usually
 more frequently than typical platform TCB updates {{AI-agents}}.
 
+# Attacker Model
+{: #attacker-model }
+
+This section describes the attack vectors that motivate the security goals in the
+following section, and the requirement each imposes on a conforming solution. They
+complement the relay, diversion, and replay attacks already discussed
+under {{integration-security-goals}}.
+
+## Cross-Connection and Cross-Peer Evidence Reuse
+{: #evidence-reuse }
+
+An adversary attempts to present Evidence outside the specific interaction for
+which it was produced:
+
+* Cross-connection replay: Evidence obtained from a Target Environment in one
+  connection is replayed in a later, separate connection, where it no longer
+  reflects the current state.
+* Cross-peer hand-off: a peer obtains Evidence from a Target Environment and
+  passes it to a different, colluding peer, which injects it into its own
+  handshake with a Relying Party.
+
+If Evidence is not uniquely tied to a single TLS connection, an adversary can
+use old Evidence in a different connection or share it with unauthorized entities, 
+leading the Relying Party to trust an outdated or unverified environment. These are 
+variants of the replay and relay attacks addressed by the freshness and channel-binding 
+goals in this document.
+
+## Key Substitution
+A peer presents valid Evidence from a Target Environment together with
+the private key it uses to authenticate the TLS connection, but that private key
+was not generated or protected within the attested environment.
+When the Evidence and the authentication key are appraised independently,
+the Relying Party may conclude that the key benefits from the
+protection properties asserted in the Evidence when it does not. Proof of
+possession does not detect this: the presenter genuinely controls the key, so
+the handshake succeeds, while the key may reside in software or in a different
+module outside the attested environment.
+
+## Evidence Exposure under Compromised Traffic Secrets
+
+Re-attestation may be performed over an long-lived (D)TLS connection. If the
+traffic secrets of that connection have been compromised (see
+{{I-D.ietf-tls-extended-key-update}} for more details on the threat), an adversary
+holding them can decrypt the re-attestation exchange and read the Evidence.
+Besides leaking platform attestation details, the adversary may attempt to reuse
+the captured Evidence on a different connection (see {{evidence-reuse}}).
+
+## Posture Drift on Long-Lived and Resumed Connections
+
+The Relying Party appraises the Attester's Evidence during the TLS handshake. 
+Its posture can change afterwards without the connection being re-established. 
+
+Two situations are of particular concern:
+
+* Long-lived connections: the connection stays open while the Target Environment
+  changes state, so sensitive data keeps flowing over an environment whose Evidence
+  is now stale.
+* Resumption: the Relying Party reconnects using a session ticket, skipping the
+  handshake and the attestation exchange, so communication continues under the new,
+  unverified state.
+
+In both cases the Relying Party keeps exchanging data with a Target Environment
+whose posture has changed, bypassing RA for ongoing or resumed traffic. This is
+related to the exposure discussed under Runtime Attestation.
+
+## RA Negotiation Downgrade
+
+Peers negotiate whether RA is used, the Evidence formats they can produce or
+consume, and the attestation models they support. An on-path adversary can
+tamper with this negotiation: stripping the RA capability so the peers fall
+back to a plain secure channel with no attestation, or forcing selection of a
+weaker Evidence format or attestation model than both peers would otherwise
+support. Because this negotiation precedes any established trust in the Target
+Environment, an adversary that can modify these messages may silently remove or
+degrade attestation without either peer detecting the change. This is the
+adversarial counterpart to the graceful fallback under the Negotiation and
+Capability Discovery goal.
+
 # Integration Security Goals
+{: #integration-security-goals }
 
 This section provides a list of desirable security goals for designs that compose
 RA with secure channel protocols. Proposed protocol specifications should
@@ -433,7 +513,10 @@ Use case: See {{I-D.aylward-aiga-2}} for details. Contrary to {{sec-operation-tr
 
 # Security Considerations
 
-This whole document is about security.
+<!-- [**CHANGE**] Second sentence added to point at the new Attacker Model section. -->
+This whole document is about security. The adversary considered by this document
+and the attack vectors that motivate its security goals are described in
+{{attacker-model}}.
 
 # IANA Considerations
 
