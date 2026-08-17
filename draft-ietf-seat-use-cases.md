@@ -162,9 +162,7 @@ more frequently than typical platform TCB updates {{AI-agents}}.
 {: #attacker-model }
 
 This section describes the attack vectors that motivate the security goals in the
-following section, and the requirement each imposes on a conforming solution. They
-complement the relay, diversion, and replay attacks already discussed
-under {{integration-security-goals}}.
+following section, and the requirement each imposes on a conforming solution.
 
 ## Cross-Connection and Cross-Peer Evidence Reuse
 {: #evidence-reuse }
