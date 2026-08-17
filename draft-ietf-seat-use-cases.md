@@ -173,7 +173,7 @@ which it was produced:
 * Cross-connection replay: Evidence obtained from a Target Environment in one
   connection is replayed in a later, separate connection, where it no longer
   reflects the current state.
-* Cross-peer hand-off: a peer obtains Evidence from a Target Environment and
+* Cross-peer relay: a peer obtains Evidence from a Target Environment and
   passes it to a different, colluding peer, which injects it into its own
   handshake with a Relying Party.
 
