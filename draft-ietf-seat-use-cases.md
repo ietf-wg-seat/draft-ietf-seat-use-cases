@@ -193,6 +193,14 @@ possession does not detect this: the presenter genuinely controls the key, so
 the handshake succeeds, while the key may reside in software or in a different
 module outside the attested environment.
 
+A malicious peer uses this to have its own key, which is not protected by 
+the attested environment, treated by the Relying Party as if it were. 
+The Relying Party may then release secrets or sensitive data to it, 
+or allow privileged operations, that it would refuse for a software-held key; 
+and because the key is not confined, the peer can copy it and use it on 
+other hosts, so the attested identity is no longer bound to a 
+attested environment.
+
 ## Evidence Exposure under Compromised Traffic Secrets
 
 Re-attestation may be performed over an long-lived (D)TLS connection. If the
