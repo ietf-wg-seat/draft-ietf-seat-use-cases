@@ -179,9 +179,7 @@ which it was produced:
 
 If Evidence is not uniquely tied to a single TLS connection, an adversary can
 use old Evidence in a different connection or share it with unauthorized entities, 
-leading the Relying Party to trust an outdated or unverified environment. These are 
-variants of the replay and relay attacks addressed by the freshness and channel-binding 
-goals in this document.
+leading the Relying Party to trust an outdated or unverified environment.
 
 ## Key Substitution
 
