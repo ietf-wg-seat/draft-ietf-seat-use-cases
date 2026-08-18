@@ -170,7 +170,7 @@ following section, and the requirement each imposes on a conforming solution.
 An adversary attempts to present Evidence outside the specific interaction for
 which it was produced:
 
-* Cross-connection replay: Evidence obtained from a Target Environment in one
+* Cross-connection replay: Evidence obtained from an Attesting Environment in one
   connection is replayed in a later, separate connection, where it no longer
   reflects the current state.
 * Cross-peer relay: a peer obtains Evidence from a Target Environment and
