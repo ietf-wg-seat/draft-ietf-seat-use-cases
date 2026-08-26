@@ -34,6 +34,7 @@ informative:
     RFC9334: rats-arch
     RFC4949:
     RFC3552: int-threat-model
+    RFC9846: tls
     I-D.draft-ccc-wimse-twi-extensions: wimse-twi
     I-D.draft-ietf-rats-eat-measured-component: rats-measured
     ID-Crisis:
@@ -163,16 +164,23 @@ more frequently than typical platform TCB updates {{AI-agents}}.
 {: #attacker-model }
 
 This section defines the attacker capabilities and attack scenarios that a
-solution integrating RA with a secure channel needs to consider. The baseline
-attacker follows the Internet Threat Model of {{-int-threat-model}}. Some
-scenarios explicitly grant the attacker capabilities beyond that baseline.
-Attacker capabilities are not cumulative unless an attack scenario says that
-they are combined.
+solution integrating RA with a secure channel needs to consider. Attacks
+in-scope for IETF protocols generally assume the Internet Threat Model of
+{{-int-threat-model}}. This corresponds to the "network attacker" described
+below. Some scenarios explicitly grant the attacker capabilities beyond that
+baseline.
 
 Unless stated otherwise, the Relying Party is not compromised and correctly
-performs the checks required by the protocol and its appraisal policy.
+performs the checks required by the protocol and its appraisal policy. The
+Attester is referenced in terms of its Attesting and Target Environments, as
+described in {{Section 3.1 of -rats-arch}}. The Attesting Environment is the
+entity responsible for using the Attestation Key to sign Evidence for the
+Target Environment.
 
-The baseline security assumptions of the TLS v1.3 protocol apply.
+The baseline security assumptions of the TLS v1.3 protocol apply. See
+{{Appendix F of -tls}} for the relevant properties.
+
+The TLS stack of the attester is assumed to be running within the TEE.
 
 ## Attacker Capabilities
 
@@ -185,10 +193,18 @@ The attacks in this section use the following attacker profiles:
 * **Malicious peer:** Controls a protocol endpoint and can deviate arbitrarily
   from the protocol. Control of the peer does not, by itself, imply compromise
   of an Attesting Environment or its Attestation Key.
-* **Traffic-secret attacker:** Possesses one or more traffic secrets for a
-  secure connection. Each attack specifies which direction and epoch are
-  relevant. Possession of a traffic secret does not, by itself, imply possession
-  of an authentication key (see below) or Attestation Key.
+* **Ephemeral-key attacker:** Possesses an endpoint's ephemeral private key used
+  for key establishment in a particular secure-channel handshake. Given the
+  peer's public key share and the handshake transcript, this attacker can derive
+  the connection's handshake and application traffic secrets when the key
+  schedule does not also depend on independent secret keying material unknown to
+  the attacker, such as a PSK. This capability does not, by itself, imply
+  possession of an authentication key or Attestation Key.
+* **Traffic-secret attacker:** Possesses either the handshake and/or the
+  application traffic secrets for a secure connection. Each attack specifies
+  which direction and epoch are relevant. Possession of a traffic secret does not,
+  by itself, imply possession of an authentication key (see below) or Attestation
+  Key.
 * **Authentication-key attacker:** Possesses the private key used by a peer to
   authenticate itself in a secure connection (e.g., to sign the CertificateVerify
   message in the TLS 1.3 handshake).
@@ -241,66 +257,39 @@ detect the attack because the old Evidence object is retransmitted as new
 application data.
 
 **Required invariant:** Every Evidence response is fresh for a particular
-attestation exchange and is bound to a unique challenge, sequence, epoch, or
-equivalent freshness mechanism. Evidence accepted for one attestation exchange
-cannot satisfy a later request on the same TLS connection.
+attestation exchange and is bound to a unique challenge or equivalent freshness
+mechanism. Evidence accepted for one attestation exchange cannot satisfy a later
+request on the same TLS connection.
 
 ### Evidence Relay
 
 **Attacker capabilities:** A malicious peer can establish a TLS connection with
-a Relying Party and can request Evidence from an Attesting Environment
-associated with a (separate) Target Environment. Alternatively, the attacker can
-act as a man-in-the-middle that terminates one TLS connection with the Relying
-Party and a second TLS connection with the endpoint associated with the Target
-Environment. The attacker does not need to control or collude with the Attesting
-or Target Environment.
+a Relying Party and can obtain Evidence about a separate Target Environment that
+contains the correct binder for the attacker's connection as its challenge
+value. How the attacker obtains such Evidence is not constrained by this model.
+The attacker does not need to control or collude with the Attesting or Target
+Environment.
 
 **Targeted assurance:** The Evidence describes the Target Environment
 associated with the peer and connection being appraised by the Relying Party.
 
-**Preconditions and attack:** A relay can occur in either of the following ways:
-
-* **Unregulated Evidence-generation API:** The Attesting Environment exposes an
-  open or otherwise unregulated API that accepts, as its challenge, a
-  caller-supplied value intended to bind the Evidence to a TLS connection (the
-  binder). The attacker obtains the binder for its connection with the Relying
-  Party, supplies it to the API, and receives authentic, fresh Evidence about
-  the nonmalicious Target Environment containing that binder. The attacker then
-  presents the Evidence on its own connection.
-* **Insufficient connection binding:** The attacker terminates two different TLS
-  connections: one with the Relying Party and another with the endpoint
-  associated with the nonmalicious Target Environment. The binder can be reused
-  across the two connections because it is not cryptographically and uniquely
-  derived from the connection being appraised. The attacker forwards the binder
-  or challenge from the Relying-Party connection over the Target-Environment
-  connection, obtains fresh Evidence containing it, and relays that Evidence
-  back to the Relying Party.
-
-In either case, the Relying Party attributes the state of the separate Target
+**Preconditions and attack:** The attacker obtains the binder for its TLS
+connection with the Relying Party. It then obtains authentic, fresh Evidence
+about a separate Target Environment in which that binder appears as the
+challenge value and presents the Evidence to the Relying Party. If the Evidence
+is accepted, the Relying Party attributes the state of the separate Target
 Environment to the attacker's endpoint and TLS connection.
 
-**Why validation succeeds:** In the unregulated-API case, the Evidence is
-authentic and fresh, and its binder matches the attacker's connection. These
-checks establish that the Attesting Environment incorporated the supplied
-binder, but not that the Target Environment is associated with the peer on that
-connection. The appraisal policy has no claim or other trustworthy information
-that distinguishes Evidence produced through an unrestricted,
-caller-controlled interface.
+**Why validation succeeds:** The Evidence is authentic and fresh, and its
+challenge value matches the binder expected for the attacker's connection.
+These checks establish that the Attesting Environment incorporated the correct
+binder into the Evidence, but not that the evidenced Target Environment is
+associated with the peer on that connection.
 
-In the insufficient-binding case, both TLS connections can be cryptographically
-secure, and the Evidence can be authentic and fresh. Because the same binder is
-valid in both contexts, checking its value does not reveal that the Evidence was
-generated through a different TLS connection.
-
-**Required invariant:** The binder is cryptographically and uniquely derived
-from the exact TLS connection being appraised, including the relevant endpoint
-roles and context, and the Relying Party verifies that binding. Evidence
-generation also establishes that the endpoint associated with the Target
-Environment participates in that same connection. Merely accepting a binder
-supplied by an arbitrary API caller or forwarded from another TLS connection
-does not establish this association. Evidence or Attestation Results provide
-enough trustworthy information for the appraisal policy to distinguish an
-unrestricted caller-supplied-binder interface when that distinction is required.
+**Required invariant:** Acceptance of Evidence establishes that the evidenced
+Target Environment is associated with the peer participating in the TLS
+connection being appraised. Merely including the correct connection binder as a
+challenge value does not establish this association.
 
 ## Key Substitution
 
@@ -329,24 +318,48 @@ was generated, is stored, and is used strictly within that environment.
 Evidence asserting its relevant generation, storage, export, and use properties,
 and those assertions are appraised together with the connection authentication.
 
-## Evidence Exposure under Compromised Traffic Secrets
+## Evidence Privacy Loss
 
-**Attacker capabilities:** A traffic-secret attacker possesses the receiving
-traffic secret and epoch used to protect a re-attestation exchange on a
-long-lived (D)TLS connection. This capability permits decryption of records
-protected by that secret, but does not by itself imply control of either
-endpoint. See {{I-D.ietf-tls-extended-key-update}} for additional discussion of
-the threat.
+### Under Ephemeral-Key Compromise
 
-**Targeted assurance:** Evidence conveyed inside the secure connection remains
+**Attacker capabilities:** An ephemeral-key attacker possesses an endpoint's
+ephemeral key-establishment secret for the handshake and observes the handshake
+transcript, including the peer's public key share.
+
+**Targeted assurance:** Evidence conveyed during or after the handshake remains
 confidential from parties other than the connection endpoints.
 
-**Preconditions and attack:** Re-attestation Evidence is sent under a compromised
-traffic secret. The attacker observes the protected records and uses the secret
-to decrypt the Evidence, learning the platform and software details it carries.
-The attacker can also capture the Evidence for an attempted replay or relay,
-although acceptance of that Evidence requires the separate preconditions
-described under {{evidence-reuse}}.
+**Preconditions and attack:** The attacker records the handshake and protected
+records carrying Evidence. Using the compromised ephemeral private key, the
+peer's public key share, and the recorded handshake messages, the attacker
+computes the shared secret and derives the handshake and application traffic
+secrets. It can then decrypt Evidence protected under those secrets, including
+Evidence decrypted retrospectively from recorded traffic after the compromise.
+
+**Why validation succeeds:** This is a secure-channel confidentiality failure,
+not an Evidence-validation failure. The Evidence can remain authentic, fresh,
+and correctly bound to the connection even though its contents are disclosed.
+
+**Required invariant:** Ephemeral key-establishment secrets are protected and
+erased when no longer needed. A design that claims recovery from compromise of
+such a secret establishes new traffic secrets using fresh key-establishment
+input independent of the compromised secret before sending further Evidence.
+
+### Under Traffic-Secret Compromise
+
+**Attacker capabilities:** A traffic-secret attacker possesses the traffic secret
+used to protect an attestation exchange on a (D)TLS connection. This capability
+permits decryption of records protected by that secret, but does not by itself
+imply control of either endpoint. See {{I-D.ietf-tls-extended-key-update}} for
+additional discussion of the threat.
+
+**Targeted assurance:** Evidence conveyed inside the secure connection remains
+private from parties other than the connection endpoints.
+
+**Preconditions and attack:** Attestation Evidence is sent under a compromised
+handshake or application traffic secret. The attacker observes the protected
+records and uses the secret to decrypt the Evidence, learning the platform and
+software details it carries.
 
 **Why validation succeeds:** This is a confidentiality failure rather than an
 Evidence-validation failure. The Evidence can remain authentic and correctly
@@ -390,7 +403,8 @@ Evidence.
 ## RA Negotiation Downgrade
 
 **Attacker capabilities:** A network attacker can modify messages carrying the
-peers' RA capabilities or selections.
+peers' RA capabilities or selections. Alternatively, a malicious peer can
+disregard the RP's request for attestation.
 
 **Targeted assurance:** The use of RA and the selected Evidence format and
 attestation model reflect the peers' authentic capabilities and configured
@@ -419,7 +433,8 @@ properties.
 **Attacker capabilities:** An authentication-key attacker can also operate an
 endorsed Target Environment that satisfies the Relying Party's appraisal policy.
 The stolen authentication key is importable into that environment and has not
-been revoked.
+been revoked. This represents a Man-in-the-Middle attack as described in
+{{Section 3.3.5 of -int-threat-model}}.
 
 **Targeted assurance:** An authenticated peer identity remains associated with
 an authorized Target Environment instance.
@@ -464,9 +479,8 @@ authentication-public-key binding, and asserted key provenance all verify
 against attacker-chosen values. Those checks ultimately rely on the compromised
 Attestation Key.
 
-**Required invariant:** The attestation trust model protects Attestation Keys,
-limits the claims for which each key is authoritative, and supports rejection
-and recovery when an Attestation Key is compromised.
+**Required invariant:** The peers support rejection and recovery when an
+Attestation Key is compromised.
 
 # Integration Security Goals
 {: #integration-security-goals }
