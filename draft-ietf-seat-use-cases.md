@@ -190,9 +190,10 @@ The attacks in this section use the following attacker profiles:
   observe, inject, modify, drop, delay, reorder, and replay messages. This
   attacker does not control either endpoint or possess their cryptographic
   secrets. This closely follows the attacker model of {{-int-threat-model}}.
-* **Malicious peer:** Controls a protocol endpoint and can deviate arbitrarily
-  from the protocol. Control of the peer does not, by itself, imply compromise
-  of an Attesting Environment or its Attestation Key.
+* **Malicious peer:** Controls a TLS endpoint and can deviate arbitrarily from
+  the protocol. The TLS endpoint is not running in an environment that can
+  produce Evidence acceptable to the Relying Party. The attacker does not control
+  or compromise the Attesting Environment or its Attestation Key.
 * **Ephemeral-key attacker:** Possesses an endpoint's ephemeral private key used
   for key establishment in a particular secure-channel handshake. Given the
   peer's public key share and the handshake transcript, this attacker can derive
@@ -263,15 +264,16 @@ request on the same TLS connection.
 
 ### Evidence Relay
 
-**Attacker capabilities:** A malicious peer can establish a TLS connection with
-a Relying Party and can obtain Evidence about a separate Target Environment that
-contains the correct binder for the attacker's connection as its challenge
-value. How the attacker obtains such Evidence is not constrained by this model.
-The attacker does not need to control or collude with the Attesting or Target
-Environment.
+**Attacker capabilities:** The attacker, acting as a malicious TLS peer, can
+establish a TLS connection with a Relying Party and can obtain Evidence about a
+separate Target Environment that contains the correct binder for the attacker's
+connection as its challenge value. How the attacker obtains such Evidence is not
+constrained by this model. The attacker does not need to control or collude with
+the Attesting or Target Environment.
 
-**Targeted assurance:** The Evidence describes the Target Environment
-associated with the peer and connection being appraised by the Relying Party.
+**Targeted assurance:** The Relying Party incorrectly attributes the claims
+asserted by the Evidence to the TLS endpoint and assumes that the authentication
+private key has the protection properties asserted by the Evidence.
 
 **Preconditions and attack:** The attacker obtains the binder for its TLS
 connection with the Relying Party. It then obtains authentic, fresh Evidence
@@ -280,11 +282,12 @@ challenge value and presents the Evidence to the Relying Party. If the Evidence
 is accepted, the Relying Party attributes the state of the separate Target
 Environment to the attacker's endpoint and TLS connection.
 
-**Why validation succeeds:** The Evidence is authentic and fresh, and its
-challenge value matches the binder expected for the attacker's connection.
+**Why validation succeeds:** Proof of possession in CertificateVerify establishes
+that the peer controls the private key. The Evidence is authentic and fresh, and
+its challenge value matches the binder expected for the attacker's connection.
 These checks establish that the Attesting Environment incorporated the correct
 binder into the Evidence, but not that the evidenced Target Environment is
-associated with the peer on that connection.
+holds the authentication key or the TLS stack that can use it.
 
 **Required invariant:** Acceptance of Evidence establishes that the evidenced
 Target Environment is associated with the peer participating in the TLS
@@ -342,8 +345,9 @@ and correctly bound to the connection even though its contents are disclosed.
 
 **Required invariant:** Ephemeral key-establishment secrets are protected and
 erased when no longer needed. A design that claims recovery from compromise of
-such a secret establishes new traffic secrets using fresh key-establishment
-input independent of the compromised secret before sending further Evidence.
+such a secret provides Post-Compromise Security (PCS) by establishing new traffic
+secrets using fresh key-establishment input independent of the compromised secret
+before sending further Evidence.
 
 ### Under Traffic-Secret Compromise
 
@@ -370,7 +374,7 @@ design that claims recovery from traffic-secret compromise does not send new
 Evidence until it has established traffic secrets that are independent of the
 compromised secrets.
 
-## Posture Drift on Long-Lived and Resumed Connections
+## State Drift on Long-Lived and Resumed Connections
 
 **Classification:** This is a stale-assurance failure mode. It can result from a
 Target-Environment attacker, but it can also result from legitimate
@@ -389,7 +393,7 @@ Evidence being appraised. Two cases are relevant:
   exchange, thereby inheriting an assurance established before the state change.
 
 In either case, communication or authorized operations continue with a Target
-Environment whose current posture has not been appraised.
+Environment whose current state has not been appraised.
 
 **Why validation succeeds:** The original Evidence remains authentic, but it no
 longer describes the current state. The Relying Party has no newer Evidence on
