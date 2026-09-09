@@ -32,6 +32,7 @@ normative:
 
 informative:
     RFC9334: rats-arch
+    RFC9397: teep-arch
     RFC4949:
     RFC3552: int-threat-model
     RFC9846: tls
@@ -175,12 +176,15 @@ performs the checks required by the protocol and its appraisal policy. The
 Attester is referenced in terms of its Attesting and Target Environments, as
 described in {{Section 3.1 of -rats-arch}}. The Attesting Environment is the
 entity which holds the Attestation key, which is used to sign Evidence for the
-Target Environment.
+Target Environment. Part or all of the Target Environment may be executing
+within a protected environment that provides certain security guarantees,
+called a Trusted Execution Environment (TEE) (see {{-teep-arch}}).
 
 The baseline security assumptions of the TLS v1.3 protocol apply. See
 {{Appendix F of -tls}} for the relevant properties.
 
-The TLS stack of the attester is assumed to be running within the TEE.
+The TLS stack of the attester is assumed to be running within its Target
+Environment.
 
 ## Attacker Capabilities
 
@@ -190,10 +194,15 @@ The attacks in this section use the following attacker profiles:
   observe, inject, modify, drop, delay, reorder, and replay messages. This
   attacker does not control either endpoint or possess their cryptographic
   secrets. This closely follows the attacker model of {{-int-threat-model}}.
+
 * **Malicious peer:** Controls a TLS endpoint and can deviate arbitrarily from
-  the protocol. The TLS endpoint is not running in an environment that can
-  produce Evidence acceptable to the Relying Party. The attacker does not control
-  or compromise the Attesting Environment or its Attestation Key.
+  the protocol. The attacker cannot generate Evidence which would be accepted by
+  the Relying Party's appraisal policy. This can be because the endpoint is not
+  running in a Target Environment, or because the Evidence for that Target
+  Environment does not meet the requirements of the appraisal policy. The
+  attacker does not control or compromise an Attesting Environment or its
+  Attestation Key.
+
 * **Ephemeral-key attacker:** Possesses an endpoint's ephemeral private key used
   for key establishment in a particular secure-channel handshake. Given the
   peer's public key share and the handshake transcript, this attacker can derive
@@ -201,16 +210,20 @@ The attacks in this section use the following attacker profiles:
   schedule does not also depend on independent secret keying material unknown to
   the attacker, such as a PSK. This capability does not, by itself, imply
   possession of an authentication key or Attestation Key.
+
 * **Traffic-secret attacker:** Possesses either the handshake and/or the
   application traffic secrets for a secure connection. Each attack specifies
   which direction and epoch are relevant. Possession of a traffic secret does not,
   by itself, imply possession of an authentication key (see below) or Attestation
   Key.
+
 * **Authentication-key attacker:** Possesses the private key used by a peer to
   authenticate itself in a secure connection (e.g., to sign the CertificateVerify
   message in the TLS 1.3 handshake).
+
 * **Attestation-key attacker:** Can use an Attestation Key whose credential the
   Relying Party continues to accept.
+
 * **Target-Environment attacker:** Can change the state of a Target Environment
   after Evidence about that environment has been generated. Post-attestation
   state changes can also occur through legitimate reconfiguration and therefore
@@ -222,17 +235,21 @@ Each attack or failure mode below is described using the following fields:
 
 * **Attacker capabilities:** Identifies the attacker profile or combination of
   profiles required by the scenario and states any additional capabilities.
+
 * **Targeted assurance:** Identifies the security claim or property that the
   Relying Party expects to hold and that the scenario attempts to invalidate.
+
 * **Preconditions and attack:** Describes the conditions required for the attack,
   the actions performed by the attacker, and the resulting incorrect conclusion
   or other security consequence. For a non-adversarial failure mode, this field
   is named **Preconditions and event** and describes the triggering event and
   its result instead.
+
 * **Why validation succeeds:** Explains why the Evidence or secure-channel
   checks do not detect the attack, including which checks still pass despite
   the attack.
-* **Required invariant:** States the security property that a solution needs to
+
+* **Mitigation strategy:** States the security property that a solution needs to
   preserve, without prescribing a particular protocol mechanism.
 
 ## Evidence Reuse
@@ -257,7 +274,7 @@ connection-level binder still matches. TLS record replay protection does not
 detect the attack because the old Evidence object is retransmitted as new
 application data.
 
-**Required invariant:** Every Evidence response is fresh for a particular
+**Mitigation strategy:** Every Evidence response is fresh for a particular
 attestation exchange and is bound to a unique challenge or equivalent freshness
 mechanism. Evidence accepted for one attestation exchange cannot satisfy a later
 request on the same TLS connection.
@@ -289,7 +306,7 @@ These checks establish that the Attesting Environment incorporated the correct
 binder into the Evidence, but not that the evidenced Target Environment is
 holds the authentication key or the TLS stack that can use it.
 
-**Required invariant:** Acceptance of Evidence establishes that the evidenced
+**Mitigation strategy:** Acceptance of Evidence establishes that the evidenced
 Target Environment is associated with the peer participating in the TLS
 connection being appraised. Merely including the correct connection binder as a
 challenge value does not establish this association.
@@ -317,7 +334,7 @@ controls the private key, and Evidence appraisal establishes properties of the
 Target Environment. Neither check establishes that this particular private key
 was generated, is stored, and is used strictly within that environment.
 
-**Required invariant:** The authentication public key is unambiguously bound to
+**Mitigation strategy:** The authentication public key is unambiguously bound to
 Evidence asserting its relevant generation, storage, export, and use properties,
 and those assertions are appraised together with the connection authentication.
 
@@ -343,7 +360,7 @@ Evidence decrypted retrospectively from recorded traffic after the compromise.
 not an Evidence-validation failure. The Evidence can remain authentic, fresh,
 and correctly bound to the connection even though its contents are disclosed.
 
-**Required invariant:** Ephemeral key-establishment secrets are protected and
+**Mitigation strategy:** Ephemeral key-establishment secrets are protected and
 erased when no longer needed. A design that claims recovery from compromise of
 such a secret provides Post-Compromise Security (PCS) by establishing new traffic
 secrets using fresh key-establishment input independent of the compromised secret
@@ -369,7 +386,7 @@ software details it carries.
 Evidence-validation failure. The Evidence can remain authentic and correctly
 bound to the connection even though its contents are disclosed.
 
-**Required invariant:** Evidence is confidentiality-protected in transit. A
+**Mitigation strategy:** Evidence is confidentiality-protected in transit. A
 design that claims recovery from traffic-secret compromise does not send new
 Evidence until it has established traffic secrets that are independent of the
 compromised secrets.
@@ -383,9 +400,9 @@ reconfiguration, software update, or other state change.
 **Targeted assurance:** Evidence appraised for a connection remains an adequate
 basis for decisions made later in that connection or in a resumed connection.
 
-**Preconditions and event:** The Relying Party appraises Evidence during an
+**Preconditions and event:** The Relying Party accepts Evidence during an
 initial handshake. The Target Environment subsequently changes without new
-Evidence being appraised. Two cases are relevant:
+Evidence being requested and verified. Two cases are relevant:
 
 * The original connection remains open and continues to carry sensitive data
   after the Evidence becomes stale.
@@ -399,7 +416,7 @@ Environment whose current state has not been appraised.
 longer describes the current state. The Relying Party has no newer Evidence on
 which to base its decision.
 
-**Required invariant:** The validity of an appraisal is bounded by an explicit
+**Mitigation strategy:** The validity of an appraisal is bounded by an explicit
 lifetime or by security-relevant events. Continued and resumed connections do
 not rely on an appraisal beyond that bound without obtaining and appraising new
 Evidence.
@@ -425,7 +442,7 @@ the policy that would have been applied to the authentic negotiation.
 **Why validation succeeds:** The endpoint cannot distinguish the attacker-modified
 negotiation from the peer's authentic offer or selection.
 
-**Required invariant:** The complete RA negotiation and its outcome are
+**Mitigation strategy:** The complete RA negotiation and its outcome are
 integrity-protected and bound to the secure channel. An endpoint does not
 silently fall back when its policy requires RA or particular attestation
 properties.
@@ -458,7 +475,7 @@ has the authentication private key. The connection binding and public-key
 binding also succeed because the Evidence describes the attacker's current
 connection and environment. Evidence appraisal accepts that environment.
 
-**Required invariant:** A deployment that requires continuity with a particular
+**Mitigation strategy:** A deployment that requires continuity with a particular
 platform instance binds authorization to that instance, rather than only to an
 environment class, and provides a means to reject compromised authentication
 credentials. Alternatively, the appraisal policy must inform the Relying Party
@@ -483,7 +500,7 @@ authentication-public-key binding, and asserted key provenance all verify
 against attacker-chosen values. Those checks ultimately rely on the compromised
 Attestation Key.
 
-**Required invariant:** The peers support rejection and recovery when an
+**Mitigation strategy:** The peers support rejection and recovery when an
 Attestation Key is compromised.
 
 # Integration Security Goals
