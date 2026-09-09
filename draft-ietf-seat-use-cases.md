@@ -174,7 +174,7 @@ Unless stated otherwise, the Relying Party is not compromised and correctly
 performs the checks required by the protocol and its appraisal policy. The
 Attester is referenced in terms of its Attesting and Target Environments, as
 described in {{Section 3.1 of -rats-arch}}. The Attesting Environment is the
-entity responsible for using the Attestation Key to sign Evidence for the
+entity which holds the Attestation key, which is used to sign Evidence for the
 Target Environment.
 
 The baseline security assumptions of the TLS v1.3 protocol apply. See
