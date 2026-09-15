@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-10T04:00:43.972873+00:00",
+  "timestamp": "2026-09-15T04:17:35.717336+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -7260,24 +7260,26 @@
       "id": "PR_kwDOP_9tTM7__-oL",
       "title": "Add attacker model",
       "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/59",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ionut-arm",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "Courtesy of @tireddy2 ",
       "createdAt": "2026-08-17T09:25:28Z",
-      "updatedAt": "2026-09-09T15:51:43Z",
+      "updatedAt": "2026-09-13T21:10:32Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "3bd870604738e6d594b65ecf3656b22adf333ecd",
       "headRepository": "tireddy2/use-cases-and-properties",
       "headRefName": "main",
       "headRefOid": "786a8c560438969d8bb0c796b30ff4b5b3cac7f5",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "closedAt": "2026-09-13T21:10:31Z",
+      "mergedAt": "2026-09-13T21:10:31Z",
+      "mergedBy": "ionut-arm",
+      "mergeCommit": {
+        "oid": "aae97f4d2b6aec752bf15ab4e1fa0af62173c97e"
+      },
       "comments": [
         {
           "author": "ionut-arm",
@@ -7341,6 +7343,13 @@
           "body": "> The question is not about this PR. The question is what the goal is.\r\n\r\nI'm pretty sure I explicitly stated what the goal was above: The reason we even need an \"attacker model\" in this context is that the properties we need to encode are motivated by very specific attacker profiles and capabilities.\r\n\r\n> Sophie was clearly talking about a threat model.\r\n\r\nDo you mean in [this email](https://mailarchive.ietf.org/arch/msg/seat/t8aobzB374lWiLzrVrORY7kGYyQ/)? If so, it's because we explicitly asked what the threat model was for her research, so that we understand how it might apply to our work. I do not see a request there for us to define a \"threat model\", or an offer for her to help guide such an effort. Happy to hear otherwise from her.",
           "createdAt": "2026-08-29T23:04:51Z",
           "updatedAt": "2026-08-29T23:04:51Z"
+        },
+        {
+          "author": "ionut-arm",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Merging the PR as there has been substantial feedback and discussion around it. The changes will be released tomorrow. We can, of course, continue to iterate on this. If you would like to propose changes to the Attacker Model, please either open an issue or a PR.",
+          "createdAt": "2026-09-13T21:10:27Z",
+          "updatedAt": "2026-09-13T21:10:27Z"
         }
       ],
       "reviews": [
@@ -7941,7 +7950,7 @@
             "abbreviatedOid": "48226b2"
           },
           "author": "yogeshbdeshpande",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "",
           "createdAt": "2026-09-02T08:20:36Z",
@@ -7961,7 +7970,7 @@
             "abbreviatedOid": "48226b2"
           },
           "author": "yogeshbdeshpande",
-          "authorAssociation": "NONE",
+          "authorAssociation": "CONTRIBUTOR",
           "state": "COMMENTED",
           "body": "left some comments for you to look at..",
           "createdAt": "2026-09-02T08:22:07Z",
