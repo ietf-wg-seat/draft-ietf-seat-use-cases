@@ -67,7 +67,14 @@ informative:
      target: https://www.cve.org/CVERecord?id=CVE-2026-33697
     I-D.aylward-aiga-2:
     I-D.draft-ietf-rats-pkix-key-attestation:
+    I-D.draft-reddy-rats-key-binding:
     I-D.jiang-seat-dynamic-attestation:
+    I-D.ayerbe-trip-protocol:
+    RFC9190:
+    RFC3579:
+    CoCo-Trustee:
+     title: Trustee
+     target: https://github.com/confidential-containers/trustee
 
 --- abstract
 
@@ -602,181 +609,237 @@ round-trips or very large payloads in the initial handshake should be minimized.
 
 # Use Cases
 
-This section provides the concrete motivation for the WG's work by describing
-specific use cases. For each case, the scenario, actors, and specific security
-guarantees needed from RA are described.
+This section defines protocol-focused profiles for composing RA with (D)TLS.
+Application examples provide deployment context and can map to several profiles.
 
-## Secure Provisioning and High-Assurance Operations
+The server-as-Attester and client-as-Attester profiles define the two base attestation directions.
+The remaining profiles describe composition, lifecycle, or topology considerations that can be overlaid on either direction.
+Base profiles use the fields below; overlay profiles specify only the properties they add or modify.
 
-Goal: Ensure the integrity of workloads and devices when bootstrapping their
-PKI-based identity or receiving critical commands.
+Across all profiles, the Verifier appraises Evidence and produces an Attestation Result (AR), while the Relying Party makes the authorization or release decision based on that AR.
+The Relying Party rejects an unacceptable result.
+Missing, stale, unverifiable, or unbound Evidence, Verifier unavailability, and timeouts make the decision indeterminate.
+When policy requires attestation, an unacceptable Attestation Result or an indeterminate decision blocks the operation.
+Any non-attested fallback is separate and explicit.
 
-### Runtime Secret Provisioning
+Across all profiles, the Relying Party's policy defines when an Attestation Result is usable for a protected decision and whether it may be reused for a later decision.
+Fresh assurance is required when the result expires, when the Relying Party identifies a relevant state change, or when a new connection invalidates a required connection binding.
+Verifier appraisal can supply applicable validity constraints.
 
-A confidential workload starts in a
-generic state and needs to fetch secrets (e.g., API keys, database credentials,
-encryption keys) to become operational.
+Systems may combine base and overlay profiles.
+When profiles are combined, the attestation exchanges and their associated Evidence, Verifiers, trust anchors, appraisal policies, timing, lifetimes, and authorization decisions are independent unless a deployment explicitly requires them to be shared or coordinated.
 
-* Requirement: The workload must attest its runtime state (TEE genuineness,
-  software measurements) to a secrets management service. The service will only
-  release the secrets after successful verification, ensuring they are delivered
-  exclusively to a trustworthy environment. This use-case also covers secure
-  device onboarding for IoT devices that lack a pre-provisioned PKI-based identity.
+Profiles state the required assurance but do not define the values or mechanism used to bind attestation to a connection.
+Those details belong to the protocol solution.
 
-### High-Assurance Command Execution
+## Server as Attester Before a Protected Operation
 
-An operator sends a critical command
-to a remote system (e.g., an industrial controller, a financial transaction
-processor).
+**Scenario and protected decision or asset:** A TLS client needs assurance about a TLS server before releasing sensitive data, accepting a result, or sending a high-impact command.
 
-* Requirement: The system must provide fresh Evidence to the
-  operator to prove its integrity before the command is dispatched. This
-  prevents commands from being executed on a compromised system.
+**TLS and RATS roles:** The server is the Attester, the client is the Relying Party, and the Verifier can be separate.
 
-## Confidential Data Collaboration
+**Existing TLS authentication:** TLS authenticates the server's network identity; RA adds information about its Target Environment.
 
-Goal: Enable multiple parties to collaborate on sensitive, combined datasets
-without exposing raw data to each other or to the infrastructure operator.
+**Attestation topology and trust boundaries:** The TLS endpoint is part of the appraised Target Environment.
+The intermediary-aware profile also applies when an intermediary terminates TLS.
 
-### Data Clean Rooms
+**Attestation trigger:** Evidence is appraised before the protected operation that requires current assurance.
 
-Multiple *data providers* contribute sensitive data to
-a confidential workload for joint analysis. *Data consumers* receive aggregated
-insights without ever accessing the raw, combined dataset.
+**Relying Party authorization or release decision:** The Relying Party applies local policy to the Attestation Result and authenticated TLS identity.
 
-* Requirement: Before sending data, each data provider must attest the
-  confidential workload to verify it is running the authorized analysis code in
-  a secure Trusted Execution Environment (TEE). Similarly, data consumers must
-  attest the workload to trust the integrity of the results.
+**Required security outcome:** The acceptable attested state applies to the intended server endpoint and connection carrying the protected operation.
 
-###Secure Multi-Party Computation (MPC)
+**Assumptions, limitations, and non-goals:** Attestation neither authorizes the application action nor guarantees the server's future state or behavior.
 
-Distributed parties
-collaboratively compute a function (e.g., train a machine learning model)
-without sharing their local data.
+**Application examples:**
 
-* Requirement: The central aggregator, as well as each participating client,
-  must be able to mutually attest to ensure all parties are running the correct,
-  untampered MPC algorithm in a trusted environment.
+* **High-Assurance Command Execution**
 
-## Network Infrastructure Integrity
+  An operator sends a critical command to a remote system, such as an industrial controller.
+  The system provides fresh Evidence for appraisal before the command is sent.
 
-Goal: Verify the integrity of network devices that form the foundation of
-communication.
+* **Data Clean Rooms**
 
-### Attestation of Network Functions
+  Data providers contribute sensitive data to a confidential workload for joint analysis, while data consumers receive only aggregated results.
+  Before sending data or accepting results, they attest that the workload runs authorized code in a Trusted Execution Environment (TEE).
 
-A router, switch, or firewall joins
-a network's management plane. A Virtualized Network Function (VNF) is
-instantiated on a generic server.
+* **Securing Control and Management Planes**
 
-* Requirement: The network orchestrator must verify the device's integrity
-  (e.g., secure boot enabled, running signed OS and firmware) before allowing it
-  to join the network and receive policy. This prevents a compromised router
-  from misdirecting traffic or a malicious VNF from inspecting sensitive
-  packets.
+  Before an administrator uses a network device's management interface, the client appraises Evidence about the endpoint's state.
+  This avoids exposing credentials or policy to a compromised interface.
 
-### Securing Control and Management Planes
+* **Attestation of Certificate Private Key**
 
-An administrator connects to a
-network device's management interface.
+  A TLS endpoint authenticates with an end-entity certificate whose private key is claimed to be protected by a secure element.
+  TLS proves possession of the key, but not where or how it is stored and used.
 
-* Requirement: The administrator's client must verify the integrity of the
-  management endpoint on the network device to ensure they are not connecting to
-  a compromised interface that could steal credentials or manipulate the device.
+  {{I-D.draft-reddy-rats-key-binding}} describes the use-case, and the required checks and properties.
+  {{I-D.draft-ietf-rats-pkix-key-attestation}} partially addresses this use case by attesting the module and key at certificate issuance, but does not describe their state at connection establishment or later.
 
-## Operation-Triggered Attestation for High-Impact Application Operations
-{: #sec-operation-triggered }
+## Client as Attester Before Service Admission
 
-Goal: Ensure the integrity of application services at operation time,
-when security posture may change after initial channel establishment.
+**Scenario and protected decision or asset:** A service needs assurance about a TLS client before granting access or releasing a protected asset.
 
-Use case: **High-Assurance Operation Execution in Dynamic Application Services**:
-An application service instance (e.g., AI agent) or confidential computing
-environment (which could host an AI agent) maintains a (D)TLS connection with
-a peer and must execute a high-impact action (e.g., payment initiation,
-configuration change, privileged command).
-See {{I-D.jiang-seat-dynamic-attestation}} for details.
+**TLS and RATS roles:** The client is the Attester and the server is the Relying Party.
+A separate Verifier can appraise the Evidence.
 
-* Requirement 1: Before executing a high-impact operation over the existing
-connection, the peer must present fresh, connection-bound Evidence
-reflecting the current behavior-affecting posture (e.g., enabled capabilities,
-policy configuration, runtime permissions).
+**Existing TLS authentication:** Client attestation works with or without TLS client authentication.
+Without it, the client can attest anonymously.
 
-* Requirement 2: The mechanism should support lightweight, dynamic attestation
-within the existing connection, without necessarily requiring a full new TLS
-handshake, so that behavior-affecting posture changes are visible to relying
-parties when required by local policy.
+**Attestation topology and trust boundaries:** The Target Environment is the client component being appraised.
+The service and Verifier can belong to different administrative domains and use different trust anchors.
 
-## Attestation of Certificate Private Key
+**Attestation trigger:** Evidence is appraised before the protected decision.
 
-A TLS endpoint authenticates itself using an end-entity certificate whose
-corresponding private key is claimed to be protected by a secure element.
-While standard TLS authentication verifies possession of the private
-key, it provides no assurance about where or how that key is stored and used.
+**Relying Party authorization or release decision:** The Relying Party applies local policy to the Attestation Result and any authenticated client identity.
 
-In this scenario, the peer acting as the Relying Party requires additional
-assurance that the private key associated with the end-entity certificate used
-to authenticate the TLS connection is generated, stored, and used within an
-attested cryptographic module. In addition to verifying possession of the
-private key via the TLS handshake, the Relying Party seeks
-Evidence that the key is non-exportable, remains bound to the
-cryptographic module, and that the module is operating in an expected
-security configuration at the time the TLS connection is established.
+**Required security outcome:** The Relying Party associates the acceptable state with the client receiving access or the asset.
+If client identity is used, both inputs refer to the same endpoint.
 
-Remote attestation is used to provide Evidence about the cryptographic module
-where the private key used for TLS authentication is stored. The Evidence may
-include claims about the security goals of the cryptographic module.
-To prevent replay attacks, this Evidence has to be fresh and tied to the
-current TLS connection. Replayed Evidence could otherwise be used to falsely
-assert key security goals that no longer hold.
+**Assumptions, limitations, and non-goals:** SEAT does not define acceptable measurements or how the client obtains its identity credential.
+Attestation supports an authorization decision based on the client’s appraised state at the time of the protected decision, but does not assure that the client will remain in that state, remain uncompromised, or use any granted access only as expected afterward.
 
-* Requirement: The Attester must be able to produce Evidence that demonstrates
-  that the private key used for secure channel authentication:
-  * is generated and stored within a specific cryptographic module or secure
-    element,
-  * is protected against export or software extraction
-  * is attested using fresh Evidence that is bound to the current TLS connection.
+**Application examples:**
 
-The Relying Party uses this Evidence, potentially with the assistance of a
-Verifier, to determine whether the key security goals satisfy its local
-security policy.
+* **Attested Workload and Device Provisioning**
 
-The approach described in {{I-D.draft-ietf-rats-pkix-key-attestation}} addresses this
-use case partially by providing attestation of the cryptographic module and associated
-private key at certificate issuance time, reflecting their state when the
-certificate is enrolled. This model does not provide guarantees about the
-continued state of the module at connection establishment or during the lifetime of
-the TLS connection.
+  A workload or device obtains the secrets, configuration, credentials, or policy needed to become operational only after its state is appraised.
+  This includes runtime secret provisioning for a confidential workload and onboarding an IoT device without a pre-provisioned PKI identity.
 
-## Platform-to-platform communication
+  For example, a Confidential Container can obtain configuration data or disk keys from a Key Broker Service or Trustee {{CoCo-Trustee}} after appraisal of its TEE claims and software measurements.
+  The workload is the Attester; the Trustee is the Relying Party and can also be the Verifier.
 
-Goal: Allow platforms to establish a trustworthy secure channel with each other.
+  It also includes injecting a Web PKI credential into a short-lived TEE container: a cluster utility can obtain the certificate and private key before loading them into the container, while the Relying Party obtains current assurance that the intended Target Environment uses the provisioned credential.
+  Credential issuance remains outside SEAT.
 
-Use case: Migration of workloads (confidential workloads in particular) between
-different platforms. Migration is occasionally required in order to maintain
-uptime for the hosted services across periods of scheduled downtime for the
-hosting platform. Having remote attestation-enforced policies for such migration
-events provides guarantees that the services will not be exposed to lower
-security guarantees when migrating. Migration is typically performed by trusted,
-low-level components (migration agents) on both source and destination
-platforms, which perform the authorization checks and handle the data migration.
+* **Attestation of Network Functions**
 
-* Requirement: The migration agent on the destination platform typically acts
-  as Attester, proving its state for its peer on the source platform (where the
-  workload initially resides).
+  Before admitting a network device or function to the management plane, the orchestrator appraises Evidence about its state.
+  This gates admission and policy delivery; it does not attest other devices or the traffic path.
 
-* Example: Intel TDX offers migration capabilities via its Migration Trust Domain (MigTD)
-  {{MigTD}}. Peer MigTDs on the initiating and target platforms set up an
-  attested TLS connection to perform the migration over.
+* **Enterprise Network Access Control**
 
-## AI Governance and Accountability
+  An endpoint seeks access through an 802.1X Ethernet port or WPA3-Enterprise access point.
+  The Network Access Server is the Relying Party and relays the authentication exchange to a RADIUS/AAA server {{RFC3579}}, which can act as the Verifier.
+  General network access remains blocked until authorization completes.
+  EAP-TLS {{RFC9190}} is one TLS-based authentication profile for this deployment.
 
-Goal: Design framework for governing autonomous AI agents.
+## Mutual Attestation Before Sensitive Exchange
 
-Use case: See {{I-D.aylward-aiga-2}} for details. Contrary to {{sec-operation-triggered}}, the entity verifying the Evidence in this case is the governance body and for the purposes of ensuring that no unethical or harmful action is performed.
+This profile overlays the server-as-Attester and client-as-Attester profiles when both TLS peers need assurance before releasing protected data.
+The two directions remain independent as described above.
+Mutual attestation does not require mutual TLS authentication.
 
-* Requirement: Runtime attestation based on agent risk tiers defined in {{Section 2.2 of I-D.aylward-aiga-2}}
+**Required security outcome:** In each direction, the acceptable attested state is associated with the peer endpoint that will receive protected data.
+
+**Operational and failure behavior:** A failure in one direction prevents that party's protected release.
+A successful attestation in only one direction is not mutual attestation.
+
+**Assumptions, limitations, and non-goals:** Mutual attestation does not prove a joint computation correct.
+The application defines its transaction semantics.
+
+**Application examples:**
+
+* **Secure Multi-Party Computation (MPC)**
+
+  Parties compute a function without sharing their local data.
+  The aggregator and clients mutually attest that they run the expected MPC software in trusted environments.
+
+* **Platform-to-Platform Workload Migration**
+
+  Workloads can migrate between platforms to maintain service availability.
+  Migration agents authorize and transfer the workload while enforcing policies that prevent migration to a platform with lower security guarantees.
+
+  The destination migration agent attests to its source peer; deployments can also require source attestation.
+  Intel TDX Migration Trust Domains (MigTDs) {{MigTD}} use an attested TLS connection between the source and destination.
+
+## Re-Evaluation on Long-Lived or Resumed Connections
+
+**Scenario and protected decision or asset:** A peer needs a refresh of its assurance before a protected operation on a long-lived or resumed connection.
+
+**TLS and RATS roles:** Either endpoint can be the Attester or Relying Party; both can re-attest.
+
+**Existing TLS authentication:** Re-evaluation adds current state information without replacing or retroactively strengthening TLS authentication.
+
+**Attestation topology and trust boundaries:** Assurance does not carry over when an endpoint, workload, or intermediary changes merely because TLS state was retained.
+
+**Attestation trigger:** Re-evaluation can be periodic or occur before a high-impact operation.
+
+**Relying Party authorization or release decision:** The Relying Party applies the fresh Attestation Result to the later operation.
+
+**State transition and lifetime:** Connection age does not establish freshness, and an earlier result does not prove that state persisted.
+
+**Required security outcome:** Current assurance applies to the later operation and connection; earlier or unrelated Evidence cannot be substituted.
+
+**Operational and failure behavior:** Indeterminate re-evaluation does not extend an old result.
+
+**Assumptions, limitations, and non-goals:** Re-attestation cannot protect data released before an unacceptable state was detected or constrain future state changes.
+
+**Application examples:**
+
+* **Operation-Triggered Attestation for High-Impact Application Operations**
+  {: #sec-operation-triggered }
+
+  An application service, such as an AI agent, maintains a (D)TLS connection and later performs a high-impact action.
+  Before that action, its peer obtains fresh, connection-bound Evidence of the current behavior-affecting posture.
+  {{I-D.jiang-seat-dynamic-attestation}} describes this use case.
+
+  The attestation can occur over the existing connection without requiring a new TLS handshake.
+
+* **AI Governance and Accountability**
+
+  A governance body appraises Evidence from an autonomous AI agent when deciding whether it may act.
+  Runtime attestation follows the risk tiers in {{Section 2.2 of I-D.aylward-aiga-2}}.
+
+* **Actor Identity Continuity via Longitudinal Trajectory Attestation**
+  {: #sec-actor-identity-continuity }
+
+  A TLS peer presents Evidence about the trajectory of an actor whose identity persists across platforms.
+  The Relying Party attributes the trajectory to that identity and uses each policy-defined interval for a separate authorization decision.
+  The actor is not tied to a particular machine.
+  TRIP {{I-D.ayerbe-trip-protocol}} provides one example.
+
+## Intermediary-Aware Deployment
+
+**Scenario and protected decision or asset:** An intermediary terminates or mediates communication with an attested service.
+The Relying Party needs to know which component and trust boundary it appraises.
+
+**TLS and RATS roles:** The Attester can be an endpoint or intermediary.
+This profile applies in either attestation direction.
+
+**Existing TLS authentication:** TLS authenticates the identity presented by each connection's endpoint; an intermediary that terminates TLS remains visible as that endpoint even when presenting an origin's identity.
+
+**Attestation topology and trust boundaries:** Either the intermediary is the attested service boundary, or a trusted terminator fronts an appraised origin.
+The latter creates a channel discontinuity, so origin assurance requires a security association to the origin.
+This document does not define that association.
+
+**Attestation trigger:** Evidence is appraised before accepting the intermediary or origin as the service boundary.
+
+**Relying Party authorization or release decision:** The Relying Party decides whether the observed termination and attestation topology is acceptable.
+The result identifies the appraised component sufficiently for topology policy.
+
+**State transition and lifetime:** A topology change can invalidate the result and trigger re-evaluation.
+
+**Required security outcome:** The Relying Party can determine the appraised component and the TLS endpoint protecting its traffic.
+A topology change does not transfer assurance between an origin and intermediary.
+
+**Operational and failure behavior:** An unexpected or indeterminate topology cannot silently replace a policy-required attested path.
+
+**Assumptions, limitations, and non-goals:** An authorized intermediary remains a trust boundary.
+This profile neither mandates sidecars nor defines end-to-end association through an arbitrary TLS terminator.
+
+**Application examples:**
+
+* **Proxy-Fronted Attested Secure Channels**
+
+  An endpoint reaches an application through an operational intermediary.
+  The Relying Party can attest that intermediary or appraise an origin behind a trusted terminator.
+  An untrusted terminator remains a trust boundary.
+
+* **Service-Mesh Attestation**
+
+  Service-mesh proxies terminate or mediate TLS for application workloads.
+  A peer obtains fresh Evidence for the relevant proxy so policy can distinguish an expected attested proxy from an unacceptable one.
 
 # Security Considerations
 
