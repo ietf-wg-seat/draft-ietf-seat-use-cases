@@ -1,0 +1,2338 @@
+<!DOCTYPE html>
+<html lang="en" class="Internet-Draft">
+<head>
+<meta charset="utf-8">
+<meta content="Common,Latin" name="scripts">
+<meta content="initial-scale=1.0" name="viewport">
+<title>Security Goals and Use Cases for Integrating Remote Attestation with Secure Channel Protocols</title>
+<meta content="Ionuț Mihalcea" name="author">
+<meta content="
+       This document outlines desirable security goals and use cases for integrating remote
+attestation (RA) capabilities with secure channel establishment protocols (e.g., TLS and DTLS).
+Peer authentication in such protocols establishes trust in a peer's network identifiers but
+provides no assurance regarding the integrity of its underlying software and
+hardware stack. Remote attestation addresses this gap by enabling a peer to
+provide verifiable evidence about the current state of the Target Environment. This document specifies a set of essential
+security goals the protocol solution must have, including cryptographic binding to
+the secure connection, evidence freshness, and flexibility to support different
+attestation models. It then explores relevant use cases, such as confidential
+data collaboration and secure secrets provisioning, to motivate the
+need for this integration.  This document is intended
+to serve as an input to the design
+of protocol solutions within the SEAT working group. 
+    " name="description">
+<meta content="xml2rfc 3.34.1" name="generator">
+<meta content="remote attestation" name="keyword">
+<meta content="TLS" name="keyword">
+<meta content="confidential computing" name="keyword">
+<meta content="IoT" name="keyword">
+<meta content="RATS" name="keyword">
+<meta content="draft-ietf-seat-use-cases-latest" name="ietf.draft">
+<!-- Generator version information:
+  xml2rfc 3.34.1
+    Python 3.14.7
+    ConfigArgParse 1.7.7
+    google-i18n-address 3.1.1
+    intervaltree 3.2.1
+    Jinja2 3.1.6
+    lxml 6.1.1
+    natsort 8.4.0
+    platformdirs 4.11.10
+    pycountry 24.6.1
+    PyYAML 6.0.3
+    requests 2.33.1
+    wcwidth 0.8.4
+-->
+<link href="draft-ietf-seat-use-cases.xml" rel="alternate" type="application/rfc+xml">
+<link href="#copyright" rel="license">
+<style type="text/css">@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Italic'), local('Lora-Italic'), url('https://martinthomson.github.io/rfc-css/fonts/lora-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Lora Regular'), local('Lora-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/lora-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C88, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-cyrillic.woff2') format('woff2');
+  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-vietnamese.woff2') format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+1EA0-1EF9, U+20AB;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-024F, U+0259, U+1E00-1EFF, U+2020, U+20A0-20AB, U+20AD-20CF, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: local('Lora Bold'), local('Lora-Bold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-bold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Lora';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: local('Lora SemiBold'), local('Lora-SemiBold'), url('https://martinthomson.github.io/rfc-css/fonts/lora-semibold-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Oxygen Mono';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: local('Oxygen Mono'), local('OxygenMono-Regular'), url('https://martinthomson.github.io/rfc-css/fonts/oxygenmono-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: italic;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-italic-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic-ext.woff2') format('woff2');
+  unicode-range: U+0460-052F, U+1C80-1C8A, U+20B4, U+2DE0-2DFF, U+A640-A69F, U+FE2E-FE2F;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-cyrillic.woff2') format('woff2');
+  unicode-range: U+0301, U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-greek.woff2') format('woff2');
+  unicode-range: U+0370-0377, U+037A-037F, U+0384-038A, U+038C, U+038E-03A1, U+03A3-03FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+  font-family: 'Sofia Sans Semi Condensed';
+  font-style: normal;
+  font-weight: 1 1000;
+  src: url('https://martinthomson.github.io/rfc-css/fonts/sofiasanssemicondensed-regular-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root {
+  color-scheme: light dark;
+  --background-color: #fff;
+  --text-color: #222;
+  --title-color: #191919;
+  --link-color: #2a6496;
+  --highlight-color: #f9f9f9;
+  --line-color: #eee;
+  --pilcrow-weak: #ddd;
+  --pilcrow-strong: #bbb;
+  --small-font-size: 14.5px;
+  --font-mono: 'Oxygen Mono', monospace;
+  --font-title: "Sofia Sans Semi Condensed", sans-serif;
+  scrollbar-color: #bbb #eee;
+}
+body {
+  max-width: 600px;
+  margin: 75px auto;
+  padding: 0 5px;
+  color: var(--text-color);
+  background-color: var(--background-color);
+  font: 16px/22px "Lora", serif;
+  scroll-behavior: smooth;
+}
+
+.ears {
+  display: none;
+}
+
+/* headings */
+section {
+  clear: both;
+}
+.section-number {
+  padding-right: 0.5em;
+}
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-title);
+  font-weight: 680;
+  margin: 0.8em 0 0.3em;
+  font-size-adjust: 0.5;
+  color: var(--title-color);
+}
+h1 {
+  &#title {
+    font-size: 32px;
+    line-height: 40px;
+    clear: both;
+    margin: 1.5em 0 0.2em;
+  }
+  &#rfcnum {
+    margin: 1.5em 0 0.2em;
+    & + h1#title {
+      margin: 0.2em 0;
+    }
+  }
+}
+
+h1, h2, h3 {
+  font-size: 22px;
+  line-height: 27px;
+}
+h4, h5, h6 {
+  font-size: 20px;
+  line-height: 24px;
+}
+
+/* general structure */
+.author {
+  padding-bottom: 0.3em;
+  vertical-align: top;
+}
+#abstract+p {
+  font-size: 18px;
+  line-height: 24px;
+  & code, & samp, & tt {
+    font-size: 16px;
+    line-height: 0;
+  }
+}
+
+p {
+  padding: 0;
+  margin: 0.5em 0;
+  text-align: left;
+}
+div {
+  margin: 0;
+}
+.alignRight {
+  margin: 1em 0;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    margin: 0;
+    float: right;
+    clear: both;
+  }
+  & > *:nth-child(2) {
+    clear: both;
+    display: block;
+    border: none;
+  }
+}
+svg {
+  display: block;
+  /* font-family isn't space-separated, but =~ will have to do */
+  &[font-family~="monospace" i], & [font-family~="monospace" i] {
+    font-family: var(--font-mono);
+  }
+}
+.alignCenter {
+  margin: 1em 0;
+  &.art-text {
+    background-color: var(--highlight-color);
+    border: 1px solid var(--line-color);
+    border-radius: 3px;
+    padding: 0.5em 1em 0;
+    margin-bottom: 0.5em;
+    & pre {
+      padding: 0;
+      width: auto;
+    }
+  }
+  & > *:first-child {
+    border: none;
+    /* this isn't optimal, but it's an existence proof.  PrinceXML doesn't
+       support flexbox yet.
+    */
+    display: table;
+    margin: 0 auto;
+  }
+}
+
+/* lists */
+ol, ul {
+  padding: 0;
+  margin: 0 0 0.5em 2em;
+  & :is(ol, ul) {
+    margin-left: 1em;
+  }
+}
+li {
+  margin: 0 0 0.25em 0;
+}
+ul.empty, .ulEmpty {
+  list-style-type: none;
+  & li {
+    margin-top: 0.5em;
+  }
+}
+:is(ul, ol).compact, .ulCompact, .olCompact {
+  margin: 0 0 0 2em;
+  & li {
+    margin: 0;
+    & :first-child { margin-top: 0; }
+    & :last-child { margin-bottom: 0; }
+  }
+}
+
+/* definition lists */
+dl {
+  clear: left;
+  --indent: 3ch;
+  /* --indent: attr(indent ch); not supported in any browser, but we can dream */
+  &.olPercent {
+    --indent: 5ch;
+    & > dt {
+      min-width: calc(var(--indent) - 2ch);
+      float: none;
+    }
+  }
+
+  dl > dd > & {
+    margin-top: 0.5em;
+    margin-bottom: 0;
+  }
+
+  &:not(.dlNewline) > dt {
+    float: left;
+    margin-right: 2ch;
+    min-width: 8ch;
+  }
+  & > dd {
+    margin-bottom: .8em;
+    margin-left: var(--indent) !important; /* stupid element overrides */
+    min-height: 2ex;
+  }
+}
+:is(dl.compact, .dlCompact) > dd {
+  margin-bottom: 0;
+  & > :is(:first-child, .break:first-child + *) {
+    margin-top: 0;
+  }
+  & > :is(:last-child) {
+    margin-bottom: 0;
+  }
+}
+:is(dd, span).break {
+  display: none;
+}
+
+/* links */
+a {
+  text-decoration: none;
+  &[href] {
+    color: var(--link-color);
+    &:hover { text-decoration: underline; }
+    &.selfRef {
+      color: var(--text-color);
+      &:hover {
+        text-decoration: none;
+        background-color: var(--highlight-color);
+      }
+    }
+  }
+}
+.iref + a[href].internal {
+  color: var(--text-color);
+}
+a.xref:is(.cite, .auto), :is(#status-of-memo, #copyright) a {
+  white-space: nowrap;
+}
+
+/* Figures */
+tt, code, pre {
+  background-color: var(--highlight-color);
+  font: 14px/22px var(--font-mono);
+}
+tt, code {
+  /* changing the font for inline elements leads to different ascender
+     and descender heights; as we want to retain baseline alignment,
+     remove leading to avoid altering the final height of lines
+     note: this fails if these blocks take an entire line,
+     a different solution would be great */
+  line-height: 0;
+}
+:is(h1, h2, h3, h4, h5, h6) :is(tt, code) {
+  font-size: 84%;
+}
+pre {
+  border: 1px solid var(--line-color);
+  font-size: 13.5px;
+  line-height: 16px;
+  letter-spacing: -0.2px;
+  margin: 5px;
+  padding: 5px;
+}
+img {
+  max-width: 100%;
+}
+figure {
+  margin: 0.5em 0;
+  padding: 0;
+  & blockquote {
+    margin: 0.8em 0.4em 0.4em;
+  }
+}
+figcaption, caption {
+  font-style: italic;
+  margin: 0.5em 1.5em;
+  text-align: left;
+  caption-side: bottom;
+}
+@media screen {
+  /* Auto-collapse boilerplate. */
+  :is(#status-of-memo, #copyright) {
+    & p {
+      margin: -2px 0;
+      max-height: 0;
+      transition: max-height 2s ease, margin 0.5s ease 0.5s;
+      overflow: hidden;
+    }
+    &:hover p,
+    & h2:target ~ p {
+      margin: 0.5em 0;
+      max-height: 500px;
+      overflow: auto;
+    }
+  }
+  pre, svg {
+    display: inline-block;
+    /* In the horizontal direction, sometimes people make over-sized figures.
+       Scrollbars for those is therefore necessary: auto adds them as necessary..
+       In the vertical direction, the line-height can combine with the font
+       asender/descender height to produce scrollbars: hidden avoids that. */
+    overflow: auto hidden;
+  }
+  pre {
+    max-width: 100%;
+    width: calc(100% - 22px - 1em);
+  }
+  svg {
+    max-width: calc(100% - 22px - 1em);
+  }
+  figure pre {
+    display: block;
+    width: calc(100% - 25px);
+  }
+  :is(pre, svg) + .pilcrow {
+    display: inline-block;
+    vertical-align: text-bottom;
+    padding-bottom: 8px;
+  }
+}
+
+/* aside, blockquote */
+aside, blockquote {
+  margin-left: 0;
+  padding: 0 2em;
+  font-style: italic;
+}
+blockquote {
+  margin: 1em 0;
+  border-left: 2px var(--pilcrow-strong) solid;
+}
+cite {
+  display: block;
+  text-align: right;
+  font-style: italic;
+}
+
+/* tables */
+table {
+  width: auto;
+  max-width: 100%;
+  margin: 0 0 1em;
+  border-collapse: collapse;
+  &.right { margin-left: auto; }
+  &.center { margin-left: auto; margin-right: auto; }
+  &.left { margin-right: auto; }
+  & .text-left { text-align: left; }
+  & .text-center { text-align: center; }
+  & .text-right { text-align: right; }
+  & caption {
+    margin: 0;
+    padding: 3px 0 3px 1em;
+  }
+  & p { margin: 0; }
+}
+
+thead, tbody {
+  border: 1px solid var(--line-color);
+}
+th, td {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 10px;
+}
+th {
+  background-color: var(--line-color);
+}
+:is(tr:nth-child(2n), thead+tbody > tr:nth-child(2n+1)) > td {
+  background-color: var(--background-color);
+}
+:is(tr:nth-child(2n+1), thead+tbody > tr:nth-child(2n)) > td {
+  background-color: var(--highlight-color);
+}
+
+/* pilcrow */
+a.pilcrow {
+  margin-left: 3px;
+  opacity: 0.2;
+  user-select: none;
+  &[href] {
+    color: var(--pilcrow-weak);
+    &:hover { text-decoration: none; }
+  }
+  @media not print {
+    :hover > &, &:focus {
+      opacity: 1;
+    }
+    &[href]:hover {
+      color: var(--pilcrow-strong);
+      background-color: transparent;
+    }
+  }
+  @media print {
+    display: none;
+  }
+}
+
+/* misc */
+hr {
+  border: 0;
+  border-top: 1px solid var(--line-color);
+}
+.bcp14 {
+  font-variant: small-caps;
+  font-weight: 600;
+  font-size: var(--small-font-size);
+}
+.role {
+  font-variant: all-small-caps;
+}
+sub, sup {
+  line-height: 1;
+  font-size: 80%;
+}
+
+/* info block */
+#identifiers {
+  margin: 0;
+  font-size: var(--small-font-size);
+  line-height: 18px;
+  --identifier-width: 15ch;
+  & dt {
+    width: var(--identifier-width);
+    min-width: var(--identifier-width);
+    clear: left;
+    float: left;
+    text-align: right;
+    margin-right: 1ch;
+  }
+  & dd {
+    margin: 0;
+    margin-left: calc(1em + var(--identifier-width)) !important;
+    min-width: 5em;
+  }
+  & .authors {
+    & .author {
+      display: inline-block;
+      margin-right: 1.5em;
+    }
+    & .org {
+      font-style: italic;
+    }
+  }
+}
+
+/* The prepared/rendered info at the very bottom of the page */
+.docInfo {
+  color: #999;
+  font-size: 0.9em;
+  font-style: italic;
+  margin-top: 2em;
+  & .prepared {
+    float: right;
+  }
+}
+
+/* table of contents */
+#toc {
+  padding: 0.75em 0 2em 0;
+  margin-bottom: 1em;
+
+  & nav {
+    & ul {
+      margin: 0 0.5em 0 0;
+      padding: 0;
+      list-style: none;
+    }
+    & li {
+      line-height: 1.3em;
+      margin: 2px 0;
+      padding-left: 1.2em;
+      text-indent: -1.2em;
+    }
+  }
+  & a.xref {
+    white-space: normal;
+  }
+}
+
+.references {
+  & > dt {
+    text-align: right;
+    font-weight: bold;
+    min-width: 10ch;
+    margin-right: 1.5ch;
+    &:target::before {
+      content: "⇒";
+      margin: 0 10px 0 -25px;
+    }
+  }
+  & > dd {
+    margin-left: 12ch !important;
+    overflow: visible;
+    & .refInstance {
+      margin-bottom: 0.8em;
+    }
+    & .ascii {
+      margin-bottom: 0.25em;
+    }
+  }
+}
+
+#rfc\.index\.index + ul {
+  margin-left: 0;
+}
+
+/* authors */
+address.vcard {
+  font-style: normal;
+  max-width: 20em;
+  margin: 1em auto 1em 0;
+
+  & .nameRole {
+    font-weight: 700;
+    margin-left: 0;
+  }
+  & .label {
+    margin: 0.5em 0;
+  }
+  & .type {
+    display: none;
+  }
+  & .alternative-contact {
+    margin: 0.5em 0 0.25em 0;
+  }
+  & .non-ascii {
+    margin: 0 0 0 2em;
+  }
+  & div.left {
+    text-align: left;
+  }
+  & div.right {
+    text-align: right;
+  }
+}
+
+hr.addr {
+  border-top: 1px dashed;
+  margin: 0;
+  color: #ddd;
+  max-width: calc(100% - 16px);
+}
+@media (min-width: 500px) {
+  #authors-addresses {
+    & > section {
+      column-count: 2;
+      column-gap: 20px;
+    }
+    & > section > h2 {
+      column-span: all;
+    }
+    /* hack for break-inside: avoid-column */
+    & address {
+      display: inline-block;
+      break-inside: avoid-column;
+    }
+  }
+}
+
+/* Comments */
+.rfcEditorRemove {
+  & p:first-of-type {
+    font-style: italic;
+  }
+}
+.cref {
+  background-color: rgba(249, 232, 105, 0.3);
+  padding: 2px 4px;
+}
+.crefSource {
+  font-style: italic;
+}
+
+@media screen {
+  #toc {
+    & nav {
+      font-family: var(--font-title);
+      font-weight: 360;
+      & > ul { margin-bottom: 2em; }
+      & ul {
+        margin: 0 0 0 4px;
+        & :is(p, li) {
+          margin: 2px 0;
+        }
+      }
+    }
+    & a.toplink {
+      float: right;
+    }
+  }
+}
+@media not screen {
+  #toc a.toplink {
+    display: none;
+  }
+}
+
+
+/* TOC layout for smaller screens */
+@media screen and (max-width: 929px) {
+  #toc {
+    position: fixed;
+    z-index: 2;
+    top: 0;
+    right: 0;
+    padding: 1px 0 0 0;
+    margin: 0;
+    border-bottom: 1px solid #ccc;
+    opacity: 0.6;
+    & h2 {
+      margin: 0;
+      padding: 2px 0 2px 6px;
+      padding-right: 1em;
+      font-size: 18px;
+      line-height: 24px;
+      min-width: 190px;
+      text-align: right;
+      background-color: #444;
+      color: white;
+      cursor: pointer;
+      &::before { /* css hamburger */
+        float: right;
+        position: relative;
+        width: 1em;
+        height: 1px;
+        left: -164px;
+        margin: 8px 0 0 0;
+        background: white none repeat scroll 0 0;
+        box-shadow: 0 4px 0 0 white, 0 8px 0 0 white;
+        content: "";
+      }
+    }
+    & nav {
+      display: none;
+      background-color: var(--background-color);
+      padding: 0.5em 1em 1em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      height: calc(100vh - 48px);
+      border-left: 1px solid #ddd;
+    }
+    &.active {
+      opacity: 1;
+      & nav { display: block; }
+    }
+    /* Make the collapsed ToC header render white on gray also when it's a link */
+    & h2 a,
+    & h2 a:is(:link, :focus, :hover),
+    & a.toplink,
+    & a.toplink:hover {
+      color: white;
+      background-color: #444;
+      text-decoration: none;
+    }
+    & a.toplink {
+      margin: 2px 0.5em 0;
+    }
+  }
+}
+
+/* TOC layout for wide screens */
+@media screen and (min-width: 930px) {
+  body {
+    padding-right: 360px;
+    padding-right: calc(min(180px + 20%, 500px));
+  }
+  #toc {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    right: calc(50vw - 480px);
+    width: 312px;
+    margin: 0;
+    padding: 0;
+    z-index: 1;
+    & h2 {
+      margin: 0;
+      padding: 0.25em 1em 1em 0;
+    }
+    & nav {
+      display: block;
+      height: calc(90vh - 84px);
+      bottom: 0;
+      padding: 0.5em 0 2em;
+      overflow: auto;
+      overscroll-behavior: contain;
+      scrollbar-width: thin;
+    }
+    & a.toplink {
+      margin: 8px 0.5em 0;
+    }
+  }
+  img { /* future proofing */
+    max-width: 100%;
+    height: auto;
+  }
+}
+
+/* pagination */
+@media print {
+  body {
+    width: 100%;
+  }
+  p {
+    orphans: 3;
+    widows: 3;
+  }
+  #n-copyright-notice {
+    border-bottom: none;
+  }
+  #toc {
+    page-break-before: always;
+    border-top: none;
+    padding-top: 0;
+  }
+  #n-introduction {
+    page-break-before: always;
+  }
+  figure, pre, .vcard {
+    page-break-inside: avoid;
+  }
+  h1, h2, h3, h4, h5, h6 {
+    page-break-after: avoid;
+  }
+  :is(h2, h3, h4, h5, h6)+*, dd {
+    page-break-before: avoid;
+  }
+  pre {
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-size: 10pt;
+  }
+  table {
+    border: 1px solid #ddd;
+  }
+  td {
+    border-top: 1px solid #ddd;
+  }
+}
+
+@page :first {
+  padding-top: 0;
+  @top-left {
+    content: normal;
+    border: none;
+  }
+  @top-center {
+    content: normal;
+    border: none;
+  }
+  @top-right {
+    content: normal;
+    border: none;
+  }
+}
+
+@page {
+  size: A4;
+  margin-bottom: 45mm;
+  padding-top: 20px;
+}
+
+/* Dark mode. */
+@media (prefers-color-scheme: dark) {
+:root {
+  --background-color: #121212;
+  --text-color: #f0f0f0;
+  --title-color: #fff;
+  --link-color: #4da4f0;
+  --highlight-color: #282828;
+  --line-color: #444;
+  --pilcrow-weak: #444;
+  --pilcrow-strong: #666;
+  scrollbar-color: #777 #333;
+}
+}
+
+/* SVG Trick: a prefix match works because only black and white are allowed */
+svg {
+  & :is([stroke="black"], [stroke^="#000"]) {
+    stroke: var(--text-color);
+  }
+  & :is([stroke="white"], [stroke^="#fff"]) {
+    stroke: var(--background-color);
+  }
+  & :is([fill="black"], [fill^="#000"], :not([fill])) {
+    fill: var(--text-color);
+  }
+  & :is([fill="white"], [fill^="#fff"]) {
+    fill: var(--background-color);
+  }
+}
+</style>
+
+</head>
+<body class="xml2rfc">
+<table class="ears">
+<thead><tr>
+<td class="left">Internet-Draft</td>
+<td class="center">SEAT Use Cases</td>
+<td class="right">September 2026</td>
+</tr></thead>
+<tfoot><tr>
+<td class="left">Mihalcea</td>
+<td class="center">Expires 22 March 2027</td>
+<td class="right">[Page]</td>
+</tr></tfoot>
+</table>
+<div id="external-metadata" class="document-information"></div>
+<div id="internal-metadata" class="document-information">
+<dl id="identifiers">
+<dt class="label-workgroup">Workgroup:</dt>
+<dd class="workgroup">SEAT Working Group</dd>
+<dt class="label-internet-draft">Internet-Draft:</dt>
+<dd class="internet-draft">draft-ietf-seat-use-cases-latest</dd>
+<dt class="label-published">Published:</dt>
+<dd class="published">
+<time datetime="2026-09-18" class="published">18 September 2026</time>
+    </dd>
+<dt class="label-intended-status">Intended Status:</dt>
+<dd class="intended-status">Informational</dd>
+<dt class="label-expires">Expires:</dt>
+<dd class="expires"><time datetime="2027-03-22">22 March 2027</time></dd>
+<dt class="label-authors">Author:</dt>
+<dd class="authors">
+<div class="author">
+      <div class="author-name">I. Mihalcea, <span class="editor">Ed.</span>
+</div>
+<div class="org">Arm</div>
+</div>
+</dd>
+</dl>
+</div>
+<h1 id="title">Security Goals and Use Cases for Integrating Remote Attestation with Secure Channel Protocols</h1>
+<section id="section-abstract">
+      <h2 id="abstract"><a href="#abstract" class="selfRef">Abstract</a></h2>
+<p id="section-abstract-1">This document outlines desirable security goals and use cases for integrating remote
+attestation (RA) capabilities with secure channel establishment protocols (e.g., TLS and DTLS).
+Peer authentication in such protocols establishes trust in a peer's network identifiers but
+provides no assurance regarding the integrity of its underlying software and
+hardware stack. Remote attestation addresses this gap by enabling a peer to
+provide verifiable evidence about the current state of the Target Environment. This document specifies a set of essential
+security goals the protocol solution must have, including cryptographic binding to
+the secure connection, evidence freshness, and flexibility to support different
+attestation models. It then explores relevant use cases, such as confidential
+data collaboration and secure secrets provisioning, to motivate the
+need for this integration.  This document is intended
+to serve as an input to the design
+of protocol solutions within the SEAT working group.<a href="#section-abstract-1" class="pilcrow">¶</a></p>
+</section>
+<div id="status-of-memo">
+<section id="section-boilerplate.1">
+        <h2 id="name-status-of-this-memo">
+<a href="#name-status-of-this-memo" class="section-name selfRef">Status of This Memo</a>
+        </h2>
+<p id="section-boilerplate.1-1">
+        This Internet-Draft is submitted in full conformance with the
+        provisions of BCP 78 and BCP 79.<a href="#section-boilerplate.1-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-2">
+        Internet-Drafts are working documents of the Internet Engineering Task
+        Force (IETF). Note that other groups may also distribute working
+        documents as Internet-Drafts. The list of current Internet-Drafts is
+        at <span><a href="https://datatracker.ietf.org/drafts/current/">https://datatracker.ietf.org/drafts/current/</a></span>.<a href="#section-boilerplate.1-2" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-3">
+        Internet-Drafts are draft documents valid for a maximum of six months
+        and may be updated, replaced, or obsoleted by other documents at any
+        time. It is inappropriate to use Internet-Drafts as reference
+        material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.1-4">
+        This Internet-Draft will expire on 22 March 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="copyright">
+<section id="section-boilerplate.2">
+        <h2 id="name-copyright-notice">
+<a href="#name-copyright-notice" class="section-name selfRef">Copyright Notice</a>
+        </h2>
+<p id="section-boilerplate.2-1">
+            Copyright (c) 2026 IETF Trust and the persons identified as the
+            document authors. All rights reserved.<a href="#section-boilerplate.2-1" class="pilcrow">¶</a></p>
+<p id="section-boilerplate.2-2">
+            This document is subject to BCP 78 and the IETF Trust's Legal
+            Provisions Relating to IETF Documents
+            (<span><a href="https://trustee.ietf.org/license-info">https://trustee.ietf.org/license-info</a></span>) in effect on the date of
+            publication of this document. Please review these documents
+            carefully, as they describe your rights and restrictions with
+            respect to this document. Code Components extracted from this
+            document must include Revised BSD License text as described in
+            Section 4.e of the Trust Legal Provisions and are provided without
+            warranty as described in the Revised BSD License.<a href="#section-boilerplate.2-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="toc">
+<section id="section-toc.1">
+        <a href="#" onclick="scroll(0,0)" class="toplink">▲</a><h2 id="name-table-of-contents">
+<a href="#name-table-of-contents" class="section-name selfRef">Table of Contents</a>
+        </h2>
+<nav class="toc"><ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1">
+            <p id="section-toc.1-1.1.1"><a href="#section-1" class="auto internal xref">1</a>.  <a href="#name-introduction" class="internal xref">Introduction</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.1">
+                <p id="section-toc.1-1.1.2.1.1" class="keepWithNext"><a href="#section-1.1" class="auto internal xref">1.1</a>.  <a href="#name-establishing-trust-in-secur" class="internal xref">Establishing Trust in Secure Communications</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.2">
+                <p id="section-toc.1-1.1.2.2.1" class="keepWithNext"><a href="#section-1.2" class="auto internal xref">1.2</a>.  <a href="#name-the-role-of-remote-attestat" class="internal xref">The Role of Remote Attestation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.1.2.3">
+                <p id="section-toc.1-1.1.2.3.1" class="keepWithNext"><a href="#section-1.3" class="auto internal xref">1.3</a>.  <a href="#name-purpose-and-scope" class="internal xref">Purpose and Scope</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.2">
+            <p id="section-toc.1-1.2.1"><a href="#section-2" class="auto internal xref">2</a>.  <a href="#name-terminology" class="internal xref">Terminology</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3">
+            <p id="section-toc.1-1.3.1"><a href="#section-3" class="auto internal xref">3</a>.  <a href="#name-attacker-model" class="internal xref">Attacker Model</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.1">
+                <p id="section-toc.1-1.3.2.1.1"><a href="#section-3.1" class="auto internal xref">3.1</a>.  <a href="#name-attacker-capabilities" class="internal xref">Attacker Capabilities</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.2">
+                <p id="section-toc.1-1.3.2.2.1"><a href="#section-3.2" class="auto internal xref">3.2</a>.  <a href="#name-structure-of-attack-descrip" class="internal xref">Structure of Attack Descriptions</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3">
+                <p id="section-toc.1-1.3.2.3.1"><a href="#section-3.3" class="auto internal xref">3.3</a>.  <a href="#name-evidence-reuse" class="internal xref">Evidence Reuse</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3.2.1">
+                    <p id="section-toc.1-1.3.2.3.2.1.1"><a href="#section-3.3.1" class="auto internal xref">3.3.1</a>.  <a href="#name-per-connection-evidence-rep" class="internal xref">Per-Connection Evidence Replay</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.3.2.2">
+                    <p id="section-toc.1-1.3.2.3.2.2.1"><a href="#section-3.3.2" class="auto internal xref">3.3.2</a>.  <a href="#name-evidence-relay" class="internal xref">Evidence Relay</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.4">
+                <p id="section-toc.1-1.3.2.4.1"><a href="#section-3.4" class="auto internal xref">3.4</a>.  <a href="#name-key-substitution" class="internal xref">Key Substitution</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5">
+                <p id="section-toc.1-1.3.2.5.1"><a href="#section-3.5" class="auto internal xref">3.5</a>.  <a href="#name-evidence-privacy-loss" class="internal xref">Evidence Privacy Loss</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5.2.1">
+                    <p id="section-toc.1-1.3.2.5.2.1.1"><a href="#section-3.5.1" class="auto internal xref">3.5.1</a>.  <a href="#name-under-ephemeral-key-comprom" class="internal xref">Under Ephemeral-Key Compromise</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.5.2.2">
+                    <p id="section-toc.1-1.3.2.5.2.2.1"><a href="#section-3.5.2" class="auto internal xref">3.5.2</a>.  <a href="#name-under-traffic-secret-compro" class="internal xref">Under Traffic-Secret Compromise</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.6">
+                <p id="section-toc.1-1.3.2.6.1"><a href="#section-3.6" class="auto internal xref">3.6</a>.  <a href="#name-state-drift-on-long-lived-a" class="internal xref">State Drift on Long-Lived and Resumed Connections</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.7">
+                <p id="section-toc.1-1.3.2.7.1"><a href="#section-3.7" class="auto internal xref">3.7</a>.  <a href="#name-ra-negotiation-downgrade" class="internal xref">RA Negotiation Downgrade</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.8">
+                <p id="section-toc.1-1.3.2.8.1"><a href="#section-3.8" class="auto internal xref">3.8</a>.  <a href="#name-compromise-of-security-crit" class="internal xref">Compromise of Security-Critical Keys</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.8.2.1">
+                    <p id="section-toc.1-1.3.2.8.2.1.1"><a href="#section-3.8.1" class="auto internal xref">3.8.1</a>.  <a href="#name-authentication-key-compromi" class="internal xref">Authentication Key Compromise and Re-hosting</a></p>
+</li>
+                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.8.2.2">
+                    <p id="section-toc.1-1.3.2.8.2.2.1"><a href="#section-3.8.2" class="auto internal xref">3.8.2</a>.  <a href="#name-attestation-key-compromise" class="internal xref">Attestation Key Compromise</a></p>
+</li>
+                </ul>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4">
+            <p id="section-toc.1-1.4.1"><a href="#section-4" class="auto internal xref">4</a>.  <a href="#name-integration-security-goals" class="internal xref">Integration Security Goals</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.1">
+                <p id="section-toc.1-1.4.2.1.1"><a href="#section-4.1" class="auto internal xref">4.1</a>.  <a href="#name-cryptographic-binding-to-co" class="internal xref">Cryptographic Binding to Communication Channel</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.2">
+                <p id="section-toc.1-1.4.2.2.1"><a href="#section-4.2" class="auto internal xref">4.2</a>.  <a href="#name-compound-authentication" class="internal xref">Compound Authentication</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.3">
+                <p id="section-toc.1-1.4.2.3.1"><a href="#section-4.3" class="auto internal xref">4.3</a>.  <a href="#name-cryptographic-binding-to-ma" class="internal xref">Cryptographic Binding to Machine Identifier</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.4">
+                <p id="section-toc.1-1.4.2.4.1"><a href="#section-4.4" class="auto internal xref">4.4</a>.  <a href="#name-attestation-credential-fres" class="internal xref">Attestation Credential Freshness</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.5">
+                <p id="section-toc.1-1.4.2.5.1"><a href="#section-4.5" class="auto internal xref">4.5</a>.  <a href="#name-negotiation-and-capability-" class="internal xref">Negotiation and Capability Discovery</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.6">
+                <p id="section-toc.1-1.4.2.6.1"><a href="#section-4.6" class="auto internal xref">4.6</a>.  <a href="#name-attestation-model-flexibili" class="internal xref">Attestation Model Flexibility</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.7">
+                <p id="section-toc.1-1.4.2.7.1"><a href="#section-4.7" class="auto internal xref">4.7</a>.  <a href="#name-interaction-with-peer-authe" class="internal xref">Interaction with Peer Authentication</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.8">
+                <p id="section-toc.1-1.4.2.8.1"><a href="#section-4.8" class="auto internal xref">4.8</a>.  <a href="#name-runtime-attestation" class="internal xref">Runtime Attestation</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.8.2.1">
+                    <p id="section-toc.1-1.4.2.8.2.1.1"><a href="#section-4.8.1" class="auto internal xref">4.8.1</a>.  <a href="#name-periodic-vs-on-demand-attes" class="internal xref">Periodic vs. On-demand Attestation</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.9">
+                <p id="section-toc.1-1.4.2.9.1"><a href="#section-4.9" class="auto internal xref">4.9</a>.  <a href="#name-privacy-preservation" class="internal xref">Privacy Preservation</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.9.2.1">
+                    <p id="section-toc.1-1.4.2.9.2.1.1"><a href="#section-4.9.1" class="auto internal xref">4.9.1</a>.  <a href="#name-verifier-trust-and-privacy" class="internal xref">Verifier Trust and Privacy</a></p>
+</li>
+                </ul>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.4.2.10">
+                <p id="section-toc.1-1.4.2.10.1"><a href="#section-4.10" class="auto internal xref">4.10</a>. <a href="#name-performance-and-efficiency" class="internal xref">Performance and Efficiency</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5">
+            <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-use-cases" class="internal xref">Use Cases</a></p>
+<ul class="compact toc ulBare ulEmpty">
+<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-server-as-attester-before-a" class="internal xref">Server as Attester Before a Protected Operation</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-client-as-attester-before-s" class="internal xref">Client as Attester Before Service Admission</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-mutual-attestation-before-s" class="internal xref">Mutual Attestation Before Sensitive Exchange</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.4">
+                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-re-evaluation-on-long-lived" class="internal xref">Re-Evaluation on Long-Lived or Resumed Connections</a></p>
+</li>
+              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.5">
+                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="auto internal xref">5.5</a>.  <a href="#name-intermediary-aware-deployme" class="internal xref">Intermediary-Aware Deployment</a></p>
+</li>
+            </ul>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.6">
+            <p id="section-toc.1-1.6.1"><a href="#section-6" class="auto internal xref">6</a>.  <a href="#name-security-considerations" class="internal xref">Security Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.7">
+            <p id="section-toc.1-1.7.1"><a href="#section-7" class="auto internal xref">7</a>.  <a href="#name-iana-considerations" class="internal xref">IANA Considerations</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.8">
+            <p id="section-toc.1-1.8.1"><a href="#section-8" class="auto internal xref">8</a>.  <a href="#name-informative-references" class="internal xref">Informative References</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.9">
+            <p id="section-toc.1-1.9.1"><a href="#appendix-A" class="auto internal xref"></a><a href="#name-acknowledgments" class="internal xref">Acknowledgments</a></p>
+</li>
+          <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.10">
+            <p id="section-toc.1-1.10.1"><a href="#appendix-B" class="auto internal xref"></a><a href="#name-authors-address" class="internal xref">Author's Address</a></p>
+</li>
+        </ul>
+</nav>
+</section>
+</div>
+<div id="introduction">
+<section id="section-1">
+      <h2 id="name-introduction">
+<a href="#section-1" class="section-number selfRef">1. </a><a href="#name-introduction" class="section-name selfRef">Introduction</a>
+      </h2>
+<div id="establishing-trust-in-secure-communications">
+<section id="section-1.1">
+        <h3 id="name-establishing-trust-in-secur">
+<a href="#section-1.1" class="section-number selfRef">1.1. </a><a href="#name-establishing-trust-in-secur" class="section-name selfRef">Establishing Trust in Secure Communications</a>
+        </h3>
+<p id="section-1.1-1">Secure channel protocols, such as Transport Layer Security (TLS),
+primarily establish trust in a peer's identity. This is typically achieved
+through mechanisms like a Public Key Infrastructure (PKI), where a trusted
+Certification Authority (CA) vouches for the binding between a public key and an
+identifier (e.g., a hostname).<a href="#section-1.1-1" class="pilcrow">¶</a></p>
+<p id="section-1.1-2">However, this model has one key limitation: entity authentication provides no assurance about the peer's state, such as the integrity of its software stack at boot time and during runtime.
+A compromised endpoint, for instance, can still present a valid X.509
+certificate and be considered "trusted" by a client. This gap allows compromised
+endpoints to maintain network access and the trust of their peers, posing a
+significant security risk in many environments.<a href="#section-1.1-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="the-role-of-remote-attestation">
+<section id="section-1.2">
+        <h3 id="name-the-role-of-remote-attestat">
+<a href="#section-1.2" class="section-number selfRef">1.2. </a><a href="#name-the-role-of-remote-attestat" class="section-name selfRef">The Role of Remote Attestation</a>
+        </h3>
+<p id="section-1.2-1">Remote Attestation (RA), as described in the RATS architecture <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>, is a
+mechanism designed to fill this gap. RA allows an entity (the "Attester") to
+produce verifiable "Evidence" about its current runtime state. This Evidence covers the Attester's TCB and can thus include measurements of:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-1.2-2.1">
+            <p id="section-1.2-2.1.1">firmware<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.2-2.2">
+            <p id="section-1.2-2.2.1">operating system<a href="#section-1.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.2-2.3">
+            <p id="section-1.2-2.3.1">application code<a href="#section-1.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-1.2-2.4">
+            <p id="section-1.2-2.4.1">the configuration of its hardware and software security features (e.g., secure boot status and memory
+isolation).<a href="#section-1.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-1.2-3">A "Relying Party" can then use this Evidence, often with the help of
+a trusted "Verifier", to appraise the Attester's trustworthiness.<a href="#section-1.2-3" class="pilcrow">¶</a></p>
+<p id="section-1.2-4">Composing RA with a secure channel establishment protocol adds a second
+dimension of trust - trustworthiness - to complement peer
+authentication. This allows a peer to make authorization decisions based not
+just on who the other party is, but also on what it is (e.g., an AMD
+SEV-SNP-based server running in some known datacenter) and whether its state is
+acceptable.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="purpose-and-scope">
+<section id="section-1.3">
+        <h3 id="name-purpose-and-scope">
+<a href="#section-1.3" class="section-number selfRef">1.3. </a><a href="#name-purpose-and-scope" class="section-name selfRef">Purpose and Scope</a>
+        </h3>
+<p id="section-1.3-1">The purpose of this document is to establish a set of essential security goals
+for composition of RA with secure channel protocols and to outline the key use
+cases that can benefit from such a composition. Most of the use cases presented in this document are provided by industry contributors in the SEAT WG, who have plans to deploy this technology. The initial focus is on
+TLS 1.3  <span>[<a href="#I-D.ietf-tls-rfc8446bis" class="cite xref">I-D.ietf-tls-rfc8446bis</a>]</span>
+and its datagram-oriented variant, DTLS 1.3 <span>[<a href="#I-D.ietf-tls-rfc9147bis" class="cite xref">I-D.ietf-tls-rfc9147bis</a>]</span>.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
+<p id="section-1.3-2">This document is intended as an input to the design of protocol solutions within
+the SEAT working group. It defines the "why" (the motivation) and the "what" (the requirements),
+but not the "how" (the protocol design itself). The "how" part is out of scope of this document. A key goal of this
+document is to define
+requirements for a solution that is agnostic to any specific attestation
+technology (e.g., Trusted Platform Modules (TPMs), Intel TDX, AMD SEV, Arm CCA).<a href="#section-1.3-2" class="pilcrow">¶</a></p>
+<p id="section-1.3-3">Appraisal policies (cf. <span><a href="https://rfc-editor.org/rfc/rfc9334#section-8.5" class="relref">Section 8.5</a> of [<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>) are out of scope of this document.<a href="#section-1.3-3" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="terminology">
+<section id="section-2">
+      <h2 id="name-terminology">
+<a href="#section-2" class="section-number selfRef">2. </a><a href="#name-terminology" class="section-name selfRef">Terminology</a>
+      </h2>
+<p id="section-2-1">This document uses the terminology defined in the RATS Architecture <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>,
+including "Attester", "Relying Party", "Verifier", "Evidence", and "Attestation
+Results".<a href="#section-2-1" class="pilcrow">¶</a></p>
+<p id="section-2-2">This document also uses the following terms:<a href="#section-2-2" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-2-3.1">
+          <p id="section-2-3.1.1">Trusted Computing Base (TCB) of a device: see <span>[<a href="#RFC4949" class="cite xref">RFC4949</a>]</span>. Note that for this
+draft, it includes respective configurations of hardware, firmware, and software.<a href="#section-2-3.1.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-3.2">
+          <p id="section-2-3.2.1">Confidential Workload: as defined in <span>[<a href="#I-D.draft-ccc-wimse-twi-extensions" class="cite xref">I-D.draft-ccc-wimse-twi-extensions</a>]</span>.<a href="#section-2-3.2.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-3.3">
+          <p id="section-2-3.3.1">Measurements: as defined in <span>[<a href="#I-D.draft-ietf-rats-eat-measured-component" class="cite xref">I-D.draft-ietf-rats-eat-measured-component</a>]</span>.<a href="#section-2-3.3.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-3.4">
+          <p id="section-2-3.4.1">AI agent: An AI agent is a software principal (typically long-running) that performs
+closed-loop "perceive -&gt; plan -&gt; act" cycles using an LLM or other model,
+and invokes external tools/APIs that may read sensitive data or change
+system/network state. Its configuration (e.g., model choice, tool enablement,
+prompt template) can change independently of the binary/image and usually
+more frequently than typical platform TCB updates <span>[<a href="#AI-agents" class="cite xref">AI-agents</a>]</span>.<a href="#section-2-3.4.1" class="pilcrow">¶</a></p>
+</li>
+      </ul>
+</section>
+</div>
+<div id="attacker-model">
+<section id="section-3">
+      <h2 id="name-attacker-model">
+<a href="#section-3" class="section-number selfRef">3. </a><a href="#name-attacker-model" class="section-name selfRef">Attacker Model</a>
+      </h2>
+<p id="section-3-1">This section defines the attacker capabilities and attack scenarios that a
+solution integrating RA with a secure channel needs to consider. Attacks
+in-scope for IETF protocols generally assume the Internet Threat Model of
+<span>[<a href="#RFC3552" class="cite xref">RFC3552</a>]</span>. This corresponds to the "network attacker" described
+below. Some scenarios explicitly grant the attacker capabilities beyond that
+baseline.<a href="#section-3-1" class="pilcrow">¶</a></p>
+<p id="section-3-2">Unless stated otherwise, the Relying Party is not compromised and correctly
+performs the checks required by the protocol and its appraisal policy. The
+Attester is referenced in terms of its Attesting and Target Environments, as
+described in <span><a href="https://rfc-editor.org/rfc/rfc9334#section-3.1" class="relref">Section 3.1</a> of [<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. The Attesting Environment is the
+entity which holds the Attestation key, which is used to sign Evidence for the
+Target Environment. Part or all of the Target Environment may be executing
+within a protected environment that provides certain security guarantees,
+called a Trusted Execution Environment (TEE) (see <span>[<a href="#RFC9397" class="cite xref">RFC9397</a>]</span>).<a href="#section-3-2" class="pilcrow">¶</a></p>
+<p id="section-3-3">The baseline security assumptions of the TLS v1.3 protocol apply. See
+<span><a href="https://rfc-editor.org/rfc/rfc9846#appendix-F" class="relref">Appendix F</a> of [<a href="#RFC9846" class="cite xref">RFC9846</a>]</span> for the relevant properties.<a href="#section-3-3" class="pilcrow">¶</a></p>
+<p id="section-3-4">The TLS stack of the attester is assumed to be running within its Target
+Environment.<a href="#section-3-4" class="pilcrow">¶</a></p>
+<div id="attacker-capabilities">
+<section id="section-3.1">
+        <h3 id="name-attacker-capabilities">
+<a href="#section-3.1" class="section-number selfRef">3.1. </a><a href="#name-attacker-capabilities" class="section-name selfRef">Attacker Capabilities</a>
+        </h3>
+<p id="section-3.1-1">The attacks in this section use the following attacker profiles:<a href="#section-3.1-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.1-2.1">
+            <p id="section-3.1-2.1.1"><strong>Network attacker:</strong> Controls communication between the peers and can
+observe, inject, modify, drop, delay, reorder, and replay messages. This
+attacker does not control either endpoint or possess their cryptographic
+secrets. This closely follows the attacker model of <span>[<a href="#RFC3552" class="cite xref">RFC3552</a>]</span>.<a href="#section-3.1-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-2.2">
+            <p id="section-3.1-2.2.1"><strong>Malicious peer:</strong> Controls a TLS endpoint and can deviate arbitrarily from
+the protocol. The attacker cannot generate Evidence which would be accepted by
+the Relying Party's appraisal policy. This can be because the endpoint is not
+running in a Target Environment, or because the Evidence for that Target
+Environment does not meet the requirements of the appraisal policy. The
+attacker does not control or compromise an Attesting Environment or its
+Attestation Key.<a href="#section-3.1-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-2.3">
+            <p id="section-3.1-2.3.1"><strong>Ephemeral-key attacker:</strong> Possesses an endpoint's ephemeral private key used
+for key establishment in a particular secure-channel handshake. Given the
+peer's public key share and the handshake transcript, this attacker can derive
+the connection's handshake and application traffic secrets when the key
+schedule does not also depend on independent secret keying material unknown to
+the attacker, such as a PSK. This capability does not, by itself, imply
+possession of an authentication key or Attestation Key.<a href="#section-3.1-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-2.4">
+            <p id="section-3.1-2.4.1"><strong>Traffic-secret attacker:</strong> Possesses either the handshake and/or the
+application traffic secrets for a secure connection. Each attack specifies
+which direction and epoch are relevant. Possession of a traffic secret does not,
+by itself, imply possession of an authentication key (see below) or Attestation
+Key.<a href="#section-3.1-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-2.5">
+            <p id="section-3.1-2.5.1"><strong>Authentication-key attacker:</strong> Possesses the private key used by a peer to
+authenticate itself in a secure connection (e.g., to sign the CertificateVerify
+message in the TLS 1.3 handshake).<a href="#section-3.1-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-2.6">
+            <p id="section-3.1-2.6.1"><strong>Attestation-key attacker:</strong> Can use an Attestation Key whose credential the
+Relying Party continues to accept.<a href="#section-3.1-2.6.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.1-2.7">
+            <p id="section-3.1-2.7.1"><strong>Target-Environment attacker:</strong> Can change the state of a Target Environment
+after Evidence about that environment has been generated. Post-attestation
+state changes can also occur through legitimate reconfiguration and therefore
+do not always imply an attack.<a href="#section-3.1-2.7.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="structure-of-attack-descriptions">
+<section id="section-3.2">
+        <h3 id="name-structure-of-attack-descrip">
+<a href="#section-3.2" class="section-number selfRef">3.2. </a><a href="#name-structure-of-attack-descrip" class="section-name selfRef">Structure of Attack Descriptions</a>
+        </h3>
+<p id="section-3.2-1">Each attack or failure mode below is described using the following fields:<a href="#section-3.2-1" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.2-2.1">
+            <p id="section-3.2-2.1.1"><strong>Attacker capabilities:</strong> Identifies the attacker profile or combination of
+profiles required by the scenario and states any additional capabilities.<a href="#section-3.2-2.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-2.2">
+            <p id="section-3.2-2.2.1"><strong>Targeted assurance:</strong> Identifies the security claim or property that the
+Relying Party expects to hold and that the scenario attempts to invalidate.<a href="#section-3.2-2.2.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-2.3">
+            <p id="section-3.2-2.3.1"><strong>Preconditions and attack:</strong> Describes the conditions required for the attack,
+the actions performed by the attacker, and the resulting incorrect conclusion
+or other security consequence. For a non-adversarial failure mode, this field
+is named <strong>Preconditions and event</strong> and describes the triggering event and
+its result instead.<a href="#section-3.2-2.3.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-2.4">
+            <p id="section-3.2-2.4.1"><strong>Why validation succeeds:</strong> Explains why the Evidence or secure-channel
+checks do not detect the attack, including which checks still pass despite
+the attack.<a href="#section-3.2-2.4.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-2.5">
+            <p id="section-3.2-2.5.1"><strong>Mitigation strategy:</strong> States the security property that a solution needs to
+preserve, without prescribing a particular protocol mechanism.<a href="#section-3.2-2.5.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="evidence-reuse">
+<section id="section-3.3">
+        <h3 id="name-evidence-reuse">
+<a href="#section-3.3" class="section-number selfRef">3.3. </a><a href="#name-evidence-reuse" class="section-name selfRef">Evidence Reuse</a>
+        </h3>
+<div id="per-connection-evidence-replay">
+<section id="section-3.3.1">
+          <h4 id="name-per-connection-evidence-rep">
+<a href="#section-3.3.1" class="section-number selfRef">3.3.1. </a><a href="#name-per-connection-evidence-rep" class="section-name selfRef">Per-Connection Evidence Replay</a>
+          </h4>
+<p id="section-3.3.1-1"><strong>Attacker capabilities:</strong> A malicious peer retains valid Evidence generated
+earlier in the current TLS connection.<a href="#section-3.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-2"><strong>Targeted assurance:</strong> Evidence presented in response to a re-attestation
+request reflects the current state of the Target Environment.<a href="#section-3.3.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-3"><strong>Preconditions and attack:</strong> Evidence is bound to the TLS connection but not
+uniquely to an individual attestation exchange. After valid Evidence is accepted,
+the state of the Target Environment changes and the Relying Party requests new
+Evidence. The malicious peer retransmits the earlier Evidence in new TLS records,
+causing the Relying Party to treat the earlier state as current.<a href="#section-3.3.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-4"><strong>Why validation succeeds:</strong> The Evidence remains authentic and its
+connection-level binder still matches. TLS record replay protection does not
+detect the attack because the old Evidence object is retransmitted as new
+application data.<a href="#section-3.3.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.3.1-5"><strong>Mitigation strategy:</strong> Every Evidence response is fresh for a particular
+attestation exchange and is bound to a unique challenge or equivalent freshness
+mechanism. Evidence accepted for one attestation exchange cannot satisfy a later
+request on the same TLS connection.<a href="#section-3.3.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="evidence-relay">
+<section id="section-3.3.2">
+          <h4 id="name-evidence-relay">
+<a href="#section-3.3.2" class="section-number selfRef">3.3.2. </a><a href="#name-evidence-relay" class="section-name selfRef">Evidence Relay</a>
+          </h4>
+<p id="section-3.3.2-1"><strong>Attacker capabilities:</strong> The attacker, acting as a malicious TLS peer, can
+establish a TLS connection with a Relying Party and can obtain Evidence about a
+separate Target Environment that contains the correct binder for the attacker's
+connection as its challenge value. How the attacker obtains such Evidence is not
+constrained by this model. The attacker does not need to control or collude with
+the Attesting or Target Environment.<a href="#section-3.3.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.3.2-2"><strong>Targeted assurance:</strong> The Relying Party incorrectly attributes the claims
+asserted by the Evidence to the TLS endpoint and assumes that the authentication
+private key has the protection properties asserted by the Evidence.<a href="#section-3.3.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.3.2-3"><strong>Preconditions and attack:</strong> The attacker obtains the binder for its TLS
+connection with the Relying Party. It then obtains authentic, fresh Evidence
+about a separate Target Environment in which that binder appears as the
+challenge value and presents the Evidence to the Relying Party. If the Evidence
+is accepted, the Relying Party attributes the state of the separate Target
+Environment to the attacker's endpoint and TLS connection.<a href="#section-3.3.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.3.2-4"><strong>Why validation succeeds:</strong> Proof of possession in CertificateVerify establishes
+that the peer controls the private key. The Evidence is authentic and fresh, and
+its challenge value matches the binder expected for the attacker's connection.
+These checks establish that the Attesting Environment incorporated the correct
+binder into the Evidence, but not that the evidenced Target Environment is
+holds the authentication key or the TLS stack that can use it.<a href="#section-3.3.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.3.2-5"><strong>Mitigation strategy:</strong> Acceptance of Evidence establishes that the evidenced
+Target Environment is associated with the peer participating in the TLS
+connection being appraised. Merely including the correct connection binder as a
+challenge value does not establish this association.<a href="#section-3.3.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="key-substitution">
+<section id="section-3.4">
+        <h3 id="name-key-substitution">
+<a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-key-substitution" class="section-name selfRef">Key Substitution</a>
+        </h3>
+<p id="section-3.4-1"><strong>Attacker capabilities:</strong> A malicious peer controls an authentication private
+key that was not generated or protected within the Target Environment and can
+obtain valid Evidence about that environment.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+<p id="section-3.4-2"><strong>Targeted assurance:</strong> The authentication private key benefits from the key
+protection properties asserted by the Evidence.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
+<p id="section-3.4-3"><strong>Preconditions and attack:</strong> The Relying Party's appraisal policy does not cover
+the lifecycle of the authentication key. The peer establishes the secure
+connection by proving possession of its private key and presents valid Evidence
+about a Target Environment that does not protect that key. The Relying Party
+consequently treats a software-held, exportable, or otherwise unprotected key as
+though it had the protection properties of the Target Environment. It can then
+release secrets or authorize operations that it would deny to a peer using such a
+key.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+<p id="section-3.4-4"><strong>Why validation succeeds:</strong> Proof of possession establishes that the peer
+controls the private key, and Evidence appraisal establishes properties of the
+Target Environment. Neither check establishes that this particular private key
+was generated, is stored, and is used strictly within that environment.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
+<p id="section-3.4-5"><strong>Mitigation strategy:</strong> The authentication public key is unambiguously bound to
+Evidence asserting its relevant generation, storage, export, and use properties,
+and those assertions are appraised together with the connection authentication.<a href="#section-3.4-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="evidence-privacy-loss">
+<section id="section-3.5">
+        <h3 id="name-evidence-privacy-loss">
+<a href="#section-3.5" class="section-number selfRef">3.5. </a><a href="#name-evidence-privacy-loss" class="section-name selfRef">Evidence Privacy Loss</a>
+        </h3>
+<div id="under-ephemeral-key-compromise">
+<section id="section-3.5.1">
+          <h4 id="name-under-ephemeral-key-comprom">
+<a href="#section-3.5.1" class="section-number selfRef">3.5.1. </a><a href="#name-under-ephemeral-key-comprom" class="section-name selfRef">Under Ephemeral-Key Compromise</a>
+          </h4>
+<p id="section-3.5.1-1"><strong>Attacker capabilities:</strong> An ephemeral-key attacker possesses an endpoint's
+ephemeral key-establishment secret for the handshake and observes the handshake
+transcript, including the peer's public key share.<a href="#section-3.5.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.5.1-2"><strong>Targeted assurance:</strong> Evidence conveyed during or after the handshake remains
+confidential from parties other than the connection endpoints.<a href="#section-3.5.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.5.1-3"><strong>Preconditions and attack:</strong> The attacker records the handshake and protected
+records carrying Evidence. Using the compromised ephemeral private key, the
+peer's public key share, and the recorded handshake messages, the attacker
+computes the shared secret and derives the handshake and application traffic
+secrets. It can then decrypt Evidence protected under those secrets, including
+Evidence decrypted retrospectively from recorded traffic after the compromise.<a href="#section-3.5.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.5.1-4"><strong>Why validation succeeds:</strong> This is a secure-channel confidentiality failure,
+not an Evidence-validation failure. The Evidence can remain authentic, fresh,
+and correctly bound to the connection even though its contents are disclosed.<a href="#section-3.5.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.5.1-5"><strong>Mitigation strategy:</strong> Ephemeral key-establishment secrets are protected and
+erased when no longer needed. A design that claims recovery from compromise of
+such a secret provides Post-Compromise Security (PCS) by establishing new traffic
+secrets using fresh key-establishment input independent of the compromised secret
+before sending further Evidence.<a href="#section-3.5.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="under-traffic-secret-compromise">
+<section id="section-3.5.2">
+          <h4 id="name-under-traffic-secret-compro">
+<a href="#section-3.5.2" class="section-number selfRef">3.5.2. </a><a href="#name-under-traffic-secret-compro" class="section-name selfRef">Under Traffic-Secret Compromise</a>
+          </h4>
+<p id="section-3.5.2-1"><strong>Attacker capabilities:</strong> A traffic-secret attacker possesses the traffic secret
+used to protect an attestation exchange on a (D)TLS connection. This capability
+permits decryption of records protected by that secret, but does not by itself
+imply control of either endpoint. See <span>[<a href="#I-D.ietf-tls-extended-key-update" class="cite xref">I-D.ietf-tls-extended-key-update</a>]</span> for
+additional discussion of the threat.<a href="#section-3.5.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.5.2-2"><strong>Targeted assurance:</strong> Evidence conveyed inside the secure connection remains
+private from parties other than the connection endpoints.<a href="#section-3.5.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.5.2-3"><strong>Preconditions and attack:</strong> Attestation Evidence is sent under a compromised
+handshake or application traffic secret. The attacker observes the protected
+records and uses the secret to decrypt the Evidence, learning the platform and
+software details it carries.<a href="#section-3.5.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.5.2-4"><strong>Why validation succeeds:</strong> This is a confidentiality failure rather than an
+Evidence-validation failure. The Evidence can remain authentic and correctly
+bound to the connection even though its contents are disclosed.<a href="#section-3.5.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.5.2-5"><strong>Mitigation strategy:</strong> Evidence is confidentiality-protected in transit. A
+design that claims recovery from traffic-secret compromise does not send new
+Evidence until it has established traffic secrets that are independent of the
+compromised secrets.<a href="#section-3.5.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="state-drift-on-long-lived-and-resumed-connections">
+<section id="section-3.6">
+        <h3 id="name-state-drift-on-long-lived-a">
+<a href="#section-3.6" class="section-number selfRef">3.6. </a><a href="#name-state-drift-on-long-lived-a" class="section-name selfRef">State Drift on Long-Lived and Resumed Connections</a>
+        </h3>
+<p id="section-3.6-1"><strong>Classification:</strong> This is a stale-assurance failure mode. It can result from a
+Target-Environment attacker, but it can also result from legitimate
+reconfiguration, software update, or other state change.<a href="#section-3.6-1" class="pilcrow">¶</a></p>
+<p id="section-3.6-2"><strong>Targeted assurance:</strong> Evidence appraised for a connection remains an adequate
+basis for decisions made later in that connection or in a resumed connection.<a href="#section-3.6-2" class="pilcrow">¶</a></p>
+<p id="section-3.6-3"><strong>Preconditions and event:</strong> The Relying Party accepts Evidence during an
+initial handshake. The Target Environment subsequently changes without new
+Evidence being requested and verified. Two cases are relevant:<a href="#section-3.6-3" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-3.6-4.1">
+            <p id="section-3.6-4.1.1">The original connection remains open and continues to carry sensitive data
+after the Evidence becomes stale.<a href="#section-3.6-4.1.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.6-4.2">
+            <p id="section-3.6-4.2.1">A later connection uses session resumption and omits a new attestation
+exchange, thereby inheriting an assurance established before the state change.<a href="#section-3.6-4.2.1" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+<p id="section-3.6-5">In either case, communication or authorized operations continue with a Target
+Environment whose current state has not been appraised.<a href="#section-3.6-5" class="pilcrow">¶</a></p>
+<p id="section-3.6-6"><strong>Why validation succeeds:</strong> The original Evidence remains authentic, but it no
+longer describes the current state. The Relying Party has no newer Evidence on
+which to base its decision.<a href="#section-3.6-6" class="pilcrow">¶</a></p>
+<p id="section-3.6-7"><strong>Mitigation strategy:</strong> The validity of an appraisal is bounded by an explicit
+lifetime or by security-relevant events. Continued and resumed connections do
+not rely on an appraisal beyond that bound without obtaining and appraising new
+Evidence.<a href="#section-3.6-7" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="ra-negotiation-downgrade">
+<section id="section-3.7">
+        <h3 id="name-ra-negotiation-downgrade">
+<a href="#section-3.7" class="section-number selfRef">3.7. </a><a href="#name-ra-negotiation-downgrade" class="section-name selfRef">RA Negotiation Downgrade</a>
+        </h3>
+<p id="section-3.7-1"><strong>Attacker capabilities:</strong> A network attacker can modify messages carrying the
+peers' RA capabilities or selections. Alternatively, a malicious peer can
+disregard the RP's request for attestation.<a href="#section-3.7-1" class="pilcrow">¶</a></p>
+<p id="section-3.7-2"><strong>Targeted assurance:</strong> The use of RA and the selected Evidence format and
+attestation model reflect the peers' authentic capabilities and configured
+policies.<a href="#section-3.7-2" class="pilcrow">¶</a></p>
+<p id="section-3.7-3"><strong>Preconditions and attack:</strong> The RA negotiation is not authenticated as part of
+the secure-channel transcript or by equivalent protection, or an endpoint
+permits unprotected fallback. The attacker removes an RA capability, causes
+fallback to a channel without RA, or alters the selection to one that does not
+satisfy a peer's configured policy. As a result, the connection completes without
+required attestation or with attestation parameters that are unacceptable under
+the policy that would have been applied to the authentic negotiation.<a href="#section-3.7-3" class="pilcrow">¶</a></p>
+<p id="section-3.7-4"><strong>Why validation succeeds:</strong> The endpoint cannot distinguish the attacker-modified
+negotiation from the peer's authentic offer or selection.<a href="#section-3.7-4" class="pilcrow">¶</a></p>
+<p id="section-3.7-5"><strong>Mitigation strategy:</strong> The complete RA negotiation and its outcome are
+integrity-protected and bound to the secure channel. An endpoint does not
+silently fall back when its policy requires RA or particular attestation
+properties.<a href="#section-3.7-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="compromise-of-security-critical-keys">
+<section id="section-3.8">
+        <h3 id="name-compromise-of-security-crit">
+<a href="#section-3.8" class="section-number selfRef">3.8. </a><a href="#name-compromise-of-security-crit" class="section-name selfRef">Compromise of Security-Critical Keys</a>
+        </h3>
+<div id="authentication-key-compromise-and-re-hosting">
+<section id="section-3.8.1">
+          <h4 id="name-authentication-key-compromi">
+<a href="#section-3.8.1" class="section-number selfRef">3.8.1. </a><a href="#name-authentication-key-compromi" class="section-name selfRef">Authentication Key Compromise and Re-hosting</a>
+          </h4>
+<p id="section-3.8.1-1"><strong>Attacker capabilities:</strong> An authentication-key attacker can also operate an
+endorsed Target Environment that satisfies the Relying Party's appraisal policy.
+The stolen authentication key is importable into that environment and has not
+been revoked. This represents a Man-in-the-Middle attack as described in
+<span><a href="https://rfc-editor.org/rfc/rfc3552#section-3.3.5" class="relref">Section 3.3.5</a> of [<a href="#RFC3552" class="cite xref">RFC3552</a>]</span>.<a href="#section-3.8.1-1" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-2"><strong>Targeted assurance:</strong> An authenticated peer identity remains associated with
+an authorized Target Environment instance.<a href="#section-3.8.1-2" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-3"><strong>Preconditions and attack:</strong> The Relying Party accepts any endorsed environment
+of an expected class rather than a particular authorized instance. The appraisal
+policy also does not expect the key to have been created in the Target
+Environment. The attacker imports the stolen authentication key into its own
+acceptable environment, establishes a new connection using that key, and presents
+fresh Evidence bound to both its connection and the corresponding authentication
+public key. The Relying Party then authenticates the attacker as the holder of
+the stolen identity and accepts the attacker's environment as an authorized host
+for that identity.<a href="#section-3.8.1-3" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-4"><strong>Why validation succeeds:</strong> Proof of possession succeeds because the attacker
+has the authentication private key. The connection binding and public-key
+binding also succeed because the Evidence describes the attacker's current
+connection and environment. Evidence appraisal accepts that environment.<a href="#section-3.8.1-4" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-5"><strong>Mitigation strategy:</strong> A deployment that requires continuity with a particular
+platform instance binds authorization to that instance, rather than only to an
+environment class, and provides a means to reject compromised authentication
+credentials. Alternatively, the appraisal policy must inform the Relying Party
+whether the authentication key was created in the Target Environment.<a href="#section-3.8.1-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="attestation-key-compromise">
+<section id="section-3.8.2">
+          <h4 id="name-attestation-key-compromise">
+<a href="#section-3.8.2" class="section-number selfRef">3.8.2. </a><a href="#name-attestation-key-compromise" class="section-name selfRef">Attestation Key Compromise</a>
+          </h4>
+<p id="section-3.8.2-1"><strong>Attacker capabilities:</strong> An Attestation-key attacker can use an Attestation Key
+whose credential remains accepted by the Relying Party.<a href="#section-3.8.2-1" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-2"><strong>Targeted assurance:</strong> Authenticated Evidence truthfully represents the claims
+collected from the Target Environment.<a href="#section-3.8.2-2" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-3"><strong>Preconditions and attack:</strong> The compromised Attestation Key is sufficient to
+authenticate the relevant Evidence claims. The attacker constructs Evidence
+containing attacker-chosen claims and bindings and signs it with that key. The
+Relying Party can consequently accept arbitrary asserted platform state, key
+provenance, or connection associations as authentic.<a href="#section-3.8.2-3" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-4"><strong>Why validation succeeds:</strong> The Evidence signature, connection binding,
+authentication-public-key binding, and asserted key provenance all verify
+against attacker-chosen values. Those checks ultimately rely on the compromised
+Attestation Key.<a href="#section-3.8.2-4" class="pilcrow">¶</a></p>
+<p id="section-3.8.2-5"><strong>Mitigation strategy:</strong> The peers support rejection and recovery when an
+Attestation Key is compromised.<a href="#section-3.8.2-5" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+</section>
+</div>
+<div id="integration-security-goals">
+<section id="section-4">
+      <h2 id="name-integration-security-goals">
+<a href="#section-4" class="section-number selfRef">4. </a><a href="#name-integration-security-goals" class="section-name selfRef">Integration Security Goals</a>
+      </h2>
+<p id="section-4-1">This section provides a list of desirable security goals for designs that compose
+RA with secure channel protocols. Proposed protocol specifications should
+clearly state which of these security goals are fulfilled and explain how.<a href="#section-4-1" class="pilcrow">¶</a></p>
+<div id="cryptographic-binding-to-communication-channel">
+<section id="section-4.1">
+        <h3 id="name-cryptographic-binding-to-co">
+<a href="#section-4.1" class="section-number selfRef">4.1. </a><a href="#name-cryptographic-binding-to-co" class="section-name selfRef">Cryptographic Binding to Communication Channel</a>
+        </h3>
+<p id="section-4.1-1">The Evidence or Attestation Result is cryptographically bound to the
+specific secure connection (e.g., the (D)TLS connection). This prevents
+<strong>relay</strong> attacks where an attacker presents valid, but unrelated
+Evidence from a different connection or context. This binding is paramount for all
+use cases because the absence of this binding can be exploited in high-severity
+vulnerabilities, such as <span>[<a href="#CVE-2026-33697" class="cite xref">CVE-2026-33697</a>]</span>.<a href="#section-4.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="compound-authentication">
+<section id="section-4.2">
+        <h3 id="name-compound-authentication">
+<a href="#section-4.2" class="section-number selfRef">4.2. </a><a href="#name-compound-authentication" class="section-name selfRef">Compound Authentication</a>
+        </h3>
+<p id="section-4.2-1">RA should complement endpoint authentication rather than replace it.
+Combining the two security measures would ensure that the introduction of attestation increases security instead of replacing one security measure by another.
+A formal representation of this requirement in the form of <em>composition</em> goal can be found in <span>[<a href="#ID-Crisis" class="cite xref">ID-Crisis</a>]</span> for TLS 1.3 protocol.<a href="#section-4.2-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="cryptographic-binding-to-machine-identifier">
+<section id="section-4.3">
+        <h3 id="name-cryptographic-binding-to-ma">
+<a href="#section-4.3" class="section-number selfRef">4.3. </a><a href="#name-cryptographic-binding-to-ma" class="section-name selfRef">Cryptographic Binding to Machine Identifier</a>
+        </h3>
+<p id="section-4.3-1">Evidence should be cryptographically bound to the identifier provided to the machine by the infrastructure provider to prevent <strong>diversion</strong> attacks <span>[<a href="#ID-Crisis" class="cite xref">ID-Crisis</a>]</span>.<a href="#section-4.3-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="attestation-credential-freshness">
+<section id="section-4.4">
+        <h3 id="name-attestation-credential-fres">
+<a href="#section-4.4" class="section-number selfRef">4.4. </a><a href="#name-attestation-credential-fres" class="section-name selfRef">Attestation Credential Freshness</a>
+        </h3>
+<p id="section-4.4-1">The Relying Party is able to verify that the Evidence or Attestation Result it
+receives was freshly generated by the Attester for the specific RA interaction.
+State is
+transient, and credentials from a previous RA interaction may no longer be valid.
+See
+<span><a href="https://rfc-editor.org/rfc/rfc9334#section-10" class="relref">Section 10</a> of [<a href="#RFC9334" class="cite xref">RFC9334</a>]</span> for more details about freshness in the context of
+RA. This is formalized for attestation nonce in  <span>[<a href="#ID-Crisis" class="cite xref">ID-Crisis</a>]</span>.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="negotiation-and-capability-discovery">
+<section id="section-4.5">
+        <h3 id="name-negotiation-and-capability-">
+<a href="#section-4.5" class="section-number selfRef">4.5. </a><a href="#name-negotiation-and-capability-" class="section-name selfRef">Negotiation and Capability Discovery</a>
+        </h3>
+<p id="section-4.5-1">Peers have a secure mechanism to discover each other's support for RA, the
+specific attestation formats they can produce or consume, and the attestation
+models they support. This enables interoperability and allows for graceful
+fallback for endpoints that do not support RA.
+The negotiation of formats is required because several vendors -- like Intel,
+AMD, Arm, and IBM -- have their own Evidence formats.
+A conforming solution will have to support a mechanism to identify the content type and encoding of Evidence to facilitate interoperability.<a href="#section-4.5-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="attestation-model-flexibility">
+<section id="section-4.6">
+        <h3 id="name-attestation-model-flexibili">
+<a href="#section-4.6" class="section-number selfRef">4.6. </a><a href="#name-attestation-model-flexibili" class="section-name selfRef">Attestation Model Flexibility</a>
+        </h3>
+<p id="section-4.6-1">The solution supports both the Background Check and Passport models as defined
+in the RATS architecture <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. The Background Check model is essential
+for use cases requiring maximum freshness, while the Passport model is better
+suited for performance, scalability, and scenarios where the Verifier may be
+offline or unreachable by the Relying Party.<a href="#section-4.6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="interaction-with-peer-authentication">
+<section id="section-4.7">
+        <h3 id="name-interaction-with-peer-authe">
+<a href="#section-4.7" class="section-number selfRef">4.7. </a><a href="#name-interaction-with-peer-authe" class="section-name selfRef">Interaction with Peer Authentication</a>
+        </h3>
+<p id="section-4.7-1">The solution supports using RA in conjunction with traditional PKI-based
+authentication (e.g., X.509 certificates). This provides two independent pillars
+of trust: endpoint trustworthiness (from RA) and identity (from PKI).<a href="#section-4.7-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="runtime-attestation">
+<section id="section-4.8">
+        <h3 id="name-runtime-attestation">
+<a href="#section-4.8" class="section-number selfRef">4.8. </a><a href="#name-runtime-attestation" class="section-name selfRef">Runtime Attestation</a>
+        </h3>
+<p id="section-4.8-1">Ideally, remote attestation should allow the Relying Party to assess that configuration change of the Attester is in accordance with a policy that the Relying Party accepts.
+This enables more nuanced trust decisions based on how the Attester's state might change over time.
+However, to our knowledge, current state-of-the-art systems do not achieve such a guarantee.
+In such cases, frequent runtime attestation by the Verifier may reduce the exposure window, though the risk of a malicious configuration change occurring between the time Evidence is collected and the time of re-attestation, a Time-Of-Check-To-Time-Of-Use (TOCTOU) vulnerability cannot be entirely eliminated.<a href="#section-4.8-1" class="pilcrow">¶</a></p>
+<p id="section-4.8-2">Evidence collected at certificate issuance or during the initial secure channel establishment reflects only the Target Environment’s state at that moment. It cannot guarantee that the Target Environment remains trustworthy for the lifetime of the certificate or even for the duration of the secure connection (e.g., the (D)TLS connection). As a result, such static Evidence is insufficient in environments where the Target Environment may change state after the connection is established and the connection is long-lived.<a href="#section-4.8-2" class="pilcrow">¶</a></p>
+<div id="periodic-vs-on-demand-attestation">
+<section id="section-4.8.1">
+          <h4 id="name-periodic-vs-on-demand-attes">
+<a href="#section-4.8.1" class="section-number selfRef">4.8.1. </a><a href="#name-periodic-vs-on-demand-attes" class="section-name selfRef">Periodic vs. On-demand Attestation</a>
+          </h4>
+<p id="section-4.8.1-1">It should be possible for the Relying Party to request new Evidence periodically or on-demand during the lifetime of the connection.
+This may be necessary if the Target Environment has attributes that can change during the connection, thereby affecting its trustworthiness. Such changes cannot be detected using Evidence collected earlier.
+For example, the Evidence may include dynamic parameters such as runtime configuration flags (e.g., FIPS mode), which indicate whether the device has entered or exited an approved mode, or measurements of critical system files.<a href="#section-4.8.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="privacy-preservation">
+<section id="section-4.9">
+        <h3 id="name-privacy-preservation">
+<a href="#section-4.9" class="section-number selfRef">4.9. </a><a href="#name-privacy-preservation" class="section-name selfRef">Privacy Preservation</a>
+        </h3>
+<p id="section-4.9-1">The solution must not degrade the privacy of a standard secure connection (e.g., the (D)TLS connection). Evidence
+can contain highly specific, unique information about a device's hardware and
+software, which could be used as an advanced tracking mechanism, following a
+user across different connections and services. The design must consider how to
+minimize this leakage, especially when a third-party Verifier is involved in the
+protocol exchange.<a href="#section-4.9-1" class="pilcrow">¶</a></p>
+<div id="verifier-trust-and-privacy">
+<section id="section-4.9.1">
+          <h4 id="name-verifier-trust-and-privacy">
+<a href="#section-4.9.1" class="section-number selfRef">4.9.1. </a><a href="#name-verifier-trust-and-privacy" class="section-name selfRef">Verifier Trust and Privacy</a>
+          </h4>
+<p id="section-4.9.1-1">In the Background Check model, the Relying Party communicates with the Verifier at the time of appraisal.
+This reveals the Attester's identity and connection timing to the Verifier.
+This also reveals to the Verifier that the Relying Party is communicating with the specific Attester.
+If the Verifier is a third party, it can observe which Attesters are being appraised and when, potentially exposing client identity and other correlation information.
+Solutions should consider privacy-preserving attestation techniques being developed in the RATS working group, to minimize the data revealed to the Verifier.<a href="#section-4.9.1-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="performance-and-efficiency">
+<section id="section-4.10">
+        <h3 id="name-performance-and-efficiency">
+<a href="#section-4.10" class="section-number selfRef">4.10. </a><a href="#name-performance-and-efficiency" class="section-name selfRef">Performance and Efficiency</a>
+        </h3>
+<p id="section-4.10-1">The introduction of remote attestation should not add prohibitive latency or overhead
+to the connection establishment process. To be widely adopted, the solution must
+be practical. While some overhead is unavoidable, multiple additional
+round-trips or very large payloads in the initial handshake should be minimized.<a href="#section-4.10-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+</section>
+</div>
+<div id="use-cases">
+<section id="section-5">
+      <h2 id="name-use-cases">
+<a href="#section-5" class="section-number selfRef">5. </a><a href="#name-use-cases" class="section-name selfRef">Use Cases</a>
+      </h2>
+<p id="section-5-1">This section defines protocol-focused profiles for composing RA with (D)TLS.
+Application examples provide deployment context and can map to several profiles.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">The server-as-Attester and client-as-Attester profiles define the two base attestation directions.
+The remaining profiles describe composition, lifecycle, or topology considerations that can be overlaid on either direction.
+Base profiles use the fields below; overlay profiles specify only the properties they add or modify.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">Across all profiles, the Verifier appraises Evidence and produces an Attestation Result (AR), while the Relying Party makes the authorization or release decision based on that AR.
+The Relying Party rejects an unacceptable result.
+Missing, stale, unverifiable, or unbound Evidence, Verifier unavailability, and timeouts make the decision indeterminate.
+When policy requires attestation, an unacceptable Attestation Result or an indeterminate decision blocks the operation.
+Any non-attested fallback is separate and explicit.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-4">Across all profiles, the Relying Party's policy defines when an Attestation Result is usable for a protected decision and whether it may be reused for a later decision.
+Fresh assurance is required when the result expires, when the Relying Party identifies a relevant state change, or when a new connection invalidates a required connection binding.
+Verifier appraisal can supply applicable validity constraints.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">Systems may combine base and overlay profiles.
+When profiles are combined, the attestation exchanges and their associated Evidence, Verifiers, trust anchors, appraisal policies, timing, lifetimes, and authorization decisions are independent unless a deployment explicitly requires them to be shared or coordinated.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">Profiles state the required assurance but do not define the values or mechanism used to bind attestation to a connection.
+Those details belong to the protocol solution.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<div id="server-as-attester-before-a-protected-operation">
+<section id="section-5.1">
+        <h3 id="name-server-as-attester-before-a">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-server-as-attester-before-a" class="section-name selfRef">Server as Attester Before a Protected Operation</a>
+        </h3>
+<p id="section-5.1-1"><strong>Scenario and protected decision or asset:</strong> A TLS client needs assurance about a TLS server before releasing sensitive data, accepting a result, or sending a high-impact command.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-2"><strong>TLS and RATS roles:</strong> The server is the Attester, the client is the Relying Party, and the Verifier can be separate.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.1-3"><strong>Existing TLS authentication:</strong> TLS authenticates the server's network identity; RA adds information about its Target Environment.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-4"><strong>Attestation topology and trust boundaries:</strong> The TLS endpoint is part of the appraised Target Environment.
+The intermediary-aware profile also applies when an intermediary terminates TLS.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.1-5"><strong>Attestation trigger:</strong> Evidence is appraised before the protected operation that requires current assurance.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<p id="section-5.1-6"><strong>Relying Party authorization or release decision:</strong> The Relying Party applies local policy to the Attestation Result and authenticated TLS identity.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+<p id="section-5.1-7"><strong>Required security outcome:</strong> The acceptable attested state applies to the intended server endpoint and connection carrying the protected operation.<a href="#section-5.1-7" class="pilcrow">¶</a></p>
+<p id="section-5.1-8"><strong>Assumptions, limitations, and non-goals:</strong> Attestation neither authorizes the application action nor guarantees the server's future state or behavior.<a href="#section-5.1-8" class="pilcrow">¶</a></p>
+<p id="section-5.1-9"><strong>Application examples:</strong><a href="#section-5.1-9" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.1-10.1">
+            <p id="section-5.1-10.1.1"><strong>High-Assurance Command Execution</strong><a href="#section-5.1-10.1.1" class="pilcrow">¶</a></p>
+<p id="section-5.1-10.1.2">
+An operator sends a critical command to a remote system, such as an industrial controller.
+The system provides fresh Evidence for appraisal before the command is sent.<a href="#section-5.1-10.1.2" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.1-10.2">
+            <p id="section-5.1-10.2.1"><strong>Data Clean Rooms</strong><a href="#section-5.1-10.2.1" class="pilcrow">¶</a></p>
+<p id="section-5.1-10.2.2">
+Data providers contribute sensitive data to a confidential workload for joint analysis, while data consumers receive only aggregated results.
+Before sending data or accepting results, they attest that the workload runs authorized code in a Trusted Execution Environment (TEE).<a href="#section-5.1-10.2.2" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.1-10.3">
+            <p id="section-5.1-10.3.1"><strong>Securing Control and Management Planes</strong><a href="#section-5.1-10.3.1" class="pilcrow">¶</a></p>
+<p id="section-5.1-10.3.2">
+Before an administrator uses a network device's management interface, the client appraises Evidence about the endpoint's state.
+This avoids exposing credentials or policy to a compromised interface.<a href="#section-5.1-10.3.2" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.1-10.4">
+            <p id="section-5.1-10.4.1"><strong>Attestation of Certificate Private Key</strong><a href="#section-5.1-10.4.1" class="pilcrow">¶</a></p>
+<p id="section-5.1-10.4.2">
+A TLS endpoint authenticates with an end-entity certificate whose private key is claimed to be protected by a secure element.
+TLS proves possession of the key, but not where or how it is stored and used.<a href="#section-5.1-10.4.2" class="pilcrow">¶</a></p>
+<p id="section-5.1-10.4.3"><span>[<a href="#I-D.draft-reddy-rats-key-binding" class="cite xref">I-D.draft-reddy-rats-key-binding</a>]</span> describes the use-case, and the required checks and properties.
+<span>[<a href="#I-D.draft-ietf-rats-pkix-key-attestation" class="cite xref">I-D.draft-ietf-rats-pkix-key-attestation</a>]</span> partially addresses this use case by attesting the module and key at certificate issuance, but does not describe their state at connection establishment or later.<a href="#section-5.1-10.4.3" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="client-as-attester-before-service-admission">
+<section id="section-5.2">
+        <h3 id="name-client-as-attester-before-s">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-client-as-attester-before-s" class="section-name selfRef">Client as Attester Before Service Admission</a>
+        </h3>
+<p id="section-5.2-1"><strong>Scenario and protected decision or asset:</strong> A service needs assurance about a TLS client before granting access or releasing a protected asset.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2"><strong>TLS and RATS roles:</strong> The client is the Attester and the server is the Relying Party.
+A separate Verifier can appraise the Evidence.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
+<p id="section-5.2-3"><strong>Existing TLS authentication:</strong> Client attestation works with or without TLS client authentication.
+Without it, the client can attest anonymously.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4"><strong>Attestation topology and trust boundaries:</strong> The Target Environment is the client component being appraised.
+The service and Verifier can belong to different administrative domains and use different trust anchors.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-5"><strong>Attestation trigger:</strong> Evidence is appraised before the protected decision.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<p id="section-5.2-6"><strong>Relying Party authorization or release decision:</strong> The Relying Party applies local policy to the Attestation Result and any authenticated client identity.<a href="#section-5.2-6" class="pilcrow">¶</a></p>
+<p id="section-5.2-7"><strong>Required security outcome:</strong> The Relying Party associates the acceptable state with the client receiving access or the asset.
+If client identity is used, both inputs refer to the same endpoint.<a href="#section-5.2-7" class="pilcrow">¶</a></p>
+<p id="section-5.2-8"><strong>Assumptions, limitations, and non-goals:</strong> SEAT does not define acceptable measurements or how the client obtains its identity credential.
+Attestation supports an authorization decision based on the client’s appraised state at the time of the protected decision, but does not assure that the client will remain in that state, remain uncompromised, or use any granted access only as expected afterward.<a href="#section-5.2-8" class="pilcrow">¶</a></p>
+<p id="section-5.2-9"><strong>Application examples:</strong><a href="#section-5.2-9" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.2-10.1">
+            <p id="section-5.2-10.1.1"><strong>Attested Workload and Device Provisioning</strong><a href="#section-5.2-10.1.1" class="pilcrow">¶</a></p>
+<p id="section-5.2-10.1.2">
+A workload or device obtains the secrets, configuration, credentials, or policy needed to become operational only after its state is appraised.
+This includes runtime secret provisioning for a confidential workload and onboarding an IoT device without a pre-provisioned PKI identity.<a href="#section-5.2-10.1.2" class="pilcrow">¶</a></p>
+<p id="section-5.2-10.1.3">
+For example, a Confidential Container can obtain configuration data or disk keys from a Key Broker Service or Trustee <span>[<a href="#CoCo-Trustee" class="cite xref">CoCo-Trustee</a>]</span> after appraisal of its TEE claims and software measurements.
+The workload is the Attester; the Trustee is the Relying Party and can also be the Verifier.<a href="#section-5.2-10.1.3" class="pilcrow">¶</a></p>
+<p id="section-5.2-10.1.4">
+It also includes injecting a Web PKI credential into a short-lived TEE container: a cluster utility can obtain the certificate and private key before loading them into the container, while the Relying Party obtains current assurance that the intended Target Environment uses the provisioned credential.
+Credential issuance remains outside SEAT.<a href="#section-5.2-10.1.4" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-10.2">
+            <p id="section-5.2-10.2.1"><strong>Attestation of Network Functions</strong><a href="#section-5.2-10.2.1" class="pilcrow">¶</a></p>
+<p id="section-5.2-10.2.2">
+Before admitting a network device or function to the management plane, the orchestrator appraises Evidence about its state.
+This gates admission and policy delivery; it does not attest other devices or the traffic path.<a href="#section-5.2-10.2.2" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.2-10.3">
+            <p id="section-5.2-10.3.1"><strong>Enterprise Network Access Control</strong><a href="#section-5.2-10.3.1" class="pilcrow">¶</a></p>
+<p id="section-5.2-10.3.2">
+An endpoint seeks access through an 802.1X Ethernet port or WPA3-Enterprise access point.
+The Network Access Server is the Relying Party and relays the authentication exchange to a RADIUS/AAA server <span>[<a href="#RFC3579" class="cite xref">RFC3579</a>]</span>, which can act as the Verifier.
+General network access remains blocked until authorization completes.
+EAP-TLS <span>[<a href="#RFC9190" class="cite xref">RFC9190</a>]</span> is one TLS-based authentication profile for this deployment.<a href="#section-5.2-10.3.2" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="mutual-attestation-before-sensitive-exchange">
+<section id="section-5.3">
+        <h3 id="name-mutual-attestation-before-s">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-mutual-attestation-before-s" class="section-name selfRef">Mutual Attestation Before Sensitive Exchange</a>
+        </h3>
+<p id="section-5.3-1">This profile overlays the server-as-Attester and client-as-Attester profiles when both TLS peers need assurance before releasing protected data.
+The two directions remain independent as described above.
+Mutual attestation does not require mutual TLS authentication.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-2"><strong>Required security outcome:</strong> In each direction, the acceptable attested state is associated with the peer endpoint that will receive protected data.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
+<p id="section-5.3-3"><strong>Operational and failure behavior:</strong> A failure in one direction prevents that party's protected release.
+A successful attestation in only one direction is not mutual attestation.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+<p id="section-5.3-4"><strong>Assumptions, limitations, and non-goals:</strong> Mutual attestation does not prove a joint computation correct.
+The application defines its transaction semantics.<a href="#section-5.3-4" class="pilcrow">¶</a></p>
+<p id="section-5.3-5"><strong>Application examples:</strong><a href="#section-5.3-5" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.3-6.1">
+            <p id="section-5.3-6.1.1"><strong>Secure Multi-Party Computation (MPC)</strong><a href="#section-5.3-6.1.1" class="pilcrow">¶</a></p>
+<p id="section-5.3-6.1.2">
+Parties compute a function without sharing their local data.
+The aggregator and clients mutually attest that they run the expected MPC software in trusted environments.<a href="#section-5.3-6.1.2" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.3-6.2">
+            <p id="section-5.3-6.2.1"><strong>Platform-to-Platform Workload Migration</strong><a href="#section-5.3-6.2.1" class="pilcrow">¶</a></p>
+<p id="section-5.3-6.2.2">
+Workloads can migrate between platforms to maintain service availability.
+Migration agents authorize and transfer the workload while enforcing policies that prevent migration to a platform with lower security guarantees.<a href="#section-5.3-6.2.2" class="pilcrow">¶</a></p>
+<p id="section-5.3-6.2.3">
+The destination migration agent attests to its source peer; deployments can also require source attestation.
+Intel TDX Migration Trust Domains (MigTDs) <span>[<a href="#MigTD" class="cite xref">MigTD</a>]</span> use an attested TLS connection between the source and destination.<a href="#section-5.3-6.2.3" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="re-evaluation-on-long-lived-or-resumed-connections">
+<section id="section-5.4">
+        <h3 id="name-re-evaluation-on-long-lived">
+<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-re-evaluation-on-long-lived" class="section-name selfRef">Re-Evaluation on Long-Lived or Resumed Connections</a>
+        </h3>
+<p id="section-5.4-1"><strong>Scenario and protected decision or asset:</strong> A peer needs a refresh of its assurance before a protected operation on a long-lived or resumed connection.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+<p id="section-5.4-2"><strong>TLS and RATS roles:</strong> Either endpoint can be the Attester or Relying Party; both can re-attest.<a href="#section-5.4-2" class="pilcrow">¶</a></p>
+<p id="section-5.4-3"><strong>Existing TLS authentication:</strong> Re-evaluation adds current state information without replacing or retroactively strengthening TLS authentication.<a href="#section-5.4-3" class="pilcrow">¶</a></p>
+<p id="section-5.4-4"><strong>Attestation topology and trust boundaries:</strong> Assurance does not carry over when an endpoint, workload, or intermediary changes merely because TLS state was retained.<a href="#section-5.4-4" class="pilcrow">¶</a></p>
+<p id="section-5.4-5"><strong>Attestation trigger:</strong> Re-evaluation can be periodic or occur before a high-impact operation.<a href="#section-5.4-5" class="pilcrow">¶</a></p>
+<p id="section-5.4-6"><strong>Relying Party authorization or release decision:</strong> The Relying Party applies the fresh Attestation Result to the later operation.<a href="#section-5.4-6" class="pilcrow">¶</a></p>
+<p id="section-5.4-7"><strong>State transition and lifetime:</strong> Connection age does not establish freshness, and an earlier result does not prove that state persisted.<a href="#section-5.4-7" class="pilcrow">¶</a></p>
+<p id="section-5.4-8"><strong>Required security outcome:</strong> Current assurance applies to the later operation and connection; earlier or unrelated Evidence cannot be substituted.<a href="#section-5.4-8" class="pilcrow">¶</a></p>
+<p id="section-5.4-9"><strong>Operational and failure behavior:</strong> Indeterminate re-evaluation does not extend an old result.<a href="#section-5.4-9" class="pilcrow">¶</a></p>
+<p id="section-5.4-10"><strong>Assumptions, limitations, and non-goals:</strong> Re-attestation cannot protect data released before an unacceptable state was detected or constrain future state changes.<a href="#section-5.4-10" class="pilcrow">¶</a></p>
+<p id="section-5.4-11"><strong>Application examples:</strong><a href="#section-5.4-11" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.4-12.1">
+            <div id="sec-operation-triggered">
+<p id="section-5.4-12.1.1"><strong>Operation-Triggered Attestation for High-Impact Application Operations</strong><a href="#section-5.4-12.1.1" class="pilcrow">¶</a></p>
+</div>
+<p id="section-5.4-12.1.2">
+An application service, such as an AI agent, maintains a (D)TLS connection and later performs a high-impact action.
+Before that action, its peer obtains fresh, connection-bound Evidence of the current behavior-affecting posture.
+<span>[<a href="#I-D.jiang-seat-dynamic-attestation" class="cite xref">I-D.jiang-seat-dynamic-attestation</a>]</span> describes this use case.<a href="#section-5.4-12.1.2" class="pilcrow">¶</a></p>
+<p id="section-5.4-12.1.3">
+The attestation can occur over the existing connection without requiring a new TLS handshake.<a href="#section-5.4-12.1.3" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.4-12.2">
+            <p id="section-5.4-12.2.1"><strong>AI Governance and Accountability</strong><a href="#section-5.4-12.2.1" class="pilcrow">¶</a></p>
+<p id="section-5.4-12.2.2">
+A governance body appraises Evidence from an autonomous AI agent when deciding whether it may act.
+Runtime attestation follows the risk tiers in <span><a href="https://datatracker.ietf.org/doc/html/draft-aylward-aiga-2-00#section-2.2" class="relref">Section 2.2</a> of [<a href="#I-D.aylward-aiga-2" class="cite xref">I-D.aylward-aiga-2</a>]</span>.<a href="#section-5.4-12.2.2" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.4-12.3">
+            <div id="sec-actor-identity-continuity">
+<p id="section-5.4-12.3.1"><strong>Actor Identity Continuity via Longitudinal Trajectory Attestation</strong><a href="#section-5.4-12.3.1" class="pilcrow">¶</a></p>
+</div>
+<p id="section-5.4-12.3.2">
+A TLS peer presents Evidence about the trajectory of an actor whose identity persists across platforms.
+The Relying Party attributes the trajectory to that identity and uses each policy-defined interval for a separate authorization decision.
+The actor is not tied to a particular machine.
+TRIP <span>[<a href="#I-D.ayerbe-trip-protocol" class="cite xref">I-D.ayerbe-trip-protocol</a>]</span> provides one example.<a href="#section-5.4-12.3.2" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+<div id="intermediary-aware-deployment">
+<section id="section-5.5">
+        <h3 id="name-intermediary-aware-deployme">
+<a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-intermediary-aware-deployme" class="section-name selfRef">Intermediary-Aware Deployment</a>
+        </h3>
+<p id="section-5.5-1"><strong>Scenario and protected decision or asset:</strong> An intermediary terminates or mediates communication with an attested service.
+The Relying Party needs to know which component and trust boundary it appraises.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
+<p id="section-5.5-2"><strong>TLS and RATS roles:</strong> The Attester can be an endpoint or intermediary.
+This profile applies in either attestation direction.<a href="#section-5.5-2" class="pilcrow">¶</a></p>
+<p id="section-5.5-3"><strong>Existing TLS authentication:</strong> TLS authenticates the identity presented by each connection's endpoint; an intermediary that terminates TLS remains visible as that endpoint even when presenting an origin's identity.<a href="#section-5.5-3" class="pilcrow">¶</a></p>
+<p id="section-5.5-4"><strong>Attestation topology and trust boundaries:</strong> Either the intermediary is the attested service boundary, or a trusted terminator fronts an appraised origin.
+The latter creates a channel discontinuity, so origin assurance requires a security association to the origin.
+This document does not define that association.<a href="#section-5.5-4" class="pilcrow">¶</a></p>
+<p id="section-5.5-5"><strong>Attestation trigger:</strong> Evidence is appraised before accepting the intermediary or origin as the service boundary.<a href="#section-5.5-5" class="pilcrow">¶</a></p>
+<p id="section-5.5-6"><strong>Relying Party authorization or release decision:</strong> The Relying Party decides whether the observed termination and attestation topology is acceptable.
+The result identifies the appraised component sufficiently for topology policy.<a href="#section-5.5-6" class="pilcrow">¶</a></p>
+<p id="section-5.5-7"><strong>State transition and lifetime:</strong> A topology change can invalidate the result and trigger re-evaluation.<a href="#section-5.5-7" class="pilcrow">¶</a></p>
+<p id="section-5.5-8"><strong>Required security outcome:</strong> The Relying Party can determine the appraised component and the TLS endpoint protecting its traffic.
+A topology change does not transfer assurance between an origin and intermediary.<a href="#section-5.5-8" class="pilcrow">¶</a></p>
+<p id="section-5.5-9"><strong>Operational and failure behavior:</strong> An unexpected or indeterminate topology cannot silently replace a policy-required attested path.<a href="#section-5.5-9" class="pilcrow">¶</a></p>
+<p id="section-5.5-10"><strong>Assumptions, limitations, and non-goals:</strong> An authorized intermediary remains a trust boundary.
+This profile neither mandates sidecars nor defines end-to-end association through an arbitrary TLS terminator.<a href="#section-5.5-10" class="pilcrow">¶</a></p>
+<p id="section-5.5-11"><strong>Application examples:</strong><a href="#section-5.5-11" class="pilcrow">¶</a></p>
+<ul class="normal">
+<li class="normal" id="section-5.5-12.1">
+            <p id="section-5.5-12.1.1"><strong>Proxy-Fronted Attested Secure Channels</strong><a href="#section-5.5-12.1.1" class="pilcrow">¶</a></p>
+<p id="section-5.5-12.1.2">
+An endpoint reaches an application through an operational intermediary.
+The Relying Party can attest that intermediary or appraise an origin behind a trusted terminator.
+An untrusted terminator remains a trust boundary.<a href="#section-5.5-12.1.2" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.5-12.2">
+            <p id="section-5.5-12.2.1"><strong>Service-Mesh Attestation</strong><a href="#section-5.5-12.2.1" class="pilcrow">¶</a></p>
+<p id="section-5.5-12.2.2">
+Service-mesh proxies terminate or mediate TLS for application workloads.
+A peer obtains fresh Evidence for the relevant proxy so policy can distinguish an expected attested proxy from an unacceptable one.<a href="#section-5.5-12.2.2" class="pilcrow">¶</a></p>
+</li>
+        </ul>
+</section>
+</div>
+</section>
+</div>
+<div id="security-considerations">
+<section id="section-6">
+      <h2 id="name-security-considerations">
+<a href="#section-6" class="section-number selfRef">6. </a><a href="#name-security-considerations" class="section-name selfRef">Security Considerations</a>
+      </h2>
+<p id="section-6-1">This whole document is about security. The adversary considered by this document
+and the attack vectors that motivate its security goals are described in
+<a href="#attacker-model" class="auto internal xref">Section 3</a>.<a href="#section-6-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="iana-considerations">
+<section id="section-7">
+      <h2 id="name-iana-considerations">
+<a href="#section-7" class="section-number selfRef">7. </a><a href="#name-iana-considerations" class="section-name selfRef">IANA Considerations</a>
+      </h2>
+<p id="section-7-1">This document has no IANA actions.<a href="#section-7-1" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="sec-informative-references">
+<section id="section-8">
+      <h2 id="name-informative-references">
+<a href="#section-8" class="section-number selfRef">8. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
+      </h2>
+<dl class="references">
+<dt id="AI-agents">[AI-agents]</dt>
+      <dd>
+<span class="refAuthor">Kapoor, S.</span>, <span class="refAuthor">Stroebl, B.</span>, <span class="refAuthor">Siegel, Z. S.</span>, <span class="refAuthor">Nadgir, N.</span>, and <span class="refAuthor">A. Narayanan</span>, <span class="refTitle">"AI agents that matter"</span>, <time datetime="2024-07" class="refDate">July 2024</time>, <span>&lt;<a href="https://arxiv.org/abs/2407.01502">https://arxiv.org/abs/2407.01502</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="CoCo-Trustee">[CoCo-Trustee]</dt>
+      <dd>
+<span class="refTitle">"Trustee"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/confidential-containers/trustee">https://github.com/confidential-containers/trustee</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="CVE-2026-33697">[CVE-2026-33697]</dt>
+      <dd>
+<span class="refTitle">"CVE-2026-33697"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.cve.org/CVERecord?id=CVE-2026-33697">https://www.cve.org/CVERecord?id=CVE-2026-33697</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ayerbe-trip-protocol">[I-D.ayerbe-trip-protocol]</dt>
+      <dd>
+<span class="refAuthor">Posada, C. A.</span> and <span class="refAuthor">M. U. Sardar</span>, <span class="refTitle">"TRIP: Trajectory-based Recognition of Identity Proof"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ayerbe-trip-protocol-04</span>, <time datetime="2026-05-08" class="refDate">8 May 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ayerbe-trip-protocol-04">https://datatracker.ietf.org/doc/html/draft-ayerbe-trip-protocol-04</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.aylward-aiga-2">[I-D.aylward-aiga-2]</dt>
+      <dd>
+<span class="refAuthor">Aylward, E. R.</span>, <span class="refTitle">"AI Governance and Accountability Protocol (AIGA)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-aylward-aiga-2-00</span>, <time datetime="2026-01-26" class="refDate">26 January 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-aylward-aiga-2-00">https://datatracker.ietf.org/doc/html/draft-aylward-aiga-2-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.draft-ccc-wimse-twi-extensions">[I-D.draft-ccc-wimse-twi-extensions]</dt>
+      <dd>
+<span class="refAuthor">Novak, M.</span>, <span class="refAuthor">Deshpande, Y.</span>, and <span class="refAuthor">H. Birkholz</span>, <span class="refTitle">"WIMSE Extensions for Trustworthy Workload Identity"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ccc-wimse-twi-extensions-01</span>, <time datetime="2026-01-05" class="refDate">5 January 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ccc-wimse-twi-extensions-01">https://datatracker.ietf.org/doc/html/draft-ccc-wimse-twi-extensions-01</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.draft-ietf-rats-eat-measured-component">[I-D.draft-ietf-rats-eat-measured-component]</dt>
+      <dd>
+<span class="refAuthor">Frost, S.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">H. Birkholz</span>, <span class="refTitle">"Entity Attestation Token (EAT) Measured Component"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-eat-measured-component-12</span>, <time datetime="2026-02-20" class="refDate">20 February 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-eat-measured-component-12">https://datatracker.ietf.org/doc/html/draft-ietf-rats-eat-measured-component-12</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.draft-ietf-rats-pkix-key-attestation">[I-D.draft-ietf-rats-pkix-key-attestation]</dt>
+      <dd>
+<span class="refAuthor">Fiset, J.</span>, <span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Evidence Encoding for Hardware Security Modules"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-pkix-key-attestation-07</span>, <time datetime="2026-07-05" class="refDate">5 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-pkix-key-attestation-07">https://datatracker.ietf.org/doc/html/draft-ietf-rats-pkix-key-attestation-07</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.draft-reddy-rats-key-binding">[I-D.draft-reddy-rats-key-binding]</dt>
+      <dd>
+<span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Mihalcea, I.</span>, and <span class="refAuthor">H. Birkholz</span>, <span class="refTitle">"Key Attestation for Entity Attestation Tokens (EAT)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-reddy-rats-key-binding-02</span>, <time datetime="2026-08-15" class="refDate">15 August 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-reddy-rats-key-binding-02">https://datatracker.ietf.org/doc/html/draft-reddy-rats-key-binding-02</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-tls-extended-key-update">[I-D.ietf-tls-extended-key-update]</dt>
+      <dd>
+<span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Tüxen, M.</span>, <span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Fries, S.</span>, and <span class="refAuthor">Y. Rosomakho</span>, <span class="refTitle">"Extended Key Update for Transport Layer Security (TLS) 1.3"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-extended-key-update-13</span>, <time datetime="2026-07-04" class="refDate">4 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-extended-key-update-13">https://datatracker.ietf.org/doc/html/draft-ietf-tls-extended-key-update-13</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-tls-rfc8446bis">[I-D.ietf-tls-rfc8446bis]</dt>
+      <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-rfc8446bis-14</span>, <time datetime="2025-09-13" class="refDate">13 September 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-rfc8446bis-14">https://datatracker.ietf.org/doc/html/draft-ietf-tls-rfc8446bis-14</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ietf-tls-rfc9147bis">[I-D.ietf-tls-rfc9147bis]</dt>
+      <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">N. Modadugu</span>, <span class="refTitle">"The Datagram Transport Layer Security (DTLS) Protocol Version 1.3"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-rfc9147bis-02</span>, <time datetime="2026-07-06" class="refDate">6 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-rfc9147bis-02">https://datatracker.ietf.org/doc/html/draft-ietf-tls-rfc9147bis-02</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.jiang-seat-dynamic-attestation">[I-D.jiang-seat-dynamic-attestation]</dt>
+      <dd>
+<span class="refAuthor">Jiang, Y.</span> and <span class="refAuthor">Wangdonghui</span>, <span class="refTitle">"Dynamic Attestation for AI Agent Communication"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-jiang-seat-dynamic-attestation-00</span>, <time datetime="2025-11-13" class="refDate">13 November 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-jiang-seat-dynamic-attestation-00">https://datatracker.ietf.org/doc/html/draft-jiang-seat-dynamic-attestation-00</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="ID-Crisis">[ID-Crisis]</dt>
+      <dd>
+<span class="refAuthor">Sardar, M. U.</span>, <span class="refAuthor">Moustafa, M.</span>, and <span class="refAuthor">T. Aura</span>, <span class="refTitle">"Identity Crisis in Confidential Computing: Formal Analysis of Attested TLS"</span>, <time datetime="2025-11" class="refDate">November 2025</time>, <span>&lt;<a href="https://www.researchgate.net/publication/398839141_Identity_Crisis_in_Confidential_Computing_Formal_Analysis_of_Attested_TLS">https://www.researchgate.net/publication/398839141_Identity_Crisis_in_Confidential_Computing_Formal_Analysis_of_Attested_TLS</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="MigTD">[MigTD]</dt>
+      <dd>
+<span class="refTitle">"Intel TDX Migration TD"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/intel/MigTD">https://github.com/intel/MigTD</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3552">[RFC3552]</dt>
+      <dd>
+<span class="refAuthor">Rescorla, E.</span> and <span class="refAuthor">B. Korver</span>, <span class="refTitle">"Guidelines for Writing RFC Text on Security Considerations"</span>, <span class="seriesInfo">BCP 72</span>, <span class="seriesInfo">RFC 3552</span>, <span class="seriesInfo">DOI 10.17487/RFC3552</span>, <time datetime="2003-07" class="refDate">July 2003</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3552">https://www.rfc-editor.org/rfc/rfc3552</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC3579">[RFC3579]</dt>
+      <dd>
+<span class="refAuthor">Aboba, B.</span> and <span class="refAuthor">P. Calhoun</span>, <span class="refTitle">"RADIUS (Remote Authentication Dial In User Service) Support For Extensible Authentication Protocol (EAP)"</span>, <span class="seriesInfo">RFC 3579</span>, <span class="seriesInfo">DOI 10.17487/RFC3579</span>, <time datetime="2003-09" class="refDate">September 2003</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3579">https://www.rfc-editor.org/rfc/rfc3579</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC4949">[RFC4949]</dt>
+      <dd>
+<span class="refAuthor">Shirey, R.</span>, <span class="refTitle">"Internet Security Glossary, Version 2"</span>, <span class="seriesInfo">FYI 36</span>, <span class="seriesInfo">RFC 4949</span>, <span class="seriesInfo">DOI 10.17487/RFC4949</span>, <time datetime="2007-08" class="refDate">August 2007</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4949">https://www.rfc-editor.org/rfc/rfc4949</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9190">[RFC9190]</dt>
+      <dd>
+<span class="refAuthor">Preuß Mattsson, J.</span> and <span class="refAuthor">M. Sethi</span>, <span class="refTitle">"EAP-TLS 1.3: Using the Extensible Authentication Protocol with TLS 1.3"</span>, <span class="seriesInfo">RFC 9190</span>, <span class="seriesInfo">DOI 10.17487/RFC9190</span>, <time datetime="2022-02" class="refDate">February 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9190">https://www.rfc-editor.org/rfc/rfc9190</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9334">[RFC9334]</dt>
+      <dd>
+<span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Thaler, D.</span>, <span class="refAuthor">Richardson, M.</span>, <span class="refAuthor">Smith, N.</span>, and <span class="refAuthor">W. Pan</span>, <span class="refTitle">"Remote ATtestation procedureS (RATS) Architecture"</span>, <span class="seriesInfo">RFC 9334</span>, <span class="seriesInfo">DOI 10.17487/RFC9334</span>, <time datetime="2023-01" class="refDate">January 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9334">https://www.rfc-editor.org/rfc/rfc9334</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9397">[RFC9397]</dt>
+      <dd>
+<span class="refAuthor">Pei, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Thaler, D.</span>, and <span class="refAuthor">D. Wheeler</span>, <span class="refTitle">"Trusted Execution Environment Provisioning (TEEP) Architecture"</span>, <span class="seriesInfo">RFC 9397</span>, <span class="seriesInfo">DOI 10.17487/RFC9397</span>, <time datetime="2023-07" class="refDate">July 2023</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9397">https://www.rfc-editor.org/rfc/rfc9397</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9846">[RFC9846]</dt>
+    <dd>
+<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="seriesInfo">RFC 9846</span>, <span class="seriesInfo">DOI 10.17487/RFC9846</span>, <time datetime="2026-07" class="refDate">July 2026</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9846">https://www.rfc-editor.org/rfc/rfc9846</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+</dl>
+</section>
+</div>
+<div id="acknowledgments">
+<section id="appendix-A">
+      <h2 id="name-acknowledgments">
+<a href="#name-acknowledgments" class="section-name selfRef">Acknowledgments</a>
+      </h2>
+<p id="appendix-A-1">We would like to thank Muhammad Usama Sardar, Thomas Fossati, Tirumaleswar Reddy, Yuning Jiang, and Meiling Chen for their work on establishing this document and enabling its adoption.<a href="#appendix-A-1" class="pilcrow">¶</a></p>
+<p id="appendix-A-2">We would like to thank Eric Rescorla for his detailed review.<a href="#appendix-A-2" class="pilcrow">¶</a></p>
+</section>
+</div>
+<div id="authors-addresses">
+<section id="appendix-B">
+      <h2 id="name-authors-address">
+<a href="#name-authors-address" class="section-name selfRef">Author's Address</a>
+      </h2>
+<address class="vcard">
+        <div dir="auto" class="left"><span class="fn nameRole">Ionuț Mihalcea (<span class="role">editor</span>)</span></div>
+<div dir="auto" class="left"><span class="org">Arm</span></div>
+<div class="email">
+<span>Email:</span>
+<a href="mailto:ionut.mihalcea@arm.com" class="email">ionut.mihalcea@arm.com</a>
+</div>
+</address>
+</section>
+</div>
+<script>const toc = document.getElementById("toc");
+toc.querySelector("h2").addEventListener("click", e => {
+  toc.classList.toggle("active");
+});
+toc.querySelector("nav").addEventListener("click", e => {
+  toc.classList.remove("active");
+});
+</script>
+</body>
+</html>
