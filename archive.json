@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-15T04:17:35.717336+00:00",
+  "timestamp": "2026-09-20T04:19:52.756748+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -7138,7 +7138,7 @@
       "labels": [],
       "body": "Adds a new use case based on [Markus Rudy's feedback ](https://mailarchive.ietf.org/arch/msg/seat/GcrnRi81zcpZUOG_213U2ongrnc/)regarding short-lived container workloads in TEEs.\r\n\r\n---\r\n\r\n* Documents ephemeral container workloads authenticating via public Web PKI.\r\n\r\n* Addresses the prohibitive latency of fetching certificates dynamically for temporary instances by supporting external provisioning (e.g., via cert manager).\r\n\r\n*  Mandates per-session freshness and cryptographic binding to the communication channel",
       "createdAt": "2026-07-06T21:49:52Z",
-      "updatedAt": "2026-07-13T19:16:03Z",
+      "updatedAt": "2026-09-18T13:24:16Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "7455def379e8833f22edc36579f07ca9cb9c159f",
@@ -7156,6 +7156,13 @@
           "body": "@burgerdev Turns out it doesn't look like the use-case describe on-list is present in the current draft, so this is trying to capture that.  Is this aligned with what you are looking to do / hoping for?\r\n\r\nI've also setup a PR which pulls in your changes, introduces a new optional ephemeral key (for the WG to discuss, and accommodates your use case where the identity signing key is not confidential at https://github.com/tls-attestation/seat-architecture/pull/26",
           "createdAt": "2026-07-06T21:54:09Z",
           "updatedAt": "2026-07-07T04:22:15Z"
+        },
+        {
+          "author": "burgerdev",
+          "authorAssociation": "NONE",
+          "body": "This is now in conflict with an attacker capability:\r\n\r\nhttps://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/blob/aae97f4d2b6aec752bf15ab4e1fa0af62173c97e/draft-ietf-seat-use-cases.md?plain=1#L337-L339\r\n\r\nImho a valid (and better) mitigation would also be \"don't make the protocol depend on the secrecy of the key\".",
+          "createdAt": "2026-09-18T13:24:16Z",
+          "updatedAt": "2026-09-18T13:24:16Z"
         }
       ],
       "reviews": [
@@ -8325,6 +8332,32 @@
           ]
         }
       ]
+    },
+    {
+      "number": 61,
+      "id": "PR_kwDOP_9tTM8AAAABEFR8qA",
+      "title": "Update use-cases definition to template model",
+      "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/61",
+      "state": "OPEN",
+      "author": "ionut-arm",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "",
+      "createdAt": "2026-09-18T12:56:52Z",
+      "updatedAt": "2026-09-18T12:56:52Z",
+      "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
+      "baseRefName": "main",
+      "baseRefOid": "aae97f4d2b6aec752bf15ab4e1fa0af62173c97e",
+      "headRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
+      "headRefName": "use-cases-refit",
+      "headRefOid": "d0c3e97e96495f47285599a32d545ed1208c590e",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
