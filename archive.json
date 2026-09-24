@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-20T04:19:52.756748+00:00",
+  "timestamp": "2026-09-24T04:05:42.452827+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -298,7 +298,7 @@
       ],
       "body": "References to slides are frowned upon. Also, this is importnat enough to justify a few paragraphs of text here.\n\nIn addition, the short sentence here makes a ton of assumptions on the deployment model (e.g. \"infrastructure provider\") that require clarification.\n\n",
       "createdAt": "2025-10-26T13:58:56Z",
-      "updatedAt": "2026-05-11T20:19:24Z",
+      "updatedAt": "2026-09-22T16:10:00Z",
       "closedAt": null,
       "comments": [
         {
@@ -321,6 +321,13 @@
           "body": "and in case you missed, [follow-up](https://github.com/tls-attestation/use-cases-and-properties/pull/37#issuecomment-4273176972) was requesting you to make your case more convincingly. ",
           "createdAt": "2026-05-05T18:58:54Z",
           "updatedAt": "2026-05-05T18:58:54Z"
+        },
+        {
+          "author": "nikolaichuk7",
+          "authorAssociation": "NONE",
+          "body": "Some measured data for this, since the thread so far has no field names in it. I read the identity-relevant fields at their ABI offsets across 87 genuine SEV-SNP reports from live guests (71 on GCP, 16 on AWS shared tenancy) and two TDREPORTs from two Intel TDX guests launched from one image ([`docs/INSTANCE-IDENTITY.md`](https://github.com/nikolaichuk7/hatls/blob/v0.3.0/docs/INSTANCE-IDENTITY.md), reproduction `examples/granularity.py`, all offline on the shipped evidence).\n\nWhat separates two machines, by platform:\n\n| | who supplies it | separates instances? |\n|---|---|---|\n| SEV-SNP `CHIP_ID` | the silicon | GCP: 6 chips, each hosted 2\u20133 guests over time \u2014 it names the *place*. AWS: **all-zero in 16/16**, with the report's own `MASK_CHIP_KEY` flag reading 0 |\n| SEV-SNP `REPORT_ID` | the firmware (\"generated using a CSRNG\", persists for the guest's lifetime; not among the hypervisor's `SNP_LAUNCH_START` inputs) | yes, one per instance, on both clouds |\n| SEV-SNP `HOST_DATA` | the infrastructure provider | no \u2014 one value per cloud across 14 and 8 instances |\n| TDX, all of TDINFO | firmware/measurements | 16 fields identical between the two TDs |\n| TDX `MROWNER` | the host VMM (`KVM_TDX_INIT_VM`) | the **only** differing field \u2014 and it is the host's word |\n| TDX `RTMR3`, extended once at boot by the guest with 48 random bytes | the guest, measured by the TDX module; the host has no write path | yes \u2014 two TDs from one image: `0` \u2192 `372d9c85\u2026` / `d3345726\u2026`, each `SHA-384(0 \u2016 nonce)` |\n\nTwo things follow for the text. A per-instance identifier that a Relying Party can bind to does exist on SEV-SNP, so the property is implementable there \u2014 but it is firmware-issued, not \"provided by the infrastructure provider\"; the provider's own field does not separate instances in this data, and on AWS the silicon identifier is not exposed at all, so a published list of machine identifiers would have nothing to match against there. On TDX the platform's only per-instance value is supplied by the party a diversion attack would come from \u2014 but the guest can make its own, by extending an RTMR it alone can write, and then every report carries a hardware-measured instance identifier the host did not choose. So Yaron's point that \"infrastructure provider\" carries deployment assumptions is borne out by the chips, and Usama's point that binding limits the blast radius is implementable \u2014 with `REPORT_ID` on SEV-SNP, and with a guest-extended RTMR on TDX. The endorsed signing keys, for what it is worth, are per chip (VCEK) or per region (VLEK); none is per instance.\n\nHappy to contribute text if that would help; otherwise this is just data for the issue.\n",
+          "createdAt": "2026-09-22T16:09:59Z",
+          "updatedAt": "2026-09-22T16:09:59Z"
         }
       ]
     },
@@ -1132,9 +1139,17 @@
       "labels": [],
       "body": "Section 4.5 requires Evidence that the TLS private key:\n\n> is generated and stored within a specific cryptographic module or secure element\n\nand\n\n> is protected against export or software extraction\n\nIs the intention to require that a private key can never leave the particular cryptographic module in which it was generated?\n\nThat seems too restrictive for clustered/HA TLS deployments. For example, HSM clusters commonly support secure replication of a TLS private key between HSMs, while ensuring that the key is never exposed in plaintext outside the trusted cryptographic boundary. A similar requirement may arise when a confidential workload is migrated between platforms (cf. Section 4.6).\n\nI think the desired security property is instead that the private key cannot be extracted into an untrusted environment. Secure transfer or replication directly between attested/trusted cryptographic environments should not necessarily violate that property.\n\nCould Section 4.5 distinguish **software/plaintext extraction** from **secure key migration or replication between qualifying trusted environments**?\n\nFor example, the requirements might say that the key:\n\n* is generated within, or securely provisioned into, an attested cryptographic module or secure element;\n* is stored and used only within cryptographic environments satisfying the applicable security policy; and\n* is protected against disclosure outside those environments, including extraction into ordinary software.\n\nA deployment could still impose the stronger policy that a particular key is non-migratable and remains bound to one physical module, but that would not be a fundamental requirement of the SEAT use case.\n",
       "createdAt": "2026-09-04T12:38:18Z",
-      "updatedAt": "2026-09-04T12:38:18Z",
+      "updatedAt": "2026-09-22T16:10:04Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "nikolaichuk7",
+          "authorAssociation": "NONE",
+          "body": "Two measured points that bear on the distinction you are drawing.\n\nFirst, the platform already has the notion. The SEV-SNP firmware ABI's guest-context table lists `ReportID` \u2014 the per-guest instance identifier the firmware generates \u2014 as *\"Migrated? Yes\"*: it moves with the guest when a migration agent is configured, so \"the same instance, now on other silicon\" is a first-class state, and the migration agent is then inside the trust boundary of that identity. In the 87 reports I have from GCP and AWS, `REPORT_ID_MA` is all-ones in every one \u2014 no migration agent anywhere \u2014 so nothing there has moved; but the ABI is explicit that it can.\n\nSecond, the property you want (\"cannot be extracted into an untrusted environment\", while transfer between qualifying environments is allowed) can be made checkable by a Relying Party rather than asserted by the platform. I ran this on live SEV-SNP ([`docs/HARDWARE-RESULTS.md`](https://github.com/nikolaichuk7/hatls/blob/v0.3.0/docs/HARDWARE-RESULTS.md), \"owner-authorised transfer\"): the key is enrolled to the instance it was born on; a transfer is honoured only against a grant signed by the identity's owner that names the destination instance, **and only if that destination has already presented valid Evidence to the Relying Party** \u2014 so \"a qualifying trusted environment\" is one the RP has itself seen attest, not one the platform vouches for. The same key presented from a second genuine instance without such a grant is declined on its first message; a forged, replayed or redirected grant is declined; a grant naming an instance the RP never witnessed is declined. That is one concrete shape of the requirement's third bullet (\"protected against disclosure outside those environments\") with the environments defined by attestation rather than by policy text.\n\nNeither point argues for or against the wording; they say what the hardware and a verifier can actually check.\n",
+          "createdAt": "2026-09-22T16:10:04Z",
+          "updatedAt": "2026-09-22T16:10:04Z"
+        }
+      ]
     }
   ],
   "pulls": [
