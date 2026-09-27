@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-24T04:05:42.452827+00:00",
+  "timestamp": "2026-09-27T04:41:06.243482+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -1150,6 +1150,22 @@
           "updatedAt": "2026-09-22T16:10:04Z"
         }
       ]
+    },
+    {
+      "number": 62,
+      "id": "I_kwDOP_9tTM8AAAABTAEgpA",
+      "title": "Editorial: Update TLS 1.3 citation to RFC 9846; fix grammar in Evidence Relay",
+      "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/issues/62",
+      "state": "OPEN",
+      "author": "yaronf",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "## Summary\n\nTwo editorial fixes noted in review:\n\n### 1. Stale TLS citation\n\nPurpose and scope still cite `I-D.ietf-tls-rfc8446bis` as the TLS 1.3 focus, but that draft has been published as **RFC 9846**, which the attacker model already references (Appendix F). Unify TLS 1.3 citations on RFC 9846. Keep `I-D.ietf-tls-rfc9147bis` for DTLS 1.3 if still appropriate.\n\n### 2. Grammar in Evidence Relay\n\nIn the Evidence Relay attack description (Why validation succeeds), the text currently reads:\n\n> \u2026not that the evidenced Target Environment **is holds** the authentication key or the TLS stack that can use it.\n\nShould be corrected (e.g., \u201cholds\u201d or \u201cis holding\u201d).",
+      "createdAt": "2026-09-24T14:45:54Z",
+      "updatedAt": "2026-09-24T14:45:54Z",
+      "closedAt": null,
+      "comments": []
     }
   ],
   "pulls": [
@@ -8360,7 +8376,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2026-09-18T12:56:52Z",
-      "updatedAt": "2026-09-18T12:56:52Z",
+      "updatedAt": "2026-09-24T09:18:41Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "aae97f4d2b6aec752bf15ab4e1fa0af62173c97e",
@@ -8372,7 +8388,48 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOP_9tTM8AAAABPAltww",
+          "commit": {
+            "abbreviatedOid": "d0c3e97"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "LGTM!",
+          "createdAt": "2026-09-24T09:06:03Z",
+          "updatedAt": "2026-09-24T09:06:38Z",
+          "comments": [
+            {
+              "originalPosition": 1,
+              "body": "This can be removed from the commit, I think?",
+              "createdAt": "2026-09-24T09:06:03Z",
+              "updatedAt": "2026-09-24T09:06:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOP_9tTM8AAAABPAvy0A",
+          "commit": {
+            "abbreviatedOid": "d0c3e97"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-09-24T09:18:41Z",
+          "updatedAt": "2026-09-24T09:18:41Z",
+          "comments": [
+            {
+              "originalPosition": 298,
+              "body": "so, it's only when \"deployments also require source attestation\" that this falls under the \"Mutual Attestation Before Sensitive Exchange\" umbrella.",
+              "createdAt": "2026-09-24T09:18:41Z",
+              "updatedAt": "2026-09-24T09:18:41Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
