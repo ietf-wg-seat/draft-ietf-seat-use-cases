@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-09-27T04:41:06.243482+00:00",
+  "timestamp": "2026-10-01T05:10:00.308540+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -8376,7 +8376,7 @@
       "labels": [],
       "body": "",
       "createdAt": "2026-09-18T12:56:52Z",
-      "updatedAt": "2026-09-24T09:18:41Z",
+      "updatedAt": "2026-09-29T15:44:31Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "aae97f4d2b6aec752bf15ab4e1fa0af62173c97e",
@@ -8426,6 +8426,66 @@
               "body": "so, it's only when \"deployments also require source attestation\" that this falls under the \"Mutual Attestation Before Sensitive Exchange\" umbrella.",
               "createdAt": "2026-09-24T09:18:41Z",
               "updatedAt": "2026-09-24T09:18:41Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOP_9tTM8AAAABPxqd7A",
+          "commit": {
+            "abbreviatedOid": "d0c3e97"
+          },
+          "author": "ionut-arm",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-09-29T14:00:11Z",
+          "updatedAt": "2026-09-29T14:00:11Z",
+          "comments": [
+            {
+              "originalPosition": 298,
+              "body": "I think I've written it badly here. You would need mutual attestation, because otherwise the destination might allow a \"migration\" to happen from a non-existent platform, blessing a CVM with spoofed measurements.",
+              "createdAt": "2026-09-29T14:00:11Z",
+              "updatedAt": "2026-09-29T14:00:11Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOP_9tTM8AAAABPyZAzQ",
+          "commit": {
+            "abbreviatedOid": "d0c3e97"
+          },
+          "author": "thomas-fossati",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-09-29T15:01:26Z",
+          "updatedAt": "2026-09-29T15:01:27Z",
+          "comments": [
+            {
+              "originalPosition": 298,
+              "body": "OK, so it's not that they can, it's they should/must, right?",
+              "createdAt": "2026-09-29T15:01:26Z",
+              "updatedAt": "2026-09-29T15:01:27Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOP_9tTM8AAAABPy6cmA",
+          "commit": {
+            "abbreviatedOid": "d0c3e97"
+          },
+          "author": "ionut-arm",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-09-29T15:44:31Z",
+          "updatedAt": "2026-09-29T15:44:31Z",
+          "comments": [
+            {
+              "originalPosition": 298,
+              "body": "Yes, correct, it's a MUST for both sides :)",
+              "createdAt": "2026-09-29T15:44:31Z",
+              "updatedAt": "2026-09-29T15:44:31Z"
             }
           ]
         }
