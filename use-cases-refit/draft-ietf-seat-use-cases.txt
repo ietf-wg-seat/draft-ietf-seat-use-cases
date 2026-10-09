@@ -4,8 +4,8 @@
 
 SEAT Working Group                                      I. Mihalcea, Ed.
 Internet-Draft                                                       Arm
-Intended status: Informational                         18 September 2026
-Expires: 22 March 2027
+Intended status: Informational                            9 October 2026
+Expires: 12 April 2027
 
 
   Security Goals and Use Cases for Integrating Remote Attestation with
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 22 March 2027.
+   This Internet-Draft will expire on 12 April 2027.
 
 Copyright Notice
 
@@ -938,10 +938,9 @@ Table of Contents
       workload while enforcing policies that prevent migration to a
       platform with lower security guarantees.
 
-      The destination migration agent attests to its source peer;
-      deployments can also require source attestation.  Intel TDX
-      Migration Trust Domains (MigTDs) [MigTD] use an attested TLS
-      connection between the source and destination.
+      The destination and source migration agents attest to each other.
+      Intel TDX Migration Trust Domains (MigTDs) [MigTD] use an attested
+      TLS connection between the source and destination.
 
 5.4.  Re-Evaluation on Long-Lived or Resumed Connections
 
