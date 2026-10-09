@@ -21,7 +21,7 @@ need for this integration.  This document is intended
 to serve as an input to the design
 of protocol solutions within the SEAT working group. 
     " name="description">
-<meta content="xml2rfc 3.34.0" name="generator">
+<meta content="xml2rfc 3.34.1" name="generator">
 <meta content="remote attestation" name="keyword">
 <meta content="TLS" name="keyword">
 <meta content="confidential computing" name="keyword">
@@ -29,19 +29,19 @@ of protocol solutions within the SEAT working group.
 <meta content="RATS" name="keyword">
 <meta content="draft-ietf-seat-use-cases-latest" name="ietf.draft">
 <!-- Generator version information:
-  xml2rfc 3.34.0
-    Python 3.14.7
-    ConfigArgParse 1.7.5
+  xml2rfc 3.34.1
+    Python 3.14.8
+    ConfigArgParse 1.8.0
     google-i18n-address 3.1.1
     intervaltree 3.2.1
     Jinja2 3.1.6
     lxml 6.1.1
     natsort 8.4.0
-    platformdirs 4.11.7
+    platformdirs 4.12.2
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.8.3
+    wcwidth 0.9.1
 -->
 <link href="draft-ietf-seat-use-cases.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1057,11 +1057,11 @@ svg {
 <thead><tr>
 <td class="left">Internet-Draft</td>
 <td class="center">SEAT Use Cases</td>
-<td class="right">September 2026</td>
+<td class="right">October 2026</td>
 </tr></thead>
 <tfoot><tr>
 <td class="left">Mihalcea</td>
-<td class="center">Expires 17 March 2027</td>
+<td class="center">Expires 12 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1074,12 +1074,12 @@ svg {
 <dd class="internet-draft">draft-ietf-seat-use-cases-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-09-13" class="published">13 September 2026</time>
+<time datetime="2026-10-09" class="published">9 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-03-17">17 March 2027</time></dd>
+<dd class="expires"><time datetime="2027-04-12">12 April 2027</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1126,7 +1126,7 @@ of protocol solutions within the SEAT working group.<a href="#section-abstract-1
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 17 March 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 12 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1274,49 +1274,19 @@ of protocol solutions within the SEAT working group.<a href="#section-abstract-1
             <p id="section-toc.1-1.5.1"><a href="#section-5" class="auto internal xref">5</a>.  <a href="#name-use-cases" class="internal xref">Use Cases</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1">
-                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-secure-provisioning-and-hig" class="internal xref">Secure Provisioning and High-Assurance Operations</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.1">
-                    <p id="section-toc.1-1.5.2.1.2.1.1"><a href="#section-5.1.1" class="auto internal xref">5.1.1</a>.  <a href="#name-runtime-secret-provisioning" class="internal xref">Runtime Secret Provisioning</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.1.2.2">
-                    <p id="section-toc.1-1.5.2.1.2.2.1"><a href="#section-5.1.2" class="auto internal xref">5.1.2</a>.  <a href="#name-high-assurance-command-exec" class="internal xref">High-Assurance Command Execution</a></p>
-</li>
-                </ul>
+                <p id="section-toc.1-1.5.2.1.1"><a href="#section-5.1" class="auto internal xref">5.1</a>.  <a href="#name-server-as-attester-before-a" class="internal xref">Server as Attester Before a Protected Operation</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2">
-                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-confidential-data-collabora" class="internal xref">Confidential Data Collaboration</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.1">
-                    <p id="section-toc.1-1.5.2.2.2.1.1"><a href="#section-5.2.1" class="auto internal xref">5.2.1</a>.  <a href="#name-data-clean-rooms" class="internal xref">Data Clean Rooms</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.2.2.2">
-                    <p id="section-toc.1-1.5.2.2.2.2.1"><a href="#section-5.2.2" class="auto internal xref">5.2.2</a>.  <a href="#name-secure-multi-party-computat" class="internal xref">Secure Multi-Party Computation (MPC)</a></p>
-</li>
-                </ul>
+                <p id="section-toc.1-1.5.2.2.1"><a href="#section-5.2" class="auto internal xref">5.2</a>.  <a href="#name-client-as-attester-before-s" class="internal xref">Client as Attester Before Service Admission</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3">
-                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-network-infrastructure-inte" class="internal xref">Network Infrastructure Integrity</a></p>
-<ul class="compact toc ulBare ulEmpty">
-<li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3.2.1">
-                    <p id="section-toc.1-1.5.2.3.2.1.1"><a href="#section-5.3.1" class="auto internal xref">5.3.1</a>.  <a href="#name-attestation-of-network-func" class="internal xref">Attestation of Network Functions</a></p>
-</li>
-                  <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.3.2.2">
-                    <p id="section-toc.1-1.5.2.3.2.2.1"><a href="#section-5.3.2" class="auto internal xref">5.3.2</a>.  <a href="#name-securing-control-and-manage" class="internal xref">Securing Control and Management Planes</a></p>
-</li>
-                </ul>
+                <p id="section-toc.1-1.5.2.3.1"><a href="#section-5.3" class="auto internal xref">5.3</a>.  <a href="#name-mutual-attestation-before-s" class="internal xref">Mutual Attestation Before Sensitive Exchange</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.4">
-                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-operation-triggered-attesta" class="internal xref">Operation-Triggered Attestation for High-Impact Application Operations</a></p>
+                <p id="section-toc.1-1.5.2.4.1"><a href="#section-5.4" class="auto internal xref">5.4</a>.  <a href="#name-re-evaluation-on-long-lived" class="internal xref">Re-Evaluation on Long-Lived or Resumed Connections</a></p>
 </li>
               <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.5">
-                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="auto internal xref">5.5</a>.  <a href="#name-attestation-of-certificate-" class="internal xref">Attestation of Certificate Private Key</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.6">
-                <p id="section-toc.1-1.5.2.6.1"><a href="#section-5.6" class="auto internal xref">5.6</a>.  <a href="#name-platform-to-platform-commun" class="internal xref">Platform-to-platform communication</a></p>
-</li>
-              <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.5.2.7">
-                <p id="section-toc.1-1.5.2.7.1"><a href="#section-5.7" class="auto internal xref">5.7</a>.  <a href="#name-ai-governance-and-accountab" class="internal xref">AI Governance and Accountability</a></p>
+                <p id="section-toc.1-1.5.2.5.1"><a href="#section-5.5" class="auto internal xref">5.5</a>.  <a href="#name-intermediary-aware-deployme" class="internal xref">Intermediary-Aware Deployment</a></p>
 </li>
             </ul>
 </li>
@@ -1984,261 +1954,233 @@ round-trips or very large payloads in the initial handshake should be minimized.
       <h2 id="name-use-cases">
 <a href="#section-5" class="section-number selfRef">5. </a><a href="#name-use-cases" class="section-name selfRef">Use Cases</a>
       </h2>
-<p id="section-5-1">This section provides the concrete motivation for the WG's work by describing
-specific use cases. For each case, the scenario, actors, and specific security
-guarantees needed from RA are described.<a href="#section-5-1" class="pilcrow">¶</a></p>
-<div id="secure-provisioning-and-high-assurance-operations">
+<p id="section-5-1">This section defines protocol-focused profiles for composing RA with (D)TLS.
+Application examples provide deployment context and can map to several profiles.<a href="#section-5-1" class="pilcrow">¶</a></p>
+<p id="section-5-2">The server-as-Attester and client-as-Attester profiles define the two base attestation directions.
+The remaining profiles describe composition, lifecycle, or topology considerations that can be overlaid on either direction.
+Base profiles use the fields below; overlay profiles specify only the properties they add or modify.<a href="#section-5-2" class="pilcrow">¶</a></p>
+<p id="section-5-3">Across all profiles, the Verifier appraises Evidence and produces an Attestation Result (AR), while the Relying Party makes the authorization or release decision based on that AR.
+The Relying Party rejects an unacceptable result.
+Missing, stale, unverifiable, or unbound Evidence, Verifier unavailability, and timeouts make the decision indeterminate.
+When policy requires attestation, an unacceptable Attestation Result or an indeterminate decision blocks the operation.
+Any non-attested fallback is separate and explicit.<a href="#section-5-3" class="pilcrow">¶</a></p>
+<p id="section-5-4">Across all profiles, the Relying Party's policy defines when an Attestation Result is usable for a protected decision and whether it may be reused for a later decision.
+Fresh assurance is required when the result expires, when the Relying Party identifies a relevant state change, or when a new connection invalidates a required connection binding.
+Verifier appraisal can supply applicable validity constraints.<a href="#section-5-4" class="pilcrow">¶</a></p>
+<p id="section-5-5">Systems may combine base and overlay profiles.
+When profiles are combined, the attestation exchanges and their associated Evidence, Verifiers, trust anchors, appraisal policies, timing, lifetimes, and authorization decisions are independent unless a deployment explicitly requires them to be shared or coordinated.<a href="#section-5-5" class="pilcrow">¶</a></p>
+<p id="section-5-6">Profiles state the required assurance but do not define the values or mechanism used to bind attestation to a connection.
+Those details belong to the protocol solution.<a href="#section-5-6" class="pilcrow">¶</a></p>
+<div id="server-as-attester-before-a-protected-operation">
 <section id="section-5.1">
-        <h3 id="name-secure-provisioning-and-hig">
-<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-secure-provisioning-and-hig" class="section-name selfRef">Secure Provisioning and High-Assurance Operations</a>
+        <h3 id="name-server-as-attester-before-a">
+<a href="#section-5.1" class="section-number selfRef">5.1. </a><a href="#name-server-as-attester-before-a" class="section-name selfRef">Server as Attester Before a Protected Operation</a>
         </h3>
-<p id="section-5.1-1">Goal: Ensure the integrity of workloads and devices when bootstrapping their
-PKI-based identity or receiving critical commands.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
-<div id="runtime-secret-provisioning">
-<section id="section-5.1.1">
-          <h4 id="name-runtime-secret-provisioning">
-<a href="#section-5.1.1" class="section-number selfRef">5.1.1. </a><a href="#name-runtime-secret-provisioning" class="section-name selfRef">Runtime Secret Provisioning</a>
-          </h4>
-<p id="section-5.1.1-1">A confidential workload starts in a
-generic state and needs to fetch secrets (e.g., API keys, database credentials,
-encryption keys) to become operational.<a href="#section-5.1.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-1"><strong>Scenario and protected decision or asset:</strong> A TLS client needs assurance about a TLS server before releasing sensitive data, accepting a result, or sending a high-impact command.<a href="#section-5.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.1-2"><strong>TLS and RATS roles:</strong> The server is the Attester, the client is the Relying Party, and the Verifier can be separate.<a href="#section-5.1-2" class="pilcrow">¶</a></p>
+<p id="section-5.1-3"><strong>Existing TLS authentication:</strong> TLS authenticates the server's network identity; RA adds information about its Target Environment.<a href="#section-5.1-3" class="pilcrow">¶</a></p>
+<p id="section-5.1-4"><strong>Attestation topology and trust boundaries:</strong> The TLS endpoint is part of the appraised Target Environment.
+The intermediary-aware profile also applies when an intermediary terminates TLS.<a href="#section-5.1-4" class="pilcrow">¶</a></p>
+<p id="section-5.1-5"><strong>Attestation trigger:</strong> Evidence is appraised before the protected operation that requires current assurance.<a href="#section-5.1-5" class="pilcrow">¶</a></p>
+<p id="section-5.1-6"><strong>Relying Party authorization or release decision:</strong> The Relying Party applies local policy to the Attestation Result and authenticated TLS identity.<a href="#section-5.1-6" class="pilcrow">¶</a></p>
+<p id="section-5.1-7"><strong>Required security outcome:</strong> The acceptable attested state applies to the intended server endpoint and connection carrying the protected operation.<a href="#section-5.1-7" class="pilcrow">¶</a></p>
+<p id="section-5.1-8"><strong>Assumptions, limitations, and non-goals:</strong> Attestation neither authorizes the application action nor guarantees the server's future state or behavior.<a href="#section-5.1-8" class="pilcrow">¶</a></p>
+<p id="section-5.1-9"><strong>Application examples:</strong><a href="#section-5.1-9" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.1.1-2.1">
-              <p id="section-5.1.1-2.1.1">Requirement: The workload must attest its runtime state (TEE genuineness,
-software measurements) to a secrets management service. The service will only
-release the secrets after successful verification, ensuring they are delivered
-exclusively to a trustworthy environment. This use-case also covers secure
-device onboarding for IoT devices that lack a pre-provisioned PKI-based identity.<a href="#section-5.1.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5.1-10.1">
+            <p id="section-5.1-10.1.1"><strong>High-Assurance Command Execution</strong><a href="#section-5.1-10.1.1" class="pilcrow">¶</a></p>
+<p id="section-5.1-10.1.2">
+An operator sends a critical command to a remote system, such as an industrial controller.
+The system provides fresh Evidence for appraisal before the command is sent.<a href="#section-5.1-10.1.2" class="pilcrow">¶</a></p>
 </li>
-          </ul>
-</section>
-</div>
-<div id="high-assurance-command-execution">
-<section id="section-5.1.2">
-          <h4 id="name-high-assurance-command-exec">
-<a href="#section-5.1.2" class="section-number selfRef">5.1.2. </a><a href="#name-high-assurance-command-exec" class="section-name selfRef">High-Assurance Command Execution</a>
-          </h4>
-<p id="section-5.1.2-1">An operator sends a critical command
-to a remote system (e.g., an industrial controller, a financial transaction
-processor).<a href="#section-5.1.2-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5.1.2-2.1">
-              <p id="section-5.1.2-2.1.1">Requirement: The system must provide fresh Evidence to the
-operator to prove its integrity before the command is dispatched. This
-prevents commands from being executed on a compromised system.<a href="#section-5.1.2-2.1.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-5.1-10.2">
+            <p id="section-5.1-10.2.1"><strong>Data Clean Rooms</strong><a href="#section-5.1-10.2.1" class="pilcrow">¶</a></p>
+<p id="section-5.1-10.2.2">
+Data providers contribute sensitive data to a confidential workload for joint analysis, while data consumers receive only aggregated results.
+Before sending data or accepting results, they attest that the workload runs authorized code in a Trusted Execution Environment (TEE).<a href="#section-5.1-10.2.2" class="pilcrow">¶</a></p>
 </li>
-          </ul>
+          <li class="normal" id="section-5.1-10.3">
+            <p id="section-5.1-10.3.1"><strong>Securing Control and Management Planes</strong><a href="#section-5.1-10.3.1" class="pilcrow">¶</a></p>
+<p id="section-5.1-10.3.2">
+Before an administrator uses a network device's management interface, the client appraises Evidence about the endpoint's state.
+This avoids exposing credentials or policy to a compromised interface.<a href="#section-5.1-10.3.2" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.1-10.4">
+            <p id="section-5.1-10.4.1"><strong>Attestation of Certificate Private Key</strong><a href="#section-5.1-10.4.1" class="pilcrow">¶</a></p>
+<p id="section-5.1-10.4.2">
+A TLS endpoint authenticates with an end-entity certificate whose private key is claimed to be protected by a secure element.
+TLS proves possession of the key, but not where or how it is stored and used.<a href="#section-5.1-10.4.2" class="pilcrow">¶</a></p>
+<p id="section-5.1-10.4.3"><span>[<a href="#I-D.draft-reddy-rats-key-binding" class="cite xref">I-D.draft-reddy-rats-key-binding</a>]</span> describes the use-case, and the required checks and properties.
+<span>[<a href="#I-D.draft-ietf-rats-pkix-key-attestation" class="cite xref">I-D.draft-ietf-rats-pkix-key-attestation</a>]</span> partially addresses this use case by attesting the module and key at certificate issuance, but does not describe their state at connection establishment or later.<a href="#section-5.1-10.4.3" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
-</section>
-</div>
-<div id="confidential-data-collaboration">
+<div id="client-as-attester-before-service-admission">
 <section id="section-5.2">
-        <h3 id="name-confidential-data-collabora">
-<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-confidential-data-collabora" class="section-name selfRef">Confidential Data Collaboration</a>
+        <h3 id="name-client-as-attester-before-s">
+<a href="#section-5.2" class="section-number selfRef">5.2. </a><a href="#name-client-as-attester-before-s" class="section-name selfRef">Client as Attester Before Service Admission</a>
         </h3>
-<p id="section-5.2-1">Goal: Enable multiple parties to collaborate on sensitive, combined datasets
-without exposing raw data to each other or to the infrastructure operator.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
-<div id="data-clean-rooms">
-<section id="section-5.2.1">
-          <h4 id="name-data-clean-rooms">
-<a href="#section-5.2.1" class="section-number selfRef">5.2.1. </a><a href="#name-data-clean-rooms" class="section-name selfRef">Data Clean Rooms</a>
-          </h4>
-<p id="section-5.2.1-1">Multiple <em>data providers</em> contribute sensitive data to
-a confidential workload for joint analysis. <em>Data consumers</em> receive aggregated
-insights without ever accessing the raw, combined dataset.<a href="#section-5.2.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-1"><strong>Scenario and protected decision or asset:</strong> A service needs assurance about a TLS client before granting access or releasing a protected asset.<a href="#section-5.2-1" class="pilcrow">¶</a></p>
+<p id="section-5.2-2"><strong>TLS and RATS roles:</strong> The client is the Attester and the server is the Relying Party.
+A separate Verifier can appraise the Evidence.<a href="#section-5.2-2" class="pilcrow">¶</a></p>
+<p id="section-5.2-3"><strong>Existing TLS authentication:</strong> Client attestation works with or without TLS client authentication.
+Without it, the client can attest anonymously.<a href="#section-5.2-3" class="pilcrow">¶</a></p>
+<p id="section-5.2-4"><strong>Attestation topology and trust boundaries:</strong> The Target Environment is the client component being appraised.
+The service and Verifier can belong to different administrative domains and use different trust anchors.<a href="#section-5.2-4" class="pilcrow">¶</a></p>
+<p id="section-5.2-5"><strong>Attestation trigger:</strong> Evidence is appraised before the protected decision.<a href="#section-5.2-5" class="pilcrow">¶</a></p>
+<p id="section-5.2-6"><strong>Relying Party authorization or release decision:</strong> The Relying Party applies local policy to the Attestation Result and any authenticated client identity.<a href="#section-5.2-6" class="pilcrow">¶</a></p>
+<p id="section-5.2-7"><strong>Required security outcome:</strong> The Relying Party associates the acceptable state with the client receiving access or the asset.
+If client identity is used, both inputs refer to the same endpoint.<a href="#section-5.2-7" class="pilcrow">¶</a></p>
+<p id="section-5.2-8"><strong>Assumptions, limitations, and non-goals:</strong> SEAT does not define acceptable measurements or how the client obtains its identity credential.
+Attestation supports an authorization decision based on the client’s appraised state at the time of the protected decision, but does not assure that the client will remain in that state, remain uncompromised, or use any granted access only as expected afterward.<a href="#section-5.2-8" class="pilcrow">¶</a></p>
+<p id="section-5.2-9"><strong>Application examples:</strong><a href="#section-5.2-9" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.2.1-2.1">
-              <p id="section-5.2.1-2.1.1">Requirement: Before sending data, each data provider must attest the
-confidential workload to verify it is running the authorized analysis code in
-a secure Trusted Execution Environment (TEE). Similarly, data consumers must
-attest the workload to trust the integrity of the results.<a href="#section-5.2.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5.2-10.1">
+            <p id="section-5.2-10.1.1"><strong>Attested Workload and Device Provisioning</strong><a href="#section-5.2-10.1.1" class="pilcrow">¶</a></p>
+<p id="section-5.2-10.1.2">
+A workload or device obtains the secrets, configuration, credentials, or policy needed to become operational only after its state is appraised.
+This includes runtime secret provisioning for a confidential workload and onboarding an IoT device without a pre-provisioned PKI identity.<a href="#section-5.2-10.1.2" class="pilcrow">¶</a></p>
+<p id="section-5.2-10.1.3">
+For example, a Confidential Container can obtain configuration data or disk keys from a Key Broker Service or Trustee <span>[<a href="#CoCo-Trustee" class="cite xref">CoCo-Trustee</a>]</span> after appraisal of its TEE claims and software measurements.
+The workload is the Attester; the Trustee is the Relying Party and can also be the Verifier.<a href="#section-5.2-10.1.3" class="pilcrow">¶</a></p>
+<p id="section-5.2-10.1.4">
+It also includes injecting a Web PKI credential into a short-lived TEE container: a cluster utility can obtain the certificate and private key before loading them into the container, while the Relying Party obtains current assurance that the intended Target Environment uses the provisioned credential.
+Credential issuance remains outside SEAT.<a href="#section-5.2-10.1.4" class="pilcrow">¶</a></p>
 </li>
-          </ul>
-</section>
-</div>
-<div id="secure-multi-party-computation-mpc">
-<section id="section-5.2.2">
-          <h4 id="name-secure-multi-party-computat">
-<a href="#section-5.2.2" class="section-number selfRef">5.2.2. </a><a href="#name-secure-multi-party-computat" class="section-name selfRef">Secure Multi-Party Computation (MPC)</a>
-          </h4>
-<p id="section-5.2.2-1">Distributed parties
-collaboratively compute a function (e.g., train a machine learning model)
-without sharing their local data.<a href="#section-5.2.2-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5.2.2-2.1">
-              <p id="section-5.2.2-2.1.1">Requirement: The central aggregator, as well as each participating client,
-must be able to mutually attest to ensure all parties are running the correct,
-untampered MPC algorithm in a trusted environment.<a href="#section-5.2.2-2.1.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-5.2-10.2">
+            <p id="section-5.2-10.2.1"><strong>Attestation of Network Functions</strong><a href="#section-5.2-10.2.1" class="pilcrow">¶</a></p>
+<p id="section-5.2-10.2.2">
+Before admitting a network device or function to the management plane, the orchestrator appraises Evidence about its state.
+This gates admission and policy delivery; it does not attest other devices or the traffic path.<a href="#section-5.2-10.2.2" class="pilcrow">¶</a></p>
 </li>
-          </ul>
+          <li class="normal" id="section-5.2-10.3">
+            <p id="section-5.2-10.3.1"><strong>Enterprise Network Access Control</strong><a href="#section-5.2-10.3.1" class="pilcrow">¶</a></p>
+<p id="section-5.2-10.3.2">
+An endpoint seeks access through an 802.1X Ethernet port or WPA3-Enterprise access point.
+The Network Access Server is the Relying Party and relays the authentication exchange to a RADIUS/AAA server <span>[<a href="#RFC3579" class="cite xref">RFC3579</a>]</span>, which can act as the Verifier.
+General network access remains blocked until authorization completes.
+EAP-TLS <span>[<a href="#RFC9190" class="cite xref">RFC9190</a>]</span> is one TLS-based authentication profile for this deployment.<a href="#section-5.2-10.3.2" class="pilcrow">¶</a></p>
+</li>
+        </ul>
 </section>
 </div>
-</section>
-</div>
-<div id="network-infrastructure-integrity">
+<div id="mutual-attestation-before-sensitive-exchange">
 <section id="section-5.3">
-        <h3 id="name-network-infrastructure-inte">
-<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-network-infrastructure-inte" class="section-name selfRef">Network Infrastructure Integrity</a>
+        <h3 id="name-mutual-attestation-before-s">
+<a href="#section-5.3" class="section-number selfRef">5.3. </a><a href="#name-mutual-attestation-before-s" class="section-name selfRef">Mutual Attestation Before Sensitive Exchange</a>
         </h3>
-<p id="section-5.3-1">Goal: Verify the integrity of network devices that form the foundation of
-communication.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
-<div id="attestation-of-network-functions">
-<section id="section-5.3.1">
-          <h4 id="name-attestation-of-network-func">
-<a href="#section-5.3.1" class="section-number selfRef">5.3.1. </a><a href="#name-attestation-of-network-func" class="section-name selfRef">Attestation of Network Functions</a>
-          </h4>
-<p id="section-5.3.1-1">A router, switch, or firewall joins
-a network's management plane. A Virtualized Network Function (VNF) is
-instantiated on a generic server.<a href="#section-5.3.1-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-1">This profile overlays the server-as-Attester and client-as-Attester profiles when both TLS peers need assurance before releasing protected data.
+The two directions remain independent as described above.
+Mutual attestation does not require mutual TLS authentication.<a href="#section-5.3-1" class="pilcrow">¶</a></p>
+<p id="section-5.3-2"><strong>Required security outcome:</strong> In each direction, the acceptable attested state is associated with the peer endpoint that will receive protected data.<a href="#section-5.3-2" class="pilcrow">¶</a></p>
+<p id="section-5.3-3"><strong>Operational and failure behavior:</strong> A failure in one direction prevents that party's protected release.
+A successful attestation in only one direction is not mutual attestation.<a href="#section-5.3-3" class="pilcrow">¶</a></p>
+<p id="section-5.3-4"><strong>Assumptions, limitations, and non-goals:</strong> Mutual attestation does not prove a joint computation correct.
+The application defines its transaction semantics.<a href="#section-5.3-4" class="pilcrow">¶</a></p>
+<p id="section-5.3-5"><strong>Application examples:</strong><a href="#section-5.3-5" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.3.1-2.1">
-              <p id="section-5.3.1-2.1.1">Requirement: The network orchestrator must verify the device's integrity
-(e.g., secure boot enabled, running signed OS and firmware) before allowing it
-to join the network and receive policy. This prevents a compromised router
-from misdirecting traffic or a malicious VNF from inspecting sensitive
-packets.<a href="#section-5.3.1-2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5.3-6.1">
+            <p id="section-5.3-6.1.1"><strong>Secure Multi-Party Computation (MPC)</strong><a href="#section-5.3-6.1.1" class="pilcrow">¶</a></p>
+<p id="section-5.3-6.1.2">
+Parties compute a function without sharing their local data.
+The aggregator and clients mutually attest that they run the expected MPC software in trusted environments.<a href="#section-5.3-6.1.2" class="pilcrow">¶</a></p>
 </li>
-          </ul>
-</section>
-</div>
-<div id="securing-control-and-management-planes">
-<section id="section-5.3.2">
-          <h4 id="name-securing-control-and-manage">
-<a href="#section-5.3.2" class="section-number selfRef">5.3.2. </a><a href="#name-securing-control-and-manage" class="section-name selfRef">Securing Control and Management Planes</a>
-          </h4>
-<p id="section-5.3.2-1">An administrator connects to a
-network device's management interface.<a href="#section-5.3.2-1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5.3.2-2.1">
-              <p id="section-5.3.2-2.1.1">Requirement: The administrator's client must verify the integrity of the
-management endpoint on the network device to ensure they are not connecting to
-a compromised interface that could steal credentials or manipulate the device.<a href="#section-5.3.2-2.1.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-5.3-6.2">
+            <p id="section-5.3-6.2.1"><strong>Platform-to-Platform Workload Migration</strong><a href="#section-5.3-6.2.1" class="pilcrow">¶</a></p>
+<p id="section-5.3-6.2.2">
+Workloads can migrate between platforms to maintain service availability.
+Migration agents authorize and transfer the workload while enforcing policies that prevent migration to a platform with lower security guarantees.<a href="#section-5.3-6.2.2" class="pilcrow">¶</a></p>
+<p id="section-5.3-6.2.3">
+The destination and source migration agents attest to each other.
+Intel TDX Migration Trust Domains (MigTDs) <span>[<a href="#MigTD" class="cite xref">MigTD</a>]</span> use an attested TLS connection between the source and destination.<a href="#section-5.3-6.2.3" class="pilcrow">¶</a></p>
 </li>
-          </ul>
+        </ul>
 </section>
 </div>
-</section>
-</div>
-<div id="sec-operation-triggered">
+<div id="re-evaluation-on-long-lived-or-resumed-connections">
 <section id="section-5.4">
-        <h3 id="name-operation-triggered-attesta">
-<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-operation-triggered-attesta" class="section-name selfRef">Operation-Triggered Attestation for High-Impact Application Operations</a>
+        <h3 id="name-re-evaluation-on-long-lived">
+<a href="#section-5.4" class="section-number selfRef">5.4. </a><a href="#name-re-evaluation-on-long-lived" class="section-name selfRef">Re-Evaluation on Long-Lived or Resumed Connections</a>
         </h3>
-<p id="section-5.4-1">Goal: Ensure the integrity of application services at operation time,
-when security posture may change after initial channel establishment.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
-<p id="section-5.4-2">Use case: <strong>High-Assurance Operation Execution in Dynamic Application Services</strong>:
-An application service instance (e.g., AI agent) or confidential computing
-environment (which could host an AI agent) maintains a (D)TLS connection with
-a peer and must execute a high-impact action (e.g., payment initiation,
-configuration change, privileged command).
-See <span>[<a href="#I-D.jiang-seat-dynamic-attestation" class="cite xref">I-D.jiang-seat-dynamic-attestation</a>]</span> for details.<a href="#section-5.4-2" class="pilcrow">¶</a></p>
+<p id="section-5.4-1"><strong>Scenario and protected decision or asset:</strong> A peer needs a refresh of its assurance before a protected operation on a long-lived or resumed connection.<a href="#section-5.4-1" class="pilcrow">¶</a></p>
+<p id="section-5.4-2"><strong>TLS and RATS roles:</strong> Either endpoint can be the Attester or Relying Party; both can re-attest.<a href="#section-5.4-2" class="pilcrow">¶</a></p>
+<p id="section-5.4-3"><strong>Existing TLS authentication:</strong> Re-evaluation adds current state information without replacing or retroactively strengthening TLS authentication.<a href="#section-5.4-3" class="pilcrow">¶</a></p>
+<p id="section-5.4-4"><strong>Attestation topology and trust boundaries:</strong> Assurance does not carry over when an endpoint, workload, or intermediary changes merely because TLS state was retained.<a href="#section-5.4-4" class="pilcrow">¶</a></p>
+<p id="section-5.4-5"><strong>Attestation trigger:</strong> Re-evaluation can be periodic or occur before a high-impact operation.<a href="#section-5.4-5" class="pilcrow">¶</a></p>
+<p id="section-5.4-6"><strong>Relying Party authorization or release decision:</strong> The Relying Party applies the fresh Attestation Result to the later operation.<a href="#section-5.4-6" class="pilcrow">¶</a></p>
+<p id="section-5.4-7"><strong>State transition and lifetime:</strong> Connection age does not establish freshness, and an earlier result does not prove that state persisted.<a href="#section-5.4-7" class="pilcrow">¶</a></p>
+<p id="section-5.4-8"><strong>Required security outcome:</strong> Current assurance applies to the later operation and connection; earlier or unrelated Evidence cannot be substituted.<a href="#section-5.4-8" class="pilcrow">¶</a></p>
+<p id="section-5.4-9"><strong>Operational and failure behavior:</strong> Indeterminate re-evaluation does not extend an old result.<a href="#section-5.4-9" class="pilcrow">¶</a></p>
+<p id="section-5.4-10"><strong>Assumptions, limitations, and non-goals:</strong> Re-attestation cannot protect data released before an unacceptable state was detected or constrain future state changes.<a href="#section-5.4-10" class="pilcrow">¶</a></p>
+<p id="section-5.4-11"><strong>Application examples:</strong><a href="#section-5.4-11" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.4-3.1">
-            <p id="section-5.4-3.1.1">Requirement 1: Before executing a high-impact operation over the existing
-connection, the peer must present fresh, connection-bound Evidence
-reflecting the current behavior-affecting posture (e.g., enabled capabilities,
-policy configuration, runtime permissions).<a href="#section-5.4-3.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5.4-12.1">
+            <div id="sec-operation-triggered">
+<p id="section-5.4-12.1.1"><strong>Operation-Triggered Attestation for High-Impact Application Operations</strong><a href="#section-5.4-12.1.1" class="pilcrow">¶</a></p>
+</div>
+<p id="section-5.4-12.1.2">
+An application service, such as an AI agent, maintains a (D)TLS connection and later performs a high-impact action.
+Before that action, its peer obtains fresh, connection-bound Evidence of the current behavior-affecting posture.
+<span>[<a href="#I-D.jiang-seat-dynamic-attestation" class="cite xref">I-D.jiang-seat-dynamic-attestation</a>]</span> describes this use case.<a href="#section-5.4-12.1.2" class="pilcrow">¶</a></p>
+<p id="section-5.4-12.1.3">
+The attestation can occur over the existing connection without requiring a new TLS handshake.<a href="#section-5.4-12.1.3" class="pilcrow">¶</a></p>
 </li>
-          <li class="normal" id="section-5.4-3.2">
-            <p id="section-5.4-3.2.1">Requirement 2: The mechanism should support lightweight, dynamic attestation
-within the existing connection, without necessarily requiring a full new TLS
-handshake, so that behavior-affecting posture changes are visible to relying
-parties when required by local policy.<a href="#section-5.4-3.2.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-5.4-12.2">
+            <p id="section-5.4-12.2.1"><strong>AI Governance and Accountability</strong><a href="#section-5.4-12.2.1" class="pilcrow">¶</a></p>
+<p id="section-5.4-12.2.2">
+A governance body appraises Evidence from an autonomous AI agent when deciding whether it may act.
+Runtime attestation follows the risk tiers in <span><a href="https://datatracker.ietf.org/doc/html/draft-aylward-aiga-2-00#section-2.2" class="relref">Section 2.2</a> of [<a href="#I-D.aylward-aiga-2" class="cite xref">I-D.aylward-aiga-2</a>]</span>.<a href="#section-5.4-12.2.2" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-5.4-12.3">
+            <div id="sec-actor-identity-continuity">
+<p id="section-5.4-12.3.1"><strong>Actor Identity Continuity via Longitudinal Trajectory Attestation</strong><a href="#section-5.4-12.3.1" class="pilcrow">¶</a></p>
+</div>
+<p id="section-5.4-12.3.2">
+A TLS peer presents Evidence about the trajectory of an actor whose identity persists across platforms.
+The Relying Party attributes the trajectory to that identity and uses each policy-defined interval for a separate authorization decision.
+The actor is not tied to a particular machine.
+TRIP <span>[<a href="#I-D.ayerbe-trip-protocol" class="cite xref">I-D.ayerbe-trip-protocol</a>]</span> provides one example.<a href="#section-5.4-12.3.2" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
 </div>
-<div id="attestation-of-certificate-private-key">
+<div id="intermediary-aware-deployment">
 <section id="section-5.5">
-        <h3 id="name-attestation-of-certificate-">
-<a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-attestation-of-certificate-" class="section-name selfRef">Attestation of Certificate Private Key</a>
+        <h3 id="name-intermediary-aware-deployme">
+<a href="#section-5.5" class="section-number selfRef">5.5. </a><a href="#name-intermediary-aware-deployme" class="section-name selfRef">Intermediary-Aware Deployment</a>
         </h3>
-<p id="section-5.5-1">A TLS endpoint authenticates itself using an end-entity certificate whose
-corresponding private key is claimed to be protected by a secure element.
-While standard TLS authentication verifies possession of the private
-key, it provides no assurance about where or how that key is stored and used.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
-<p id="section-5.5-2">In this scenario, the peer acting as the Relying Party requires additional
-assurance that the private key associated with the end-entity certificate used
-to authenticate the TLS connection is generated, stored, and used within an
-attested cryptographic module. In addition to verifying possession of the
-private key via the TLS handshake, the Relying Party seeks
-Evidence that the key is non-exportable, remains bound to the
-cryptographic module, and that the module is operating in an expected
-security configuration at the time the TLS connection is established.<a href="#section-5.5-2" class="pilcrow">¶</a></p>
-<p id="section-5.5-3">Remote attestation is used to provide Evidence about the cryptographic module
-where the private key used for TLS authentication is stored. The Evidence may
-include claims about the security goals of the cryptographic module.
-To prevent replay attacks, this Evidence has to be fresh and tied to the
-current TLS connection. Replayed Evidence could otherwise be used to falsely
-assert key security goals that no longer hold.<a href="#section-5.5-3" class="pilcrow">¶</a></p>
+<p id="section-5.5-1"><strong>Scenario and protected decision or asset:</strong> An intermediary terminates or mediates communication with an attested service.
+The Relying Party needs to know which component and trust boundary it appraises.<a href="#section-5.5-1" class="pilcrow">¶</a></p>
+<p id="section-5.5-2"><strong>TLS and RATS roles:</strong> The Attester can be an endpoint or intermediary.
+This profile applies in either attestation direction.<a href="#section-5.5-2" class="pilcrow">¶</a></p>
+<p id="section-5.5-3"><strong>Existing TLS authentication:</strong> TLS authenticates the identity presented by each connection's endpoint; an intermediary that terminates TLS remains visible as that endpoint even when presenting an origin's identity.<a href="#section-5.5-3" class="pilcrow">¶</a></p>
+<p id="section-5.5-4"><strong>Attestation topology and trust boundaries:</strong> Either the intermediary is the attested service boundary, or a trusted terminator fronts an appraised origin.
+The latter creates a channel discontinuity, so origin assurance requires a security association to the origin.
+This document does not define that association.<a href="#section-5.5-4" class="pilcrow">¶</a></p>
+<p id="section-5.5-5"><strong>Attestation trigger:</strong> Evidence is appraised before accepting the intermediary or origin as the service boundary.<a href="#section-5.5-5" class="pilcrow">¶</a></p>
+<p id="section-5.5-6"><strong>Relying Party authorization or release decision:</strong> The Relying Party decides whether the observed termination and attestation topology is acceptable.
+The result identifies the appraised component sufficiently for topology policy.<a href="#section-5.5-6" class="pilcrow">¶</a></p>
+<p id="section-5.5-7"><strong>State transition and lifetime:</strong> A topology change can invalidate the result and trigger re-evaluation.<a href="#section-5.5-7" class="pilcrow">¶</a></p>
+<p id="section-5.5-8"><strong>Required security outcome:</strong> The Relying Party can determine the appraised component and the TLS endpoint protecting its traffic.
+A topology change does not transfer assurance between an origin and intermediary.<a href="#section-5.5-8" class="pilcrow">¶</a></p>
+<p id="section-5.5-9"><strong>Operational and failure behavior:</strong> An unexpected or indeterminate topology cannot silently replace a policy-required attested path.<a href="#section-5.5-9" class="pilcrow">¶</a></p>
+<p id="section-5.5-10"><strong>Assumptions, limitations, and non-goals:</strong> An authorized intermediary remains a trust boundary.
+This profile neither mandates sidecars nor defines end-to-end association through an arbitrary TLS terminator.<a href="#section-5.5-10" class="pilcrow">¶</a></p>
+<p id="section-5.5-11"><strong>Application examples:</strong><a href="#section-5.5-11" class="pilcrow">¶</a></p>
 <ul class="normal">
-<li class="normal" id="section-5.5-4.1">
-            <p id="section-5.5-4.1.1">Requirement: The Attester must be able to produce Evidence that demonstrates
-that the private key used for secure channel authentication:<a href="#section-5.5-4.1.1" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5.5-4.1.2.1">
-                <p id="section-5.5-4.1.2.1.1">is generated and stored within a specific cryptographic module or secure
-element,<a href="#section-5.5-4.1.2.1.1" class="pilcrow">¶</a></p>
+<li class="normal" id="section-5.5-12.1">
+            <p id="section-5.5-12.1.1"><strong>Proxy-Fronted Attested Secure Channels</strong><a href="#section-5.5-12.1.1" class="pilcrow">¶</a></p>
+<p id="section-5.5-12.1.2">
+An endpoint reaches an application through an operational intermediary.
+The Relying Party can attest that intermediary or appraise an origin behind a trusted terminator.
+An untrusted terminator remains a trust boundary.<a href="#section-5.5-12.1.2" class="pilcrow">¶</a></p>
 </li>
-              <li class="normal" id="section-5.5-4.1.2.2">
-                <p id="section-5.5-4.1.2.2.1">is protected against export or software extraction<a href="#section-5.5-4.1.2.2.1" class="pilcrow">¶</a></p>
-</li>
-              <li class="normal" id="section-5.5-4.1.2.3">
-                <p id="section-5.5-4.1.2.3.1">is attested using fresh Evidence that is bound to the current TLS connection.<a href="#section-5.5-4.1.2.3.1" class="pilcrow">¶</a></p>
-</li>
-            </ul>
-</li>
-        </ul>
-<p id="section-5.5-5">The Relying Party uses this Evidence, potentially with the assistance of a
-Verifier, to determine whether the key security goals satisfy its local
-security policy.<a href="#section-5.5-5" class="pilcrow">¶</a></p>
-<p id="section-5.5-6">The approach described in <span>[<a href="#I-D.draft-ietf-rats-pkix-key-attestation" class="cite xref">I-D.draft-ietf-rats-pkix-key-attestation</a>]</span> addresses this
-use case partially by providing attestation of the cryptographic module and associated
-private key at certificate issuance time, reflecting their state when the
-certificate is enrolled. This model does not provide guarantees about the
-continued state of the module at connection establishment or during the lifetime of
-the TLS connection.<a href="#section-5.5-6" class="pilcrow">¶</a></p>
-</section>
-</div>
-<div id="platform-to-platform-communication">
-<section id="section-5.6">
-        <h3 id="name-platform-to-platform-commun">
-<a href="#section-5.6" class="section-number selfRef">5.6. </a><a href="#name-platform-to-platform-commun" class="section-name selfRef">Platform-to-platform communication</a>
-        </h3>
-<p id="section-5.6-1">Goal: Allow platforms to establish a trustworthy secure channel with each other.<a href="#section-5.6-1" class="pilcrow">¶</a></p>
-<p id="section-5.6-2">Use case: Migration of workloads (confidential workloads in particular) between
-different platforms. Migration is occasionally required in order to maintain
-uptime for the hosted services across periods of scheduled downtime for the
-hosting platform. Having remote attestation-enforced policies for such migration
-events provides guarantees that the services will not be exposed to lower
-security guarantees when migrating. Migration is typically performed by trusted,
-low-level components (migration agents) on both source and destination
-platforms, which perform the authorization checks and handle the data migration.<a href="#section-5.6-2" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5.6-3.1">
-            <p id="section-5.6-3.1.1">Requirement: The migration agent on the destination platform typically acts
-as Attester, proving its state for its peer on the source platform (where the
-workload initially resides).<a href="#section-5.6-3.1.1" class="pilcrow">¶</a></p>
-</li>
-          <li class="normal" id="section-5.6-3.2">
-            <p id="section-5.6-3.2.1">Example: Intel TDX offers migration capabilities via its Migration Trust Domain (MigTD)
-<span>[<a href="#MigTD" class="cite xref">MigTD</a>]</span>. Peer MigTDs on the initiating and target platforms set up an
-attested TLS connection to perform the migration over.<a href="#section-5.6-3.2.1" class="pilcrow">¶</a></p>
-</li>
-        </ul>
-</section>
-</div>
-<div id="ai-governance-and-accountability">
-<section id="section-5.7">
-        <h3 id="name-ai-governance-and-accountab">
-<a href="#section-5.7" class="section-number selfRef">5.7. </a><a href="#name-ai-governance-and-accountab" class="section-name selfRef">AI Governance and Accountability</a>
-        </h3>
-<p id="section-5.7-1">Goal: Design framework for governing autonomous AI agents.<a href="#section-5.7-1" class="pilcrow">¶</a></p>
-<p id="section-5.7-2">Use case: See <span>[<a href="#I-D.aylward-aiga-2" class="cite xref">I-D.aylward-aiga-2</a>]</span> for details. Contrary to <a href="#sec-operation-triggered" class="auto internal xref">Section 5.4</a>, the entity verifying the Evidence in this case is the governance body and for the purposes of ensuring that no unethical or harmful action is performed.<a href="#section-5.7-2" class="pilcrow">¶</a></p>
-<ul class="normal">
-<li class="normal" id="section-5.7-3.1">
-            <p id="section-5.7-3.1.1">Requirement: Runtime attestation based on agent risk tiers defined in <span><a href="https://datatracker.ietf.org/doc/html/draft-aylward-aiga-2-00#section-2.2" class="relref">Section 2.2</a> of [<a href="#I-D.aylward-aiga-2" class="cite xref">I-D.aylward-aiga-2</a>]</span><a href="#section-5.7-3.1.1" class="pilcrow">¶</a></p>
+          <li class="normal" id="section-5.5-12.2">
+            <p id="section-5.5-12.2.1"><strong>Service-Mesh Attestation</strong><a href="#section-5.5-12.2.1" class="pilcrow">¶</a></p>
+<p id="section-5.5-12.2.2">
+Service-mesh proxies terminate or mediate TLS for application workloads.
+A peer obtains fresh Evidence for the relevant proxy so policy can distinguish an expected attested proxy from an unacceptable one.<a href="#section-5.5-12.2.2" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -2273,9 +2215,17 @@ and the attack vectors that motivate its security goals are described in
       <dd>
 <span class="refAuthor">Kapoor, S.</span>, <span class="refAuthor">Stroebl, B.</span>, <span class="refAuthor">Siegel, Z. S.</span>, <span class="refAuthor">Nadgir, N.</span>, and <span class="refAuthor">A. Narayanan</span>, <span class="refTitle">"AI agents that matter"</span>, <time datetime="2024-07" class="refDate">July 2024</time>, <span>&lt;<a href="https://arxiv.org/abs/2407.01502">https://arxiv.org/abs/2407.01502</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="CoCo-Trustee">[CoCo-Trustee]</dt>
+      <dd>
+<span class="refTitle">"Trustee"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/confidential-containers/trustee">https://github.com/confidential-containers/trustee</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="CVE-2026-33697">[CVE-2026-33697]</dt>
       <dd>
 <span class="refTitle">"CVE-2026-33697"</span>, <span>n.d.</span>, <span>&lt;<a href="https://www.cve.org/CVERecord?id=CVE-2026-33697">https://www.cve.org/CVERecord?id=CVE-2026-33697</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.ayerbe-trip-protocol">[I-D.ayerbe-trip-protocol]</dt>
+      <dd>
+<span class="refAuthor">Posada, C. A.</span> and <span class="refAuthor">M. U. Sardar</span>, <span class="refTitle">"TRIP: Trajectory-based Recognition of Identity Proof"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ayerbe-trip-protocol-04</span>, <time datetime="2026-05-08" class="refDate">8 May 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ayerbe-trip-protocol-04">https://datatracker.ietf.org/doc/html/draft-ayerbe-trip-protocol-04</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.aylward-aiga-2">[I-D.aylward-aiga-2]</dt>
       <dd>
@@ -2292,6 +2242,10 @@ and the attack vectors that motivate its security goals are described in
 <dt id="I-D.draft-ietf-rats-pkix-key-attestation">[I-D.draft-ietf-rats-pkix-key-attestation]</dt>
       <dd>
 <span class="refAuthor">Fiset, J.</span>, <span class="refAuthor">Ounsworth, M.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Birkholz, H.</span>, <span class="refAuthor">Wiseman, M.</span>, and <span class="refAuthor">N. Smith</span>, <span class="refTitle">"Evidence Encoding for Hardware Security Modules"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-pkix-key-attestation-07</span>, <time datetime="2026-07-05" class="refDate">5 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-pkix-key-attestation-07">https://datatracker.ietf.org/doc/html/draft-ietf-rats-pkix-key-attestation-07</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="I-D.draft-reddy-rats-key-binding">[I-D.draft-reddy-rats-key-binding]</dt>
+      <dd>
+<span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Mihalcea, I.</span>, and <span class="refAuthor">H. Birkholz</span>, <span class="refTitle">"Key Attestation for Entity Attestation Tokens (EAT)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-reddy-rats-key-binding-02</span>, <time datetime="2026-08-15" class="refDate">15 August 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-reddy-rats-key-binding-02">https://datatracker.ietf.org/doc/html/draft-reddy-rats-key-binding-02</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-extended-key-update">[I-D.ietf-tls-extended-key-update]</dt>
       <dd>
@@ -2321,9 +2275,17 @@ and the attack vectors that motivate its security goals are described in
       <dd>
 <span class="refAuthor">Rescorla, E.</span> and <span class="refAuthor">B. Korver</span>, <span class="refTitle">"Guidelines for Writing RFC Text on Security Considerations"</span>, <span class="seriesInfo">BCP 72</span>, <span class="seriesInfo">RFC 3552</span>, <span class="seriesInfo">DOI 10.17487/RFC3552</span>, <time datetime="2003-07" class="refDate">July 2003</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3552">https://www.rfc-editor.org/rfc/rfc3552</a>&gt;</span>. </dd>
 <dd class="break"></dd>
+<dt id="RFC3579">[RFC3579]</dt>
+      <dd>
+<span class="refAuthor">Aboba, B.</span> and <span class="refAuthor">P. Calhoun</span>, <span class="refTitle">"RADIUS (Remote Authentication Dial In User Service) Support For Extensible Authentication Protocol (EAP)"</span>, <span class="seriesInfo">RFC 3579</span>, <span class="seriesInfo">DOI 10.17487/RFC3579</span>, <time datetime="2003-09" class="refDate">September 2003</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc3579">https://www.rfc-editor.org/rfc/rfc3579</a>&gt;</span>. </dd>
+<dd class="break"></dd>
 <dt id="RFC4949">[RFC4949]</dt>
       <dd>
 <span class="refAuthor">Shirey, R.</span>, <span class="refTitle">"Internet Security Glossary, Version 2"</span>, <span class="seriesInfo">FYI 36</span>, <span class="seriesInfo">RFC 4949</span>, <span class="seriesInfo">DOI 10.17487/RFC4949</span>, <time datetime="2007-08" class="refDate">August 2007</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc4949">https://www.rfc-editor.org/rfc/rfc4949</a>&gt;</span>. </dd>
+<dd class="break"></dd>
+<dt id="RFC9190">[RFC9190]</dt>
+      <dd>
+<span class="refAuthor">Preuß Mattsson, J.</span> and <span class="refAuthor">M. Sethi</span>, <span class="refTitle">"EAP-TLS 1.3: Using the Extensible Authentication Protocol with TLS 1.3"</span>, <span class="seriesInfo">RFC 9190</span>, <span class="seriesInfo">DOI 10.17487/RFC9190</span>, <time datetime="2022-02" class="refDate">February 2022</time>, <span>&lt;<a href="https://www.rfc-editor.org/rfc/rfc9190">https://www.rfc-editor.org/rfc/rfc9190</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="RFC9334">[RFC9334]</dt>
       <dd>
