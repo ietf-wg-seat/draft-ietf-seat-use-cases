@@ -750,7 +750,7 @@ The application defines its transaction semantics.
   Workloads can migrate between platforms to maintain service availability.
   Migration agents authorize and transfer the workload while enforcing policies that prevent migration to a platform with lower security guarantees.
 
-  The destination migration agent attests to its source peer; deployments can also require source attestation.
+  The destination and source migration agents attest to each other.
   Intel TDX Migration Trust Domains (MigTDs) {{MigTD}} use an attested TLS connection between the source and destination.
 
 ## Re-Evaluation on Long-Lived or Resumed Connections
