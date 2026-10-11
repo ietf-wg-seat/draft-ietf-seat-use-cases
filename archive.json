@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-06T05:45:34.722330+00:00",
+  "timestamp": "2026-10-11T05:04:47.546206+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -1179,9 +1179,17 @@
       "labels": [],
       "body": "Section 3.4 (Key Substitution) states:\n\n> **Attacker capabilities:** A malicious peer controls an authentication private key that was not generated or protected within the Target Environment and can obtain valid Evidence about that environment.\n\nBut Section 3.1 defines **malicious peer** as an attacker that **cannot** generate Evidence accepted by the Relying Party's appraisal policy.\n\nThose cannot both be true. Key substitution as described *requires* presenting accepted Evidence; that actor is not a malicious peer under the \u00a73.1 definition (or the definition needs an explicit exception / a different profile).\n\nA secondary clarity issue in the same section: the attack presents Evidence about \"a Target Environment that does not protect that key,\" while the targeted assurance is that the key \"benefits from the key protection properties asserted by the Evidence.\" Spell out what the Evidence is claiming versus what is true of the authentication key, so this does not read as the Evidence both denying and asserting key protection. Also distinguish this from \u00a73.3.2 (Evidence Relay); see the separate Discuss on \u00a73.8.1 regarding whether re-hosting belongs in the attacker model at all.\n\n---\nFrom Yaron Sheffer review of draft-ietf-seat-use-cases-01 (editor's copy).\nCC @yaronf\n",
       "createdAt": "2026-10-05T14:29:26Z",
-      "updatedAt": "2026-10-05T14:29:26Z",
+      "updatedAt": "2026-10-09T16:10:36Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ionut-arm",
+          "authorAssociation": "COLLABORATOR",
+          "body": "This is also related to #56 ",
+          "createdAt": "2026-10-09T16:10:36Z",
+          "updatedAt": "2026-10-09T16:10:36Z"
+        }
+      ]
     },
     {
       "number": 64,
@@ -1292,6 +1300,22 @@
       "body": "Section 2 (Terminology) and a few other spots use \"TCB\" / \"Trusted Computing Base\" (Introduction, Terminology entry citing RFC 4949, and once in the AI-agent definition).\n\nTCB is an older term and is not commonly used in current RATS/TEEP/confidential-computing discussion. Prefer RATS (and, where relevant, TEEP) terminology \u2014 e.g., Attesting Environment, Target Environment, Claims about measured components \u2014 or simply describe what is being measured without introducing TCB.\n\nSuggested approach: drop the TCB terminology entry and rephrase the few occurrences to use RATS language already used elsewhere in the draft.\n\n---\nFrom Yaron Sheffer review of draft-ietf-seat-use-cases-01 (editor's copy).\nCC @yaronf\n",
       "createdAt": "2026-10-05T14:29:37Z",
       "updatedAt": "2026-10-05T14:29:37Z",
+      "closedAt": null,
+      "comments": []
+    },
+    {
+      "number": 71,
+      "id": "I_kwDOP_9tTM8AAAABWVuL5Q",
+      "title": "Update Evidence disclosure risks to the broader threat of the Relying Party itself, authenticated or not",
+      "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/issues/71",
+      "state": "OPEN",
+      "author": "telephonicrobotics",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "From the latest discussion in the following thread, https://mailarchive.ietf.org/arch/msg/seat/TtQKOnEAsEKutXmrMNuMdgCPvnM/\n\n> draft-ietf-seat-use-cases covers Evidence disclosure only to parties other than the connection endpoints. It needs to be updated to cover the broader threat that the Relying Party itself, authenticated or not, can leak sensitive Claims.\n\nSection 4.9, [Privacy Preservation ](https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/blob/main/draft-ietf-seat-use-cases.md#privacy-preservation) appears to be the appropriate area to update. ",
+      "createdAt": "2026-10-10T18:35:19Z",
+      "updatedAt": "2026-10-10T18:35:37Z",
       "closedAt": null,
       "comments": []
     }
@@ -6552,21 +6576,21 @@
       "id": "PR_kwDOP_9tTM7bNBsx",
       "title": "Add proxy-fronted and service-mesh attested secure channel use cases",
       "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/48",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "telephonicrobotics",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "* Added proxy-fronted attested secure channel use case\r\n* Added service-mesh attestation use case\r\n* Covered TLS-terminating intermediaries: reverse proxies, API gateways, service meshes, WAFs, load balancers, and CDN edges\r\n* Distinguished intermediary-as-attested-endpoint from proxy-traversal-to-attested-origin\r\n* Generalized proxy use case from client-origin to endpoint-origin\r\n* Covered server attestation, client attestation, and mutual attestation\r\n* Added requirements for explicit trust and confidentiality boundaries\r\n* Added requirements for meaningful channel binding when TLS is terminated by an intermediary\r\n* Added policy distinction between direct attested channels, attested intermediaries, and proxy-traversal deployments",
       "createdAt": "2026-05-13T16:36:36Z",
-      "updatedAt": "2026-06-14T22:17:16Z",
+      "updatedAt": "2026-10-09T15:53:48Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "4775778e3fceb856680abf15327fc0f78b92c0db",
       "headRepository": "nathanaelritz/use-cases-and-properties",
       "headRefName": "nr-proxy-interactions-2",
       "headRefOid": "d7413e4342c32101fb968349cb814654d71d5e98",
-      "closedAt": null,
+      "closedAt": "2026-10-09T15:53:47Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -6619,6 +6643,13 @@
           "body": "> Yes, case (b) sounds like an attack, agreed. Why standardize it? Do you have a concrete scenario where this is helping?\r\n\r\n@burgerdev I have a concept for how to allow an attestation aware proxy to cooperate without requiring nested encryption, but if that was not to pan out for any number of reasons, then the property would basically just affirm that the protocol should abort the connection if intercepted by a malicious intermediary. \r\n\r\nThat's the fallback; but like I said, I have some ideas on how an attestation aware proxy might operate. However Ionut makes a fair point that we likely haven't \"discussed the topic thoroughly enough in the WG so far.\" https://github.com/tls-attestation/use-cases-and-properties/pull/51#pullrequestreview-4449337241\r\n\r\nSo, I would be fine with deferring #48 and #51 until more discussion on-list has happened anyway. \r\n\r\n\r\n\r\n\r\n",
           "createdAt": "2026-06-12T04:04:38Z",
           "updatedAt": "2026-06-12T04:04:38Z"
+        },
+        {
+          "author": "telephonicrobotics",
+          "authorAssociation": "NONE",
+          "body": "Closing, as PR #61 now covers the purpose of this PR under \u201c Intermediary-Aware Deployment\u201d.",
+          "createdAt": "2026-10-09T15:53:47Z",
+          "updatedAt": "2026-10-09T15:53:47Z"
         }
       ],
       "reviews": [
@@ -6775,21 +6806,21 @@
       "id": "PR_kwDOP_9tTM7bYDFg",
       "title": "Add framing subsection on diverse trust boundaries",
       "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/51",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "telephonicrobotics",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Adds a short introductory paragraph contextualising the deployment complexity that arises when RA is composed with secure channels, particularly in the presence of TLS-terminating intermediaries that are authorised and cooperative but structurally indistinguishable from adversarial positions at the protocol level.\r\n\r\nMotivates the proxy-fronted deployment discussion introduced in PR #48 and grounds the Verifier reachability discussion in the attestation model flexibility property.",
       "createdAt": "2026-05-14T04:15:34Z",
-      "updatedAt": "2026-06-14T22:16:33Z",
+      "updatedAt": "2026-10-09T15:55:31Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "4775778e3fceb856680abf15327fc0f78b92c0db",
       "headRepository": "nathanaelritz/use-cases-and-properties",
       "headRefName": "nr-diverse-trust-boundaries-1",
       "headRefOid": "8e590764f328c67380da3409bcb6c9d13bec84c1",
-      "closedAt": null,
+      "closedAt": "2026-10-09T15:55:30Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
@@ -6807,6 +6838,13 @@
           "body": "> I'm in favour of supporting proxies, but don't know if we've discussed the topic thoroughly enough in the WG so far.\r\n\r\nI don't remember having such a condition for the other use cases. So what's changed? If you are fine, please approve this and we can merge this to let this be discussed in the version for adoption.",
           "createdAt": "2026-06-14T22:15:54Z",
           "updatedAt": "2026-06-14T22:15:54Z"
+        },
+        {
+          "author": "telephonicrobotics",
+          "authorAssociation": "NONE",
+          "body": "Closing, as PR #61 now covers the purpose of this PR under \u201cIntermediary-Aware Deployment\u201d.",
+          "createdAt": "2026-10-09T15:55:30Z",
+          "updatedAt": "2026-10-09T15:55:31Z"
         }
       ],
       "reviews": [
@@ -8497,25 +8535,35 @@
       "id": "PR_kwDOP_9tTM8AAAABEFR8qA",
       "title": "Update use-cases definition to template model",
       "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/61",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ionut-arm",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "",
       "createdAt": "2026-09-18T12:56:52Z",
-      "updatedAt": "2026-09-29T15:44:31Z",
+      "updatedAt": "2026-10-09T16:12:54Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "aae97f4d2b6aec752bf15ab4e1fa0af62173c97e",
       "headRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "headRefName": "use-cases-refit",
-      "headRefOid": "d0c3e97e96495f47285599a32d545ed1208c590e",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
-      "comments": [],
+      "headRefOid": "0d6a7082e714a74eae8463e3e107ad9c88299f4e",
+      "closedAt": "2026-10-09T16:12:48Z",
+      "mergedAt": "2026-10-09T16:12:48Z",
+      "mergedBy": "ionut-arm",
+      "mergeCommit": {
+        "oid": "2c3d2d701dec2ad7989440f9fb4e25975ff179dd"
+      },
+      "comments": [
+        {
+          "author": "telephonicrobotics",
+          "authorAssociation": "NONE",
+          "body": "I\u2019ve reviewed this, and while I\u2019m sure the specifics will be subject to further feedback from the list over time, but this rework appears to be a good start. ",
+          "createdAt": "2026-10-09T16:08:03Z",
+          "updatedAt": "2026-10-09T16:08:03Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOP_9tTM8AAAABPAltww",
