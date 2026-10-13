@@ -398,6 +398,37 @@ design that claims recovery from traffic-secret compromise does not send new
 Evidence until it has established traffic secrets that are independent of the
 compromised secrets.
 
+### Encrypted Evidence and Blind Envelope Substitution
+
+**Attacker capabilities:** A network attacker or untrusted intermediary that
+can obtain or induce valid encrypted Evidence envelopes constructed against
+the current connection challenge. The attacker does not possess the Verifier's
+private decryption key, the Attestation Key, or the peer authentication key.
+
+**Targeted assurance:** The Evidence evaluated by the Verifier corresponds
+strictly to the encrypted payload conveyed across the secure channel.
+
+**Preconditions and attack:** When a Relying Party is restricted from handling
+claims directly, Evidence may be encrypted for an external Verifier to protect
+claim privacy (see Section 11 of {{RFC9334}}), leaving the Relying Party as a
+blind forwarder. The attacker intercepts the encrypted Evidence envelope and
+substitutes a different valid envelope constructed against the same connection
+challenge. The Relying Party forwards the substituted envelope to the Verifier,
+which decrypts it and returns an Attestation Result confirming valid
+Evidence for that challenge. The Relying Party completes the connection,
+falsely attributing the substituted posture to the peer.
+
+**Why validation succeeds:** The Relying Party cannot inspect inner claims.
+Verifier appraisal succeeds because the substituted payload contains valid
+signatures and matches the expected challenge. Standard channel authentication
+confirms control of the identity key, but remains cryptographically uncoupled
+from the inner Evidence.
+
+**Mitigation strategy:** The Relying Party computes a cryptographic commitment
+directly over the opaque encrypted Evidence bytes on the wire, and the Verifier
+binds this commitment into the signed Attestation Result, establishing transitive
+cryptographic closure between the channel transcript and the appraised payload.
+
 ## State Drift on Long-Lived and Resumed Connections
 
 **Classification:** This is a stale-assurance failure mode. It can result from a
