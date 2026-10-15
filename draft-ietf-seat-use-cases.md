@@ -36,7 +36,6 @@ informative:
     RFC4949:
     RFC3552: int-threat-model
     RFC9846: tls
-    I-D.draft-ccc-wimse-twi-extensions: wimse-twi
     I-D.draft-ietf-rats-eat-measured-component: rats-measured
     ID-Crisis:
       title: "Identity Crisis in Confidential Computing: Formal Analysis of Attested TLS"
@@ -156,9 +155,11 @@ Results".
 
 This document also uses the following terms:
 
+* Attesting and Target Environments: as described in {{Section 3.1 of -rats-arch}}.
 * Trusted Computing Base (TCB) of a device: see {{RFC4949}}. Note that for this
 draft, it includes respective configurations of hardware, firmware, and software.
-* Confidential Workload: as defined in {{-wimse-twi}}.
+* Attested workload: An instance of software executing within a Target Environment,
+which can obtain remote attestation Evidence or Attestation Results about itself.
 * Measurements: as defined in {{-rats-measured}}.
 * AI agent: An AI agent is a software principal (typically long-running) that performs
 closed-loop "perceive -> plan -> act" cycles using an LLM or other model,
@@ -180,12 +181,12 @@ baseline.
 
 Unless stated otherwise, the Relying Party is not compromised and correctly
 performs the checks required by the protocol and its appraisal policy. The
-Attester is referenced in terms of its Attesting and Target Environments, as
-described in {{Section 3.1 of -rats-arch}}. The Attesting Environment is the
-entity which holds the Attestation key, which is used to sign Evidence for the
-Target Environment. Part or all of the Target Environment may be executing
-within a protected environment that provides certain security guarantees,
-called a Trusted Execution Environment (TEE) (see {{-teep-arch}}).
+Attester is referenced in terms of its Attesting and Target Environments. The
+Attesting Environment is the entity which holds the Attestation key, which is
+used to sign Evidence for the Target Environment. Part or all of the Target
+Environment may be executing within a protected environment that provides
+certain security guarantees, called a Trusted Execution Environment (TEE) (see
+{{-teep-arch}}).
 
 The baseline security assumptions of the TLS v1.3 protocol apply. See
 {{Appendix F of -tls}} for the relevant properties.
@@ -668,7 +669,7 @@ The intermediary-aware profile also applies when an intermediary terminates TLS.
 
 * **Data Clean Rooms**
 
-  Data providers contribute sensitive data to a confidential workload for joint analysis, while data consumers receive only aggregated results.
+  Data providers contribute sensitive data to an attested workload for joint analysis, while data consumers receive only aggregated results.
   Before sending data or accepting results, they attest that the workload runs authorized code in a Trusted Execution Environment (TEE).
 
 * **Securing Control and Management Planes**
@@ -712,7 +713,7 @@ Attestation supports an authorization decision based on the client’s appraised
 * **Attested Workload and Device Provisioning**
 
   A workload or device obtains the secrets, configuration, credentials, or policy needed to become operational only after its state is appraised.
-  This includes runtime secret provisioning for a confidential workload and onboarding an IoT device without a pre-provisioned PKI identity.
+  This includes runtime secret provisioning for an attested workload and onboarding an IoT device without a pre-provisioned PKI identity.
 
   For example, a Confidential Container can obtain configuration data or disk keys from a Key Broker Service or Trustee {{CoCo-Trustee}} after appraisal of its TEE claims and software measurements.
   The workload is the Attester; the Trustee is the Relying Party and can also be the Verifier.
