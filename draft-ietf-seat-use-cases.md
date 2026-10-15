@@ -45,16 +45,6 @@ informative:
         - ins: M. U. Sardar
         - ins: M. Moustafa
         - ins: T. Aura
-    AI-agents:
-     title: "AI agents that matter"
-     date: 1 July 2024,
-     target: https://arxiv.org/abs/2407.01502
-     author:
-     - ins: S. Kapoor
-     - ins: B. Stroebl
-     - ins: Z. S. Siegel
-     - ins: N. Nadgir
-     - ins: A. Narayanan
     MigTD:
      title: Intel TDX Migration TD
      target: https://github.com/intel/MigTD
@@ -112,7 +102,7 @@ significant security risk in many environments.
 
 Remote Attestation (RA), as described in the RATS architecture {{RFC9334}}, is a
 mechanism designed to fill this gap. RA allows an entity (the "Attester") to
-produce verifiable "Evidence" about its current runtime state. This Evidence covers the Attester's TCB and can thus include measurements of:
+produce verifiable "Evidence" about its current runtime state. This Evidence covers the Attester's security state and can thus include measurements of:
 
 - firmware
 - operating system
@@ -156,17 +146,11 @@ Results".
 This document also uses the following terms:
 
 * Attesting and Target Environments: as described in {{Section 3.1 of -rats-arch}}.
-* Trusted Computing Base (TCB) of a device: see {{RFC4949}}. Note that for this
-draft, it includes respective configurations of hardware, firmware, and software.
 * Attested workload: An instance of software executing within a Target Environment,
 which can obtain remote attestation Evidence or Attestation Results about itself.
 * Measurements: as defined in {{-rats-measured}}.
-* AI agent: An AI agent is a software principal (typically long-running) that performs
-closed-loop "perceive -> plan -> act" cycles using an LLM or other model,
-and invokes external tools/APIs that may read sensitive data or change
-system/network state. Its configuration (e.g., model choice, tool enablement,
-prompt template) can change independently of the binary/image and usually
-more frequently than typical platform TCB updates {{AI-agents}}.
+* AI agent: An AI agent is a software principal that performs closed-loop cycles
+using an LLM or other model.
 * Credential: as defined in {{RFC4949}}.
 
 # Attacker Model
