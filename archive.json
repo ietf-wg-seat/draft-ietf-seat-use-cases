@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-11T05:04:47.546206+00:00",
+  "timestamp": "2026-10-15T04:01:13.945055+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -8662,6 +8662,73 @@
               "body": "Yes, correct, it's a MUST for both sides :)",
               "createdAt": "2026-09-29T15:44:31Z",
               "updatedAt": "2026-09-29T15:44:31Z"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "number": 72,
+      "id": "PR_kwDOP_9tTM8AAAABIPDnZg",
+      "title": "Add envelope substitution attack",
+      "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/72",
+      "state": "OPEN",
+      "author": "telephonicrobotics",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Added section covering encrypted evidence and blind envelope substitution attacks against blind-forwarding relying parties.",
+      "createdAt": "2026-10-13T18:24:05Z",
+      "updatedAt": "2026-10-13T19:50:47Z",
+      "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
+      "baseRefName": "main",
+      "baseRefOid": "2c3d2d701dec2ad7989440f9fb4e25975ff179dd",
+      "headRepository": "telephonicrobotics/draft-ietf-seat-use-cases",
+      "headRefName": "nr-encrypted-evidence",
+      "headRefOid": "0bea85b4873fe7fd53b460809d67812cc5cb4ce7",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOP_9tTM8AAAABSFTBuw",
+          "commit": {
+            "abbreviatedOid": "0bea85b"
+          },
+          "author": "yaronf",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-13T18:55:07Z",
+          "updatedAt": "2026-10-13T18:55:07Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "I'm sure I'm missing something but regardless of the attack, I don't understand the mitigation. There's full trust and a bidirectional secure channel between the RP and the Verifier, no? So what's the benefit of binding the RP->V request to the V->RP response?",
+              "createdAt": "2026-10-13T18:55:07Z",
+              "updatedAt": "2026-10-13T18:55:07Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOP_9tTM8AAAABSF50gA",
+          "commit": {
+            "abbreviatedOid": "0bea85b"
+          },
+          "author": "telephonicrobotics",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-13T19:50:46Z",
+          "updatedAt": "2026-10-13T19:50:47Z",
+          "comments": [
+            {
+              "originalPosition": 34,
+              "body": "> There's full trust and a bidirectional secure channel between the RP and the Verifier, no?\r\n\r\nIn this case, the mitigation is not concerned with the RP\u2013Verifier transport channel. Instead it is designed to establish end-to-end cryptographic binding back to the Attester\u2013RP transcript log where the Evidence was exchanged.\r\n\r\nAs Tiru noted in https://github.com/yaronf/draft-fossati-seat-early-attestation/pull/82#discussion_r4226953937:\r\n\r\n> *\"If Evidence is encrypted to the Verifier, the RP cannot check the binder or [subject public key] hash locally. RP must convey both to the Verifier.\"*\r\n\r\nBecause the RP cannot decrypt the opaque ciphertext or inspect inner claims, a minimized Attestation Result over a matching challenge only proves that the Verifier appraised *some* valid Evidence, not necessarily the specific envelope delivered on the wire. The Relying Party is left with no mathematical proof on its own that the payload the Verifier evaluated is the one actually present in its TLS transcript rather than a substituted one.\r\n\r\nWhile I don't have analysis about how easy or difficult it would be to pull such an attack off in practice across specific deployment profiles, the mitigation bridges the identified gap by directly tying the Verifier's signature to the exact ciphertext bytes sitting in the RP's handshake (or authenticator) transcript log.",
+              "createdAt": "2026-10-13T19:50:46Z",
+              "updatedAt": "2026-10-13T19:50:47Z"
             }
           ]
         }
