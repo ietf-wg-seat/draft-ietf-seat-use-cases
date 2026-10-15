@@ -259,6 +259,9 @@ Each attack or failure mode below is described using the following fields:
 * **Mitigation strategy:** States the security property that a solution needs to
   preserve, without prescribing a particular protocol mechanism.
 
+* **Why Optional** (OPTIONAL): For attacks classed as optional, this section
+  explains why this is the case, and under what circumstances it might apply.
+
 ## Evidence Reuse
 {: #evidence-reuse }
 
@@ -456,7 +459,7 @@ properties.
 
 ## Compromise of Security-Critical Keys
 
-### Authentication Key Compromise and Re-hosting
+### Authentication Key Compromise and Re-hosting (OPTIONAL)
 
 **Attacker capabilities:** An authentication-key attacker can also operate an
 endorsed Target Environment that satisfies the Relying Party's appraisal policy.
@@ -487,6 +490,11 @@ platform instance binds authorization to that instance, rather than only to an
 environment class, and provides a means to reject compromised authentication
 credentials. Alternatively, the appraisal policy must inform the Relying Party
 whether the authentication key was created in the Target Environment.
+
+**Why optional:** For class-based appraisal (i.e., where the Target Environment
+is not restricted to a set of known platforms or workload instances), this attack
+is out of scope as the attacker's posture (acceptable Target Environment that
+proves ownership of some network identity) is what the RP expects to see.
 
 ### Attestation Key Compromise
 
