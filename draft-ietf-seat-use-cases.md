@@ -291,11 +291,11 @@ request on the same TLS connection.
 ### Evidence Relay
 
 **Attacker capabilities:** The attacker, acting as a malicious TLS peer, can
-establish a TLS connection with a Relying Party and can obtain Evidence about a
-separate Target Environment that contains the correct binder for the attacker's
-connection as its challenge value. How the attacker obtains such Evidence is not
-constrained by this model. The attacker does not need to control or collude with
-the Attesting or Target Environment.
+establish a TLS connection with a Relying Party and can obtain Evidence that
+contains the correct binder for the attacker's connection as its challenge value,
+and which represents a Target Environment. How the attacker obtains such Evidence
+is not constrained by this model. The attacker does not need to control or
+collude with the Attesting or Target Environment.
 
 **Targeted assurance:** The Relying Party incorrectly attributes the claims
 asserted by the Evidence to the TLS endpoint and assumes that the authentication
