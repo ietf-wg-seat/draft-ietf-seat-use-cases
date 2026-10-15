@@ -59,7 +59,6 @@ informative:
     MigTD:
      title: Intel TDX Migration TD
      target: https://github.com/intel/MigTD
-    I-D.ietf-tls-rfc8446bis:
     I-D.ietf-tls-rfc9147bis:
     I-D.ietf-tls-extended-key-update:
     CVE-2026-33697:
@@ -137,7 +136,7 @@ acceptable.
 The purpose of this document is to establish a set of essential security goals
 for composition of RA with secure channel protocols and to outline the key use
 cases that can benefit from such a composition. Most of the use cases presented in this document are provided by industry contributors in the SEAT WG, who have plans to deploy this technology. The initial focus is on
-TLS 1.3  {{I-D.ietf-tls-rfc8446bis}}
+TLS 1.3  {{-tls}}
 and its datagram-oriented variant, DTLS 1.3 {{I-D.ietf-tls-rfc9147bis}}.
 
 This document is intended as an input to the design of protocol solutions within
@@ -312,7 +311,7 @@ that the peer controls the private key. The Evidence is authentic and fresh, and
 its challenge value matches the binder expected for the attacker's connection.
 These checks establish that the Attesting Environment incorporated the correct
 binder into the Evidence, but not that the evidenced Target Environment is
-holds the authentication key or the TLS stack that can use it.
+holding the authentication key or the TLS stack that can use it.
 
 **Mitigation strategy:** Acceptance of Evidence establishes that the evidenced
 Target Environment is associated with the peer participating in the TLS
