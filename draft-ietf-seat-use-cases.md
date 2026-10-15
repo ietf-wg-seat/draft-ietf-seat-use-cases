@@ -233,9 +233,7 @@ The attacks in this section use the following attacker profiles:
   Relying Party continues to accept.
 
 * **Target-Environment attacker:** Can change the state of a Target Environment
-  after Evidence about that environment has been generated. Post-attestation
-  state changes can also occur through legitimate reconfiguration and therefore
-  do not always imply an attack.
+  after Evidence about that environment has been generated.
 
 ## Structure of Attack Descriptions
 
