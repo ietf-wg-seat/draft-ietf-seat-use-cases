@@ -321,25 +321,25 @@ challenge value does not establish this association.
 ## Key Substitution
 
 **Attacker capabilities:** A malicious peer controls an authentication private
-key that was not generated or protected within the Target Environment and can
-obtain valid Evidence about that environment.
+key that was not generated or protected within a TEE, but can obtain valid
+Evidence claiming the key is protected.
 
 **Targeted assurance:** The authentication private key benefits from the key
 protection properties asserted by the Evidence.
 
 **Preconditions and attack:** The Relying Party's appraisal policy does not cover
-the lifecycle of the authentication key. The peer establishes the secure
-connection by proving possession of its private key and presents valid Evidence
-about a Target Environment that does not protect that key. The Relying Party
-consequently treats a software-held, exportable, or otherwise unprotected key as
-though it had the protection properties of the Target Environment. It can then
-release secrets or authorize operations that it would deny to a peer using such a
-key.
+the lifecycle of the authentication key. The peer imports the key pair into a
+TEE, establishes the secure connection by proving possession of its private key
+and presents valid Evidence about the Target Environment protecting a copy of the
+key. The Relying Party consequently treats a software-held, exportable, or
+otherwise unprotected key as though it had the protection properties of the Target
+Environment. It can then release secrets or authorize operations that it would
+deny to a peer using such a key.
 
 **Why validation succeeds:** Proof of possession establishes that the peer
 controls the private key, and Evidence appraisal establishes properties of the
 Target Environment. Neither check establishes that this particular private key
-was generated, is stored, and is used strictly within that environment.
+was generated, and is used strictly within that environment.
 
 **Mitigation strategy:** The authentication public key is unambiguously bound to
 Evidence asserting its relevant generation, storage, export, and use properties,
