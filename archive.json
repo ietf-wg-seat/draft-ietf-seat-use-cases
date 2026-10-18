@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-15T04:01:13.945055+00:00",
+  "timestamp": "2026-10-18T03:54:52.443775+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -59,16 +59,6 @@
       "color": "81f79e"
     },
     {
-      "name": "ready-to-merge in meeting",
-      "description": "",
-      "color": "7d3619"
-    },
-    {
-      "name": "authors-personal",
-      "description": "",
-      "color": "0d74c9"
-    },
-    {
       "name": "PR submitted",
       "description": "",
       "color": "08eafe"
@@ -77,6 +67,11 @@
       "name": "admin/non-technical",
       "description": "",
       "color": "e0b1ca"
+    },
+    {
+      "name": "awaiting-input",
+      "description": "",
+      "color": "ba9dc4"
     }
   ],
   "issues": [
@@ -1136,10 +1131,12 @@
       "author": "yaronf",
       "authorAssociation": "NONE",
       "assignees": [],
-      "labels": [],
+      "labels": [
+        "awaiting-input"
+      ],
       "body": "Section 4.5 requires Evidence that the TLS private key:\n\n> is generated and stored within a specific cryptographic module or secure element\n\nand\n\n> is protected against export or software extraction\n\nIs the intention to require that a private key can never leave the particular cryptographic module in which it was generated?\n\nThat seems too restrictive for clustered/HA TLS deployments. For example, HSM clusters commonly support secure replication of a TLS private key between HSMs, while ensuring that the key is never exposed in plaintext outside the trusted cryptographic boundary. A similar requirement may arise when a confidential workload is migrated between platforms (cf. Section 4.6).\n\nI think the desired security property is instead that the private key cannot be extracted into an untrusted environment. Secure transfer or replication directly between attested/trusted cryptographic environments should not necessarily violate that property.\n\nCould Section 4.5 distinguish **software/plaintext extraction** from **secure key migration or replication between qualifying trusted environments**?\n\nFor example, the requirements might say that the key:\n\n* is generated within, or securely provisioned into, an attested cryptographic module or secure element;\n* is stored and used only within cryptographic environments satisfying the applicable security policy; and\n* is protected against disclosure outside those environments, including extraction into ordinary software.\n\nA deployment could still impose the stronger policy that a particular key is non-migratable and remains bound to one physical module, but that would not be a fundamental requirement of the SEAT use case.\n",
       "createdAt": "2026-09-04T12:38:18Z",
-      "updatedAt": "2026-09-22T16:10:04Z",
+      "updatedAt": "2026-10-15T13:54:09Z",
       "closedAt": null,
       "comments": [
         {
@@ -1148,6 +1145,13 @@
           "body": "Two measured points that bear on the distinction you are drawing.\n\nFirst, the platform already has the notion. The SEV-SNP firmware ABI's guest-context table lists `ReportID` \u2014 the per-guest instance identifier the firmware generates \u2014 as *\"Migrated? Yes\"*: it moves with the guest when a migration agent is configured, so \"the same instance, now on other silicon\" is a first-class state, and the migration agent is then inside the trust boundary of that identity. In the 87 reports I have from GCP and AWS, `REPORT_ID_MA` is all-ones in every one \u2014 no migration agent anywhere \u2014 so nothing there has moved; but the ABI is explicit that it can.\n\nSecond, the property you want (\"cannot be extracted into an untrusted environment\", while transfer between qualifying environments is allowed) can be made checkable by a Relying Party rather than asserted by the platform. I ran this on live SEV-SNP ([`docs/HARDWARE-RESULTS.md`](https://github.com/nikolaichuk7/hatls/blob/v0.3.0/docs/HARDWARE-RESULTS.md), \"owner-authorised transfer\"): the key is enrolled to the instance it was born on; a transfer is honoured only against a grant signed by the identity's owner that names the destination instance, **and only if that destination has already presented valid Evidence to the Relying Party** \u2014 so \"a qualifying trusted environment\" is one the RP has itself seen attest, not one the platform vouches for. The same key presented from a second genuine instance without such a grant is declined on its first message; a forged, replayed or redirected grant is declined; a grant naming an instance the RP never witnessed is declined. That is one concrete shape of the requirement's third bullet (\"protected against disclosure outside those environments\") with the environments defined by attestation rather than by policy text.\n\nNeither point argues for or against the wording; they say what the hardware and a verifier can actually check.\n",
           "createdAt": "2026-09-22T16:10:04Z",
           "updatedAt": "2026-09-22T16:10:04Z"
+        },
+        {
+          "author": "ionut-arm",
+          "authorAssociation": "COLLABORATOR",
+          "body": "I believe this issue has disappeared with the refactoring of the use-cases. There is still an attacker case, Key Substitution (which is also discussed in #63 ) which is tangential, but I believe the initial concern has been addressed. Please check if the current editor's draft is good enough \u2122\ufe0f ",
+          "createdAt": "2026-10-15T13:53:54Z",
+          "updatedAt": "2026-10-15T13:53:54Z"
         }
       ]
     },
@@ -1203,9 +1207,17 @@
       "labels": [],
       "body": "Section 3.8.1 (Authentication Key Compromise and Re-hosting): an attacker who steals an authentication private key imports it into any Target Environment that satisfies the Relying Party's appraisal policy, then presents fresh Evidence for that environment.\n\nUnder ordinary class-based appraisal \u2014 which is what almost all deployments actually want (virtualization, cloud scale-out, migration) \u2014 that outcome is **expected**, not a SEAT failure: the RP asked for \"an acceptable TE of this class holding this identity,\" and that is what it got. The real problem is the stolen TLS private key (revocation / key lifecycle), not attestation composition.\n\nThe suggested mitigation (\"bind authorization to a particular platform instance\") underscores the mismatch: that is not a common TLS-library capability and fights typical architectures. Unless the draft is targeting a narrow niche that truly requires instance continuity, reconsider whether \u00a73.8.1 belongs in the attacker model \u2014 or reframe it as a non-goal / out-of-scope for class-based deployments, with stolen-key handling left to existing PKI mechanisms.\n\n---\nFrom Yaron Sheffer review of draft-ietf-seat-use-cases-01 (editor's copy).\nCC @yaronf\n",
       "createdAt": "2026-10-05T14:29:28Z",
-      "updatedAt": "2026-10-05T14:29:28Z",
+      "updatedAt": "2026-10-15T15:52:49Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ionut-arm",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Hmm, agree, I think we're missing a way to mark specific attacks or sections \"optional\", and a field explaining why it is optional.",
+          "createdAt": "2026-10-15T15:52:48Z",
+          "updatedAt": "2026-10-15T15:52:48Z"
+        }
+      ]
     },
     {
       "number": 65,
@@ -1251,9 +1263,17 @@
       "labels": [],
       "body": "Section 3.3 (Evidence Reuse) describes two variants:\n\n* 3.3.1 Per-Connection Evidence Replay (reuse within the same TLS connection)\n* 3.3.2 Evidence Relay (Evidence about a different Target Environment, with the attacker's connection binder)\n\nIt omits the simplest and most classic case: Evidence that was presented in an earlier connection from client C to server S is replayed in a **new** connection (same or different peers). Section 3.3.1 appears to *assume* connection-level binding already holds and then discusses residual same-connection replay; the baseline cross-connection replay is never stated as an attack. It should be listed explicitly \u2014 ideally before the more specialized intra-connection and relay variants \u2014 since that is what connection binding and freshness are meant to stop.\n\n---\nFrom Yaron Sheffer review of draft-ietf-seat-use-cases-01 (editor's copy).\nCC @yaronf\n",
       "createdAt": "2026-10-05T14:29:32Z",
-      "updatedAt": "2026-10-05T14:29:32Z",
+      "updatedAt": "2026-10-15T16:24:22Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ionut-arm",
+          "authorAssociation": "COLLABORATOR",
+          "body": "> the baseline cross-connection replay is never stated as an attack\n\nIt is, section 3.3.2. What you describe is not a replay attack but a relay attack - relaying the evidence from one connection to another. If the evidence can be used across connections (regardless of whether they're to the same TE), then it's not bound properly to the connection. It also implies a freshness issue, of course, but freshness would just drop out of the connection-binding.\n\nI agree that the current wording in 3.3.2 there is a bit misleading, though, I'll fix that. In particular, \"can obtain Evidence about a **separate** Target Environment\" - it doesn't need to be separate.",
+          "createdAt": "2026-10-15T16:24:22Z",
+          "updatedAt": "2026-10-15T16:24:22Z"
+        }
+      ]
     },
     {
       "number": 68,
@@ -1267,9 +1287,17 @@
       "labels": [],
       "body": "Section 3.5 (Evidence Privacy Loss) is framed entirely as confidentiality of Evidence contents under ephemeral-key or traffic-secret compromise. The text even states that Evidence can remain authentic, fresh, and correctly bound \u2014 so this is explicitly **not** a binding / reuse failure.\n\nClarify the intent:\n\n* If the concern is only **privacy** (third parties learning platform/software details from decrypted Evidence), it is questionable whether this belongs as a first-class SEAT attacker-model threat. The confidential-computing / RATS community has already spent years on Evidence privacy (and \u00a74.9 separately addresses Privacy Preservation). Compromised TLS traffic secrets disclosing application data is largely a generic channel problem, not an attestation composition problem.\n* If the real worry is that disclosed Evidence might later be **reused** in another context, that is a reuse/binding issue and should be stated as such (and likely folded into \u00a73.3), not labeled privacy loss.\n\nAs written, \u00a73.5 sits awkwardly: either overstates privacy as a SEAT-specific threat, or buries a reuse concern under the wrong name.\n\n---\nFrom Yaron Sheffer review of draft-ietf-seat-use-cases-01 (editor's copy).\nCC @yaronf\n",
       "createdAt": "2026-10-05T14:29:34Z",
-      "updatedAt": "2026-10-05T14:29:34Z",
+      "updatedAt": "2026-10-15T16:29:07Z",
       "closedAt": null,
-      "comments": []
+      "comments": [
+        {
+          "author": "ionut-arm",
+          "authorAssociation": "COLLABORATOR",
+          "body": "It is entirely an evidence-privacy issue.\n\n> Compromised TLS traffic secrets disclosing application data\n\nHmmm, not sure evidence is application data, though.\n\nNot really sure what to do about this issue. We've also had other discussions floating around, like those highlighted by #71 . It's perhaps something we can bring up during the upcoming meeting.",
+          "createdAt": "2026-10-15T16:29:07Z",
+          "updatedAt": "2026-10-15T16:29:07Z"
+        }
+      ]
     },
     {
       "number": 69,
@@ -4957,12 +4985,10 @@
       "author": "muhammad-usama-sardar",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [
-        "ready-to-merge in meeting"
-      ],
+      "labels": [],
       "body": "Addresses #8 \r\n- Added def. of infrastructure provider\r\n- Added def. of diversion attack\r\n- dependency on deployment model etc.\r\n- state-of-the-art may not meet some properties\r\n\r\nCC co-author @Maisy-ML",
       "createdAt": "2026-05-06T22:14:34Z",
-      "updatedAt": "2026-06-14T22:35:10Z",
+      "updatedAt": "2026-10-15T13:50:26Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "4775778e3fceb856680abf15327fc0f78b92c0db",
@@ -5635,12 +5661,10 @@
       "author": "muhammad-usama-sardar",
       "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
-      "labels": [
-        "ready-to-merge in meeting"
-      ],
+      "labels": [],
       "body": "- Public key of Target Environment\r\n- Replication attacks\r\n\r\nCC co-author @Maisy-ML",
       "createdAt": "2026-05-09T10:46:07Z",
-      "updatedAt": "2026-06-14T21:48:46Z",
+      "updatedAt": "2026-10-15T13:50:24Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "4775778e3fceb856680abf15327fc0f78b92c0db",
@@ -8733,6 +8757,32 @@
           ]
         }
       ]
+    },
+    {
+      "number": 73,
+      "id": "PR_kwDOP_9tTM8AAAABIqrhYQ",
+      "title": "Fixes for a number of recent issues",
+      "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/73",
+      "state": "OPEN",
+      "author": "ionut-arm",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "cc @yaronf - each commit identifies and addresses a specific issue, please have a look",
+      "createdAt": "2026-10-15T16:34:51Z",
+      "updatedAt": "2026-10-15T16:34:51Z",
+      "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
+      "baseRefName": "main",
+      "baseRefOid": "2c3d2d701dec2ad7989440f9fb4e25975ff179dd",
+      "headRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
+      "headRefName": "fixes",
+      "headRefOid": "715e41ba652da95c37ed154c5e4025e52757951f",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
