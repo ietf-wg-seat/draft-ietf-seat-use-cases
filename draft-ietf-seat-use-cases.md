@@ -853,9 +853,12 @@ This document has no IANA actions.
 
 --- back
 
-# Acknowledgments
+# Contributors
 {:numbered="false"}
 
 We would like to thank Muhammad Usama Sardar, Thomas Fossati, Tirumaleswar Reddy, Yuning Jiang, and Meiling Chen for their work on establishing this document and enabling its adoption.
+
+# Acknowledgments
+{:numbered="false"}
 
 We would like to thank Eric Rescorla for his detailed review.
