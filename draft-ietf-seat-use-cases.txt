@@ -4,8 +4,8 @@
 
 SEAT Working Group                                      I. Mihalcea, Ed.
 Internet-Draft                                                       Arm
-Intended status: Informational                            9 October 2026
-Expires: 12 April 2027
+Intended status: Informational                           21 October 2026
+Expires: 24 April 2027
 
 
   Security Goals and Use Cases for Integrating Remote Attestation with
@@ -45,7 +45,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 12 April 2027.
+   This Internet-Draft will expire on 24 April 2027.
 
 Copyright Notice
 
@@ -81,7 +81,7 @@ Table of Contents
      3.6.  State Drift on Long-Lived and Resumed Connections
      3.7.  RA Negotiation Downgrade
      3.8.  Compromise of Security-Critical Keys
-       3.8.1.  Authentication Key Compromise and Re-hosting
+       3.8.1.  Authentication Key Compromise and Re-hosting (OPTIONAL)
        3.8.2.  Attestation Key Compromise
    4.  Integration Security Goals
      4.1.  Cryptographic Binding to Communication Channel
@@ -131,8 +131,8 @@ Table of Contents
    Remote Attestation (RA), as described in the RATS architecture
    [RFC9334], is a mechanism designed to fill this gap.  RA allows an
    entity (the "Attester") to produce verifiable "Evidence" about its
-   current runtime state.  This Evidence covers the Attester's TCB and
-   can thus include measurements of:
+   current runtime state.  This Evidence covers the Attester's security
+   state and can thus include measurements of:
 
    *  firmware
 
@@ -160,8 +160,8 @@ Table of Contents
    and to outline the key use cases that can benefit from such a
    composition.  Most of the use cases presented in this document are
    provided by industry contributors in the SEAT WG, who have plans to
-   deploy this technology.  The initial focus is on TLS 1.3
-   [I-D.ietf-tls-rfc8446bis] and its datagram-oriented variant, DTLS 1.3
+   deploy this technology.  The initial focus is on TLS 1.3 [RFC9846]
+   and its datagram-oriented variant, DTLS 1.3
    [I-D.ietf-tls-rfc9147bis].
 
    This document is intended as an input to the design of protocol
@@ -183,23 +183,20 @@ Table of Contents
 
    This document also uses the following terms:
 
-   *  Trusted Computing Base (TCB) of a device: see [RFC4949].  Note
-      that for this draft, it includes respective configurations of
-      hardware, firmware, and software.
+   *  Attesting and Target Environments: as described in Section 3.1 of
+      [RFC9334].
 
-   *  Confidential Workload: as defined in
-      [I-D.draft-ccc-wimse-twi-extensions].
+   *  Attested workload: An instance of software executing within a
+      Target Environment, which can obtain remote attestation Evidence
+      or Attestation Results about itself.
 
    *  Measurements: as defined in
       [I-D.draft-ietf-rats-eat-measured-component].
 
-   *  AI agent: An AI agent is a software principal (typically long-
-      running) that performs closed-loop "perceive -> plan -> act"
-      cycles using an LLM or other model, and invokes external tools/
-      APIs that may read sensitive data or change system/network state.
-      Its configuration (e.g., model choice, tool enablement, prompt
-      template) can change independently of the binary/image and usually
-      more frequently than typical platform TCB updates [AI-agents].
+   *  AI agent: An AI agent is a software principal that performs
+      closed-loop cycles using an LLM or other model.
+
+   *  Credential: as defined in [RFC4949].
 
 3.  Attacker Model
 
@@ -213,13 +210,12 @@ Table of Contents
    Unless stated otherwise, the Relying Party is not compromised and
    correctly performs the checks required by the protocol and its
    appraisal policy.  The Attester is referenced in terms of its
-   Attesting and Target Environments, as described in Section 3.1 of
-   [RFC9334].  The Attesting Environment is the entity which holds the
-   Attestation key, which is used to sign Evidence for the Target
-   Environment.  Part or all of the Target Environment may be executing
-   within a protected environment that provides certain security
-   guarantees, called a Trusted Execution Environment (TEE) (see
-   [RFC9397]).
+   Attesting and Target Environments.  The Attesting Environment is the
+   entity which holds the Attestation key, which is used to sign
+   Evidence for the Target Environment.  Part or all of the Target
+   Environment may be executing within a protected environment that
+   provides certain security guarantees, called a Trusted Execution
+   Environment (TEE) (see [RFC9397]).
 
    The baseline security assumptions of the TLS v1.3 protocol apply.
    See Appendix F of [RFC9846] for the relevant properties.
@@ -272,9 +268,7 @@ Table of Contents
 
    *  *Target-Environment attacker:* Can change the state of a Target
       Environment after Evidence about that environment has been
-      generated.  Post-attestation state changes can also occur through
-      legitimate reconfiguration and therefore do not always imply an
-      attack.
+      generated.
 
 3.2.  Structure of Attack Descriptions
 
@@ -303,6 +297,10 @@ Table of Contents
    *  *Mitigation strategy:* States the security property that a
       solution needs to preserve, without prescribing a particular
       protocol mechanism.
+
+   *  *Why Optional* (OPTIONAL): For attacks classed as optional, this
+      section explains why this is the case, and under what
+      circumstances it might apply.
 
 3.3.  Evidence Reuse
 
@@ -337,11 +335,11 @@ Table of Contents
 
    *Attacker capabilities:* The attacker, acting as a malicious TLS
    peer, can establish a TLS connection with a Relying Party and can
-   obtain Evidence about a separate Target Environment that contains the
-   correct binder for the attacker's connection as its challenge value.
-   How the attacker obtains such Evidence is not constrained by this
-   model.  The attacker does not need to control or collude with the
-   Attesting or Target Environment.
+   obtain Evidence that contains the correct binder for the attacker's
+   connection as its challenge value, and which represents a Target
+   Environment.  How the attacker obtains such Evidence is not
+   constrained by this model.  The attacker does not need to control or
+   collude with the Attesting or Target Environment.
 
    *Targeted assurance:* The Relying Party incorrectly attributes the
    claims asserted by the Evidence to the TLS endpoint and assumes that
@@ -361,8 +359,8 @@ Table of Contents
    authentic and fresh, and its challenge value matches the binder
    expected for the attacker's connection.  These checks establish that
    the Attesting Environment incorporated the correct binder into the
-   Evidence, but not that the evidenced Target Environment is holds the
-   authentication key or the TLS stack that can use it.
+   Evidence, but not that the evidenced Target Environment is holding
+   the authentication key or the TLS stack that can use it.
 
    *Mitigation strategy:* Acceptance of Evidence establishes that the
    evidenced Target Environment is associated with the peer
@@ -373,27 +371,27 @@ Table of Contents
 3.4.  Key Substitution
 
    *Attacker capabilities:* A malicious peer controls an authentication
-   private key that was not generated or protected within the Target
-   Environment and can obtain valid Evidence about that environment.
+   private key that was not generated or protected within a TEE, but can
+   obtain valid Evidence claiming the key is protected.
 
    *Targeted assurance:* The authentication private key benefits from
    the key protection properties asserted by the Evidence.
 
    *Preconditions and attack:* The Relying Party's appraisal policy does
-   not cover the lifecycle of the authentication key.  The peer
-   establishes the secure connection by proving possession of its
-   private key and presents valid Evidence about a Target Environment
-   that does not protect that key.  The Relying Party consequently
-   treats a software-held, exportable, or otherwise unprotected key as
-   though it had the protection properties of the Target Environment.
-   It can then release secrets or authorize operations that it would
-   deny to a peer using such a key.
+   not cover the lifecycle of the authentication key.  The peer imports
+   the key pair into a TEE, establishes the secure connection by proving
+   possession of its private key and presents valid Evidence about the
+   Target Environment protecting a copy of the key.  The Relying Party
+   consequently treats a software-held, exportable, or otherwise
+   unprotected key as though it had the protection properties of the
+   Target Environment.  It can then release secrets or authorize
+   operations that it would deny to a peer using such a key.
 
    *Why validation succeeds:* Proof of possession establishes that the
    peer controls the private key, and Evidence appraisal establishes
    properties of the Target Environment.  Neither check establishes that
-   this particular private key was generated, is stored, and is used
-   strictly within that environment.
+   this particular private key was generated, and is used strictly
+   within that environment.
 
    *Mitigation strategy:* The authentication public key is unambiguously
    bound to Evidence asserting its relevant generation, storage, export,
@@ -525,7 +523,7 @@ Table of Contents
 
 3.8.  Compromise of Security-Critical Keys
 
-3.8.1.  Authentication Key Compromise and Re-hosting
+3.8.1.  Authentication Key Compromise and Re-hosting (OPTIONAL)
 
    *Attacker capabilities:* An authentication-key attacker can also
    operate an endorsed Target Environment that satisfies the Relying
@@ -560,6 +558,12 @@ Table of Contents
    reject compromised authentication credentials.  Alternatively, the
    appraisal policy must inform the Relying Party whether the
    authentication key was created in the Target Environment.
+
+   *Why optional:* For class-based appraisal (i.e., where the Target
+   Environment is not restricted to a set of known platforms or workload
+   instances), this attack is out of scope as the attacker's posture
+   (acceptable Target Environment that proves ownership of some network
+   identity) is what the RP expects to see.
 
 3.8.2.  Attestation Key Compromise
 
@@ -621,10 +625,11 @@ Table of Contents
 
    The Relying Party is able to verify that the Evidence or Attestation
    Result it receives was freshly generated by the Attester for the
-   specific RA interaction.  State is transient, and credentials from a
-   previous RA interaction may no longer be valid.  See Section 10 of
-   [RFC9334] for more details about freshness in the context of RA.
-   This is formalized for attestation nonce in [ID-Crisis].
+   specific RA interaction.  State is transient, and Evidence or
+   Attestation Result from a previous RA interaction may no longer be
+   valid.  See Section 10 of [RFC9334] for more details about freshness
+   in the context of RA.  This is formalized for attestation nonce in
+   [ID-Crisis].
 
 4.5.  Negotiation and Capability Discovery
 
@@ -800,17 +805,17 @@ Table of Contents
 
    *  *Data Clean Rooms*
 
-      Data providers contribute sensitive data to a confidential
-      workload for joint analysis, while data consumers receive only
-      aggregated results.  Before sending data or accepting results,
-      they attest that the workload runs authorized code in a Trusted
-      Execution Environment (TEE).
+      Data providers contribute sensitive data to an attested workload
+      for joint analysis, while data consumers receive only aggregated
+      results.  Before sending data or accepting results, they attest
+      that the workload runs authorized code in a Trusted Execution
+      Environment (TEE).
 
    *  *Securing Control and Management Planes*
 
       Before an administrator uses a network device's management
       interface, the client appraises Evidence about the endpoint's
-      state.  This avoids exposing credentials or policy to a
+      state.  This avoids exposing network credentials or policy to a
       compromised interface.
 
    *  *Attestation of Certificate Private Key*
@@ -870,8 +875,8 @@ Table of Contents
       A workload or device obtains the secrets, configuration,
       credentials, or policy needed to become operational only after its
       state is appraised.  This includes runtime secret provisioning for
-      a confidential workload and onboarding an IoT device without a
-      pre-provisioned PKI identity.
+      an attested workload and onboarding an IoT device without a pre-
+      provisioned PKI identity.
 
       For example, a Confidential Container can obtain configuration
       data or disk keys from a Key Broker Service or Trustee
@@ -1081,11 +1086,6 @@ Table of Contents
 
 8.  Informative References
 
-   [AI-agents]
-              Kapoor, S., Stroebl, B., Siegel, Z. S., Nadgir, N., and A.
-              Narayanan, "AI agents that matter", July 2024,
-              <https://arxiv.org/abs/2407.01502>.
-
    [CoCo-Trustee]
               "Trustee", n.d.,
               <https://github.com/confidential-containers/trustee>.
@@ -1107,14 +1107,6 @@ Table of Contents
               aiga-2-00, 26 January 2026,
               <https://datatracker.ietf.org/doc/html/draft-aylward-aiga-
               2-00>.
-
-   [I-D.draft-ccc-wimse-twi-extensions]
-              Novak, M., Deshpande, Y., and H. Birkholz, "WIMSE
-              Extensions for Trustworthy Workload Identity", Work in
-              Progress, Internet-Draft, draft-ccc-wimse-twi-extensions-
-              01, 5 January 2026,
-              <https://datatracker.ietf.org/doc/html/draft-ccc-wimse-
-              twi-extensions-01>.
 
    [I-D.draft-ietf-rats-eat-measured-component]
               Frost, S., Fossati, T., Tschofenig, H., and H. Birkholz,
@@ -1147,13 +1139,6 @@ Table of Contents
               draft-ietf-tls-extended-key-update-13, 4 July 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
               extended-key-update-13>.
-
-   [I-D.ietf-tls-rfc8446bis]
-              Rescorla, E., "The Transport Layer Security (TLS) Protocol
-              Version 1.3", Work in Progress, Internet-Draft, draft-
-              ietf-tls-rfc8446bis-14, 13 September 2025,
-              <https://datatracker.ietf.org/doc/html/draft-ietf-tls-
-              rfc8446bis-14>.
 
    [I-D.ietf-tls-rfc9147bis]
               Rescorla, E., Tschofenig, H., and N. Modadugu, "The

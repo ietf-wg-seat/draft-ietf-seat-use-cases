@@ -37,11 +37,11 @@ of protocol solutions within the SEAT working group.
     Jinja2 3.1.6
     lxml 6.1.1
     natsort 8.4.0
-    platformdirs 4.12.2
+    platformdirs 4.13.4
     pycountry 24.6.1
     PyYAML 6.0.3
     requests 2.33.1
-    wcwidth 0.9.1
+    wcwidth 0.9.2
 -->
 <link href="draft-ietf-seat-use-cases.xml" rel="alternate" type="application/rfc+xml">
 <link href="#copyright" rel="license">
@@ -1061,7 +1061,7 @@ svg {
 </tr></thead>
 <tfoot><tr>
 <td class="left">Mihalcea</td>
-<td class="center">Expires 12 April 2027</td>
+<td class="center">Expires 24 April 2027</td>
 <td class="right">[Page]</td>
 </tr></tfoot>
 </table>
@@ -1074,12 +1074,12 @@ svg {
 <dd class="internet-draft">draft-ietf-seat-use-cases-latest</dd>
 <dt class="label-published">Published:</dt>
 <dd class="published">
-<time datetime="2026-10-09" class="published">9 October 2026</time>
+<time datetime="2026-10-21" class="published">21 October 2026</time>
     </dd>
 <dt class="label-intended-status">Intended Status:</dt>
 <dd class="intended-status">Informational</dd>
 <dt class="label-expires">Expires:</dt>
-<dd class="expires"><time datetime="2027-04-12">12 April 2027</time></dd>
+<dd class="expires"><time datetime="2027-04-24">24 April 2027</time></dd>
 <dt class="label-authors">Author:</dt>
 <dd class="authors">
 <div class="author">
@@ -1126,7 +1126,7 @@ of protocol solutions within the SEAT working group.<a href="#section-abstract-1
         time. It is inappropriate to use Internet-Drafts as reference
         material or to cite them other than as "work in progress."<a href="#section-boilerplate.1-3" class="pilcrow">¶</a></p>
 <p id="section-boilerplate.1-4">
-        This Internet-Draft will expire on 12 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
+        This Internet-Draft will expire on 24 April 2027.<a href="#section-boilerplate.1-4" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="copyright">
@@ -1216,7 +1216,7 @@ of protocol solutions within the SEAT working group.<a href="#section-abstract-1
                 <p id="section-toc.1-1.3.2.8.1"><a href="#section-3.8" class="auto internal xref">3.8</a>.  <a href="#name-compromise-of-security-crit" class="internal xref">Compromise of Security-Critical Keys</a></p>
 <ul class="compact toc ulBare ulEmpty">
 <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.8.2.1">
-                    <p id="section-toc.1-1.3.2.8.2.1.1"><a href="#section-3.8.1" class="auto internal xref">3.8.1</a>.  <a href="#name-authentication-key-compromi" class="internal xref">Authentication Key Compromise and Re-hosting</a></p>
+                    <p id="section-toc.1-1.3.2.8.2.1.1"><a href="#section-3.8.1" class="auto internal xref">3.8.1</a>.  <a href="#name-authentication-key-compromi" class="internal xref">Authentication Key Compromise and Re-hosting (OPTIONAL)</a></p>
 </li>
                   <li class="compact toc ulBare ulEmpty" id="section-toc.1-1.3.2.8.2.2">
                     <p id="section-toc.1-1.3.2.8.2.2.1"><a href="#section-3.8.2" class="auto internal xref">3.8.2</a>.  <a href="#name-attestation-key-compromise" class="internal xref">Attestation Key Compromise</a></p>
@@ -1338,7 +1338,7 @@ significant security risk in many environments.<a href="#section-1.1-2" class="p
         </h3>
 <p id="section-1.2-1">Remote Attestation (RA), as described in the RATS architecture <span>[<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>, is a
 mechanism designed to fill this gap. RA allows an entity (the "Attester") to
-produce verifiable "Evidence" about its current runtime state. This Evidence covers the Attester's TCB and can thus include measurements of:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
+produce verifiable "Evidence" about its current runtime state. This Evidence covers the Attester's security state and can thus include measurements of:<a href="#section-1.2-1" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-1.2-2.1">
             <p id="section-1.2-2.1.1">firmware<a href="#section-1.2-2.1.1" class="pilcrow">¶</a></p>
@@ -1372,7 +1372,7 @@ acceptable.<a href="#section-1.2-4" class="pilcrow">¶</a></p>
 <p id="section-1.3-1">The purpose of this document is to establish a set of essential security goals
 for composition of RA with secure channel protocols and to outline the key use
 cases that can benefit from such a composition. Most of the use cases presented in this document are provided by industry contributors in the SEAT WG, who have plans to deploy this technology. The initial focus is on
-TLS 1.3  <span>[<a href="#I-D.ietf-tls-rfc8446bis" class="cite xref">I-D.ietf-tls-rfc8446bis</a>]</span>
+TLS 1.3  <span>[<a href="#RFC9846" class="cite xref">RFC9846</a>]</span>
 and its datagram-oriented variant, DTLS 1.3 <span>[<a href="#I-D.ietf-tls-rfc9147bis" class="cite xref">I-D.ietf-tls-rfc9147bis</a>]</span>.<a href="#section-1.3-1" class="pilcrow">¶</a></p>
 <p id="section-1.3-2">This document is intended as an input to the design of protocol solutions within
 the SEAT working group. It defines the "why" (the motivation) and the "what" (the requirements),
@@ -1396,22 +1396,21 @@ Results".<a href="#section-2-1" class="pilcrow">¶</a></p>
 <p id="section-2-2">This document also uses the following terms:<a href="#section-2-2" class="pilcrow">¶</a></p>
 <ul class="normal">
 <li class="normal" id="section-2-3.1">
-          <p id="section-2-3.1.1">Trusted Computing Base (TCB) of a device: see <span>[<a href="#RFC4949" class="cite xref">RFC4949</a>]</span>. Note that for this
-draft, it includes respective configurations of hardware, firmware, and software.<a href="#section-2-3.1.1" class="pilcrow">¶</a></p>
+          <p id="section-2-3.1.1">Attesting and Target Environments: as described in <span><a href="https://rfc-editor.org/rfc/rfc9334#section-3.1" class="relref">Section 3.1</a> of [<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>.<a href="#section-2-3.1.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-3.2">
-          <p id="section-2-3.2.1">Confidential Workload: as defined in <span>[<a href="#I-D.draft-ccc-wimse-twi-extensions" class="cite xref">I-D.draft-ccc-wimse-twi-extensions</a>]</span>.<a href="#section-2-3.2.1" class="pilcrow">¶</a></p>
+          <p id="section-2-3.2.1">Attested workload: An instance of software executing within a Target Environment,
+which can obtain remote attestation Evidence or Attestation Results about itself.<a href="#section-2-3.2.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-3.3">
           <p id="section-2-3.3.1">Measurements: as defined in <span>[<a href="#I-D.draft-ietf-rats-eat-measured-component" class="cite xref">I-D.draft-ietf-rats-eat-measured-component</a>]</span>.<a href="#section-2-3.3.1" class="pilcrow">¶</a></p>
 </li>
         <li class="normal" id="section-2-3.4">
-          <p id="section-2-3.4.1">AI agent: An AI agent is a software principal (typically long-running) that performs
-closed-loop "perceive -&gt; plan -&gt; act" cycles using an LLM or other model,
-and invokes external tools/APIs that may read sensitive data or change
-system/network state. Its configuration (e.g., model choice, tool enablement,
-prompt template) can change independently of the binary/image and usually
-more frequently than typical platform TCB updates <span>[<a href="#AI-agents" class="cite xref">AI-agents</a>]</span>.<a href="#section-2-3.4.1" class="pilcrow">¶</a></p>
+          <p id="section-2-3.4.1">AI agent: An AI agent is a software principal that performs closed-loop cycles
+using an LLM or other model.<a href="#section-2-3.4.1" class="pilcrow">¶</a></p>
+</li>
+        <li class="normal" id="section-2-3.5">
+          <p id="section-2-3.5.1">Credential: as defined in <span>[<a href="#RFC4949" class="cite xref">RFC4949</a>]</span>.<a href="#section-2-3.5.1" class="pilcrow">¶</a></p>
 </li>
       </ul>
 </section>
@@ -1429,12 +1428,12 @@ below. Some scenarios explicitly grant the attacker capabilities beyond that
 baseline.<a href="#section-3-1" class="pilcrow">¶</a></p>
 <p id="section-3-2">Unless stated otherwise, the Relying Party is not compromised and correctly
 performs the checks required by the protocol and its appraisal policy. The
-Attester is referenced in terms of its Attesting and Target Environments, as
-described in <span><a href="https://rfc-editor.org/rfc/rfc9334#section-3.1" class="relref">Section 3.1</a> of [<a href="#RFC9334" class="cite xref">RFC9334</a>]</span>. The Attesting Environment is the
-entity which holds the Attestation key, which is used to sign Evidence for the
-Target Environment. Part or all of the Target Environment may be executing
-within a protected environment that provides certain security guarantees,
-called a Trusted Execution Environment (TEE) (see <span>[<a href="#RFC9397" class="cite xref">RFC9397</a>]</span>).<a href="#section-3-2" class="pilcrow">¶</a></p>
+Attester is referenced in terms of its Attesting and Target Environments. The
+Attesting Environment is the entity which holds the Attestation key, which is
+used to sign Evidence for the Target Environment. Part or all of the Target
+Environment may be executing within a protected environment that provides
+certain security guarantees, called a Trusted Execution Environment (TEE) (see
+<span>[<a href="#RFC9397" class="cite xref">RFC9397</a>]</span>).<a href="#section-3-2" class="pilcrow">¶</a></p>
 <p id="section-3-3">The baseline security assumptions of the TLS v1.3 protocol apply. See
 <span><a href="https://rfc-editor.org/rfc/rfc9846#appendix-F" class="relref">Appendix F</a> of [<a href="#RFC9846" class="cite xref">RFC9846</a>]</span> for the relevant properties.<a href="#section-3-3" class="pilcrow">¶</a></p>
 <p id="section-3-4">The TLS stack of the attester is assumed to be running within its Target
@@ -1488,9 +1487,7 @@ Relying Party continues to accept.<a href="#section-3.1-2.6.1" class="pilcrow">�
 </li>
           <li class="normal" id="section-3.1-2.7">
             <p id="section-3.1-2.7.1"><strong>Target-Environment attacker:</strong> Can change the state of a Target Environment
-after Evidence about that environment has been generated. Post-attestation
-state changes can also occur through legitimate reconfiguration and therefore
-do not always imply an attack.<a href="#section-3.1-2.7.1" class="pilcrow">¶</a></p>
+after Evidence about that environment has been generated.<a href="#section-3.1-2.7.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1525,6 +1522,10 @@ the attack.<a href="#section-3.2-2.4.1" class="pilcrow">¶</a></p>
           <li class="normal" id="section-3.2-2.5">
             <p id="section-3.2-2.5.1"><strong>Mitigation strategy:</strong> States the security property that a solution needs to
 preserve, without prescribing a particular protocol mechanism.<a href="#section-3.2-2.5.1" class="pilcrow">¶</a></p>
+</li>
+          <li class="normal" id="section-3.2-2.6">
+            <p id="section-3.2-2.6.1"><strong>Why Optional</strong> (OPTIONAL): For attacks classed as optional, this section
+explains why this is the case, and under what circumstances it might apply.<a href="#section-3.2-2.6.1" class="pilcrow">¶</a></p>
 </li>
         </ul>
 </section>
@@ -1564,11 +1565,11 @@ request on the same TLS connection.<a href="#section-3.3.1-5" class="pilcrow">¶
 <a href="#section-3.3.2" class="section-number selfRef">3.3.2. </a><a href="#name-evidence-relay" class="section-name selfRef">Evidence Relay</a>
           </h4>
 <p id="section-3.3.2-1"><strong>Attacker capabilities:</strong> The attacker, acting as a malicious TLS peer, can
-establish a TLS connection with a Relying Party and can obtain Evidence about a
-separate Target Environment that contains the correct binder for the attacker's
-connection as its challenge value. How the attacker obtains such Evidence is not
-constrained by this model. The attacker does not need to control or collude with
-the Attesting or Target Environment.<a href="#section-3.3.2-1" class="pilcrow">¶</a></p>
+establish a TLS connection with a Relying Party and can obtain Evidence that
+contains the correct binder for the attacker's connection as its challenge value,
+and which represents a Target Environment. How the attacker obtains such Evidence
+is not constrained by this model. The attacker does not need to control or
+collude with the Attesting or Target Environment.<a href="#section-3.3.2-1" class="pilcrow">¶</a></p>
 <p id="section-3.3.2-2"><strong>Targeted assurance:</strong> The Relying Party incorrectly attributes the claims
 asserted by the Evidence to the TLS endpoint and assumes that the authentication
 private key has the protection properties asserted by the Evidence.<a href="#section-3.3.2-2" class="pilcrow">¶</a></p>
@@ -1583,7 +1584,7 @@ that the peer controls the private key. The Evidence is authentic and fresh, and
 its challenge value matches the binder expected for the attacker's connection.
 These checks establish that the Attesting Environment incorporated the correct
 binder into the Evidence, but not that the evidenced Target Environment is
-holds the authentication key or the TLS stack that can use it.<a href="#section-3.3.2-4" class="pilcrow">¶</a></p>
+holding the authentication key or the TLS stack that can use it.<a href="#section-3.3.2-4" class="pilcrow">¶</a></p>
 <p id="section-3.3.2-5"><strong>Mitigation strategy:</strong> Acceptance of Evidence establishes that the evidenced
 Target Environment is associated with the peer participating in the TLS
 connection being appraised. Merely including the correct connection binder as a
@@ -1598,22 +1599,22 @@ challenge value does not establish this association.<a href="#section-3.3.2-5" c
 <a href="#section-3.4" class="section-number selfRef">3.4. </a><a href="#name-key-substitution" class="section-name selfRef">Key Substitution</a>
         </h3>
 <p id="section-3.4-1"><strong>Attacker capabilities:</strong> A malicious peer controls an authentication private
-key that was not generated or protected within the Target Environment and can
-obtain valid Evidence about that environment.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
+key that was not generated or protected within a TEE, but can obtain valid
+Evidence claiming the key is protected.<a href="#section-3.4-1" class="pilcrow">¶</a></p>
 <p id="section-3.4-2"><strong>Targeted assurance:</strong> The authentication private key benefits from the key
 protection properties asserted by the Evidence.<a href="#section-3.4-2" class="pilcrow">¶</a></p>
 <p id="section-3.4-3"><strong>Preconditions and attack:</strong> The Relying Party's appraisal policy does not cover
-the lifecycle of the authentication key. The peer establishes the secure
-connection by proving possession of its private key and presents valid Evidence
-about a Target Environment that does not protect that key. The Relying Party
-consequently treats a software-held, exportable, or otherwise unprotected key as
-though it had the protection properties of the Target Environment. It can then
-release secrets or authorize operations that it would deny to a peer using such a
-key.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
+the lifecycle of the authentication key. The peer imports the key pair into a
+TEE, establishes the secure connection by proving possession of its private key
+and presents valid Evidence about the Target Environment protecting a copy of the
+key. The Relying Party consequently treats a software-held, exportable, or
+otherwise unprotected key as though it had the protection properties of the Target
+Environment. It can then release secrets or authorize operations that it would
+deny to a peer using such a key.<a href="#section-3.4-3" class="pilcrow">¶</a></p>
 <p id="section-3.4-4"><strong>Why validation succeeds:</strong> Proof of possession establishes that the peer
 controls the private key, and Evidence appraisal establishes properties of the
 Target Environment. Neither check establishes that this particular private key
-was generated, is stored, and is used strictly within that environment.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
+was generated, and is used strictly within that environment.<a href="#section-3.4-4" class="pilcrow">¶</a></p>
 <p id="section-3.4-5"><strong>Mitigation strategy:</strong> The authentication public key is unambiguously bound to
 Evidence asserting its relevant generation, storage, export, and use properties,
 and those assertions are appraised together with the connection authentication.<a href="#section-3.4-5" class="pilcrow">¶</a></p>
@@ -1742,10 +1743,10 @@ properties.<a href="#section-3.7-5" class="pilcrow">¶</a></p>
         <h3 id="name-compromise-of-security-crit">
 <a href="#section-3.8" class="section-number selfRef">3.8. </a><a href="#name-compromise-of-security-crit" class="section-name selfRef">Compromise of Security-Critical Keys</a>
         </h3>
-<div id="authentication-key-compromise-and-re-hosting">
+<div id="authentication-key-compromise-and-re-hosting-optional">
 <section id="section-3.8.1">
           <h4 id="name-authentication-key-compromi">
-<a href="#section-3.8.1" class="section-number selfRef">3.8.1. </a><a href="#name-authentication-key-compromi" class="section-name selfRef">Authentication Key Compromise and Re-hosting</a>
+<a href="#section-3.8.1" class="section-number selfRef">3.8.1. </a><a href="#name-authentication-key-compromi" class="section-name selfRef">Authentication Key Compromise and Re-hosting (OPTIONAL)</a>
           </h4>
 <p id="section-3.8.1-1"><strong>Attacker capabilities:</strong> An authentication-key attacker can also operate an
 endorsed Target Environment that satisfies the Relying Party's appraisal policy.
@@ -1772,6 +1773,10 @@ platform instance binds authorization to that instance, rather than only to an
 environment class, and provides a means to reject compromised authentication
 credentials. Alternatively, the appraisal policy must inform the Relying Party
 whether the authentication key was created in the Target Environment.<a href="#section-3.8.1-5" class="pilcrow">¶</a></p>
+<p id="section-3.8.1-6"><strong>Why optional:</strong> For class-based appraisal (i.e., where the Target Environment
+is not restricted to a set of known platforms or workload instances), this attack
+is out of scope as the attacker's posture (acceptable Target Environment that
+proves ownership of some network identity) is what the RP expects to see.<a href="#section-3.8.1-6" class="pilcrow">¶</a></p>
 </section>
 </div>
 <div id="attestation-key-compromise">
@@ -1847,7 +1852,7 @@ A formal representation of this requirement in the form of <em>composition</em> 
 <p id="section-4.4-1">The Relying Party is able to verify that the Evidence or Attestation Result it
 receives was freshly generated by the Attester for the specific RA interaction.
 State is
-transient, and credentials from a previous RA interaction may no longer be valid.
+transient, and Evidence or Attestation Result from a previous RA interaction may no longer be valid.
 See
 <span><a href="https://rfc-editor.org/rfc/rfc9334#section-10" class="relref">Section 10</a> of [<a href="#RFC9334" class="cite xref">RFC9334</a>]</span> for more details about freshness in the context of
 RA. This is formalized for attestation nonce in  <span>[<a href="#ID-Crisis" class="cite xref">ID-Crisis</a>]</span>.<a href="#section-4.4-1" class="pilcrow">¶</a></p>
@@ -1996,14 +2001,14 @@ The system provides fresh Evidence for appraisal before the command is sent.<a h
           <li class="normal" id="section-5.1-10.2">
             <p id="section-5.1-10.2.1"><strong>Data Clean Rooms</strong><a href="#section-5.1-10.2.1" class="pilcrow">¶</a></p>
 <p id="section-5.1-10.2.2">
-Data providers contribute sensitive data to a confidential workload for joint analysis, while data consumers receive only aggregated results.
+Data providers contribute sensitive data to an attested workload for joint analysis, while data consumers receive only aggregated results.
 Before sending data or accepting results, they attest that the workload runs authorized code in a Trusted Execution Environment (TEE).<a href="#section-5.1-10.2.2" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-5.1-10.3">
             <p id="section-5.1-10.3.1"><strong>Securing Control and Management Planes</strong><a href="#section-5.1-10.3.1" class="pilcrow">¶</a></p>
 <p id="section-5.1-10.3.2">
 Before an administrator uses a network device's management interface, the client appraises Evidence about the endpoint's state.
-This avoids exposing credentials or policy to a compromised interface.<a href="#section-5.1-10.3.2" class="pilcrow">¶</a></p>
+This avoids exposing network credentials or policy to a compromised interface.<a href="#section-5.1-10.3.2" class="pilcrow">¶</a></p>
 </li>
           <li class="normal" id="section-5.1-10.4">
             <p id="section-5.1-10.4.1"><strong>Attestation of Certificate Private Key</strong><a href="#section-5.1-10.4.1" class="pilcrow">¶</a></p>
@@ -2040,7 +2045,7 @@ Attestation supports an authorization decision based on the client’s appraised
             <p id="section-5.2-10.1.1"><strong>Attested Workload and Device Provisioning</strong><a href="#section-5.2-10.1.1" class="pilcrow">¶</a></p>
 <p id="section-5.2-10.1.2">
 A workload or device obtains the secrets, configuration, credentials, or policy needed to become operational only after its state is appraised.
-This includes runtime secret provisioning for a confidential workload and onboarding an IoT device without a pre-provisioned PKI identity.<a href="#section-5.2-10.1.2" class="pilcrow">¶</a></p>
+This includes runtime secret provisioning for an attested workload and onboarding an IoT device without a pre-provisioned PKI identity.<a href="#section-5.2-10.1.2" class="pilcrow">¶</a></p>
 <p id="section-5.2-10.1.3">
 For example, a Confidential Container can obtain configuration data or disk keys from a Key Broker Service or Trustee <span>[<a href="#CoCo-Trustee" class="cite xref">CoCo-Trustee</a>]</span> after appraisal of its TEE claims and software measurements.
 The workload is the Attester; the Trustee is the Relying Party and can also be the Verifier.<a href="#section-5.2-10.1.3" class="pilcrow">¶</a></p>
@@ -2211,10 +2216,6 @@ and the attack vectors that motivate its security goals are described in
 <a href="#section-8" class="section-number selfRef">8. </a><a href="#name-informative-references" class="section-name selfRef">Informative References</a>
       </h2>
 <dl class="references">
-<dt id="AI-agents">[AI-agents]</dt>
-      <dd>
-<span class="refAuthor">Kapoor, S.</span>, <span class="refAuthor">Stroebl, B.</span>, <span class="refAuthor">Siegel, Z. S.</span>, <span class="refAuthor">Nadgir, N.</span>, and <span class="refAuthor">A. Narayanan</span>, <span class="refTitle">"AI agents that matter"</span>, <time datetime="2024-07" class="refDate">July 2024</time>, <span>&lt;<a href="https://arxiv.org/abs/2407.01502">https://arxiv.org/abs/2407.01502</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="CoCo-Trustee">[CoCo-Trustee]</dt>
       <dd>
 <span class="refTitle">"Trustee"</span>, <span>n.d.</span>, <span>&lt;<a href="https://github.com/confidential-containers/trustee">https://github.com/confidential-containers/trustee</a>&gt;</span>. </dd>
@@ -2231,10 +2232,6 @@ and the attack vectors that motivate its security goals are described in
       <dd>
 <span class="refAuthor">Aylward, E. R.</span>, <span class="refTitle">"AI Governance and Accountability Protocol (AIGA)"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-aylward-aiga-2-00</span>, <time datetime="2026-01-26" class="refDate">26 January 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-aylward-aiga-2-00">https://datatracker.ietf.org/doc/html/draft-aylward-aiga-2-00</a>&gt;</span>. </dd>
 <dd class="break"></dd>
-<dt id="I-D.draft-ccc-wimse-twi-extensions">[I-D.draft-ccc-wimse-twi-extensions]</dt>
-      <dd>
-<span class="refAuthor">Novak, M.</span>, <span class="refAuthor">Deshpande, Y.</span>, and <span class="refAuthor">H. Birkholz</span>, <span class="refTitle">"WIMSE Extensions for Trustworthy Workload Identity"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ccc-wimse-twi-extensions-01</span>, <time datetime="2026-01-05" class="refDate">5 January 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ccc-wimse-twi-extensions-01">https://datatracker.ietf.org/doc/html/draft-ccc-wimse-twi-extensions-01</a>&gt;</span>. </dd>
-<dd class="break"></dd>
 <dt id="I-D.draft-ietf-rats-eat-measured-component">[I-D.draft-ietf-rats-eat-measured-component]</dt>
       <dd>
 <span class="refAuthor">Frost, S.</span>, <span class="refAuthor">Fossati, T.</span>, <span class="refAuthor">Tschofenig, H.</span>, and <span class="refAuthor">H. Birkholz</span>, <span class="refTitle">"Entity Attestation Token (EAT) Measured Component"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-rats-eat-measured-component-12</span>, <time datetime="2026-02-20" class="refDate">20 February 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-rats-eat-measured-component-12">https://datatracker.ietf.org/doc/html/draft-ietf-rats-eat-measured-component-12</a>&gt;</span>. </dd>
@@ -2250,10 +2247,6 @@ and the attack vectors that motivate its security goals are described in
 <dt id="I-D.ietf-tls-extended-key-update">[I-D.ietf-tls-extended-key-update]</dt>
       <dd>
 <span class="refAuthor">Tschofenig, H.</span>, <span class="refAuthor">Tüxen, M.</span>, <span class="refAuthor">Reddy.K, T.</span>, <span class="refAuthor">Fries, S.</span>, and <span class="refAuthor">Y. Rosomakho</span>, <span class="refTitle">"Extended Key Update for Transport Layer Security (TLS) 1.3"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-extended-key-update-13</span>, <time datetime="2026-07-04" class="refDate">4 July 2026</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-extended-key-update-13">https://datatracker.ietf.org/doc/html/draft-ietf-tls-extended-key-update-13</a>&gt;</span>. </dd>
-<dd class="break"></dd>
-<dt id="I-D.ietf-tls-rfc8446bis">[I-D.ietf-tls-rfc8446bis]</dt>
-      <dd>
-<span class="refAuthor">Rescorla, E.</span>, <span class="refTitle">"The Transport Layer Security (TLS) Protocol Version 1.3"</span>, <span class="refContent">Work in Progress</span>, <span class="seriesInfo">Internet-Draft, draft-ietf-tls-rfc8446bis-14</span>, <time datetime="2025-09-13" class="refDate">13 September 2025</time>, <span>&lt;<a href="https://datatracker.ietf.org/doc/html/draft-ietf-tls-rfc8446bis-14">https://datatracker.ietf.org/doc/html/draft-ietf-tls-rfc8446bis-14</a>&gt;</span>. </dd>
 <dd class="break"></dd>
 <dt id="I-D.ietf-tls-rfc9147bis">[I-D.ietf-tls-rfc9147bis]</dt>
       <dd>
