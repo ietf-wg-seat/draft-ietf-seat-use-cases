@@ -724,6 +724,28 @@ Result. Solutions preserve the association between the appraisal result, the
 appraised subject, and the relevant connection and exchange. The common decision
 rules in {{uc-common-decisions}} apply throughout.
 
+{{tab-traceability}} shows which attacks and use cases motivate each property.
+A dash indicates that no attack scenario in {{attacker-model}}, or no use case
+in {{use-cases}}, is directly associated with the property.
+The Attestation Key compromise scenario ({{attack-attestation-key-compromise}})
+maps to no property: its mitigation depends on the attestation trust
+infrastructure and is outside what an integration can establish
+({{security-considerations}}).
+
+| Property | Attacks | Use cases |
+|---|---|---|
+| Attestation Status Before a Protected Decision ({{property-protected-decision}}) | - | {{uc-server}}, {{uc-client}}, {{uc-reevaluation}} |
+| Endpoint and Connection Association ({{property-endpoint-association}}) | {{attack-evidence-relay}} | {{uc-server}}, {{uc-client}} |
+| Peer Identity Association ({{property-peer-identity}}) | - | {{uc-server}}, {{uc-client}} |
+| Authentication-Key Properties ({{property-authentication-key}}) | {{attack-key-substitution}}, {{attack-key-rehosting}} | {{uc-server}} |
+| Exchange Freshness ({{property-exchange-freshness}}) | {{attack-evidence-replay}} | {{uc-reevaluation}} |
+| Appraisal Lifetime and Re-Evaluation ({{property-appraisal-lifetime}}) | {{attack-state-drift}} | {{uc-reevaluation}} |
+| Protected Negotiation ({{property-negotiation}}) | {{attack-ra-downgrade}} | - |
+| Independent Attestation Directions ({{property-directions}}) | - | {{uc-mutual}} |
+| Endpoint and Origin Boundaries ({{property-intermediary}}) | - | {{uc-intermediary}} |
+| Confidentiality and Disclosure ({{property-attestation-confidentiality}}) | {{attack-ephemeral-key-privacy}}, {{attack-traffic-secret-privacy}} | - |
+{: #tab-traceability title="Origin of the Properties"}
+
 ## Attestation Status Before a Protected Decision
 {: #property-protected-decision }
 
@@ -904,6 +926,7 @@ attackers it covers, and which checks precede release under independent secrets.
 Detection after release does not protect material already disclosed.
 
 # Security Considerations
+{: #security-considerations }
 
 The properties in {{integration-security-goals}} depend on the security
 assumptions of TLS and the attestation mechanisms used. The security
