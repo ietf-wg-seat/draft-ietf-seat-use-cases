@@ -4,8 +4,8 @@
 
 SEAT Working Group                                      I. Mihalcea, Ed.
 Internet-Draft                                                       Arm
-Intended status: Informational                           21 October 2026
-Expires: 24 April 2027
+Intended status: Informational                           22 October 2026
+Expires: 25 April 2027
 
 
   Security Goals and Use Cases for Integrating Remote Attestation with
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 24 April 2027.
+   This Internet-Draft will expire on 25 April 2027.
 
 Copyright Notice
 
@@ -886,6 +886,51 @@ Table of Contents
    appraisal result, the appraised subject, and the relevant connection
    and exchange.  The common decision rules in Section 3, Paragraph 2
    apply throughout.
+
+   Table 1 shows which attacks and use cases motivate each property.  A
+   dash indicates that no attack scenario in Section 4, or no use case
+   in Section 3, is directly associated with the property.  The
+   Attestation Key compromise scenario (Section 4.8.2) maps to no
+   property: its mitigation depends on the attestation trust
+   infrastructure and is outside what an integration can establish
+   (Section 6).
+
+    +==================================+===============+==============+
+    | Property                         | Attacks       | Use cases    |
+    +==================================+===============+==============+
+    | Attestation Status Before a      | -             | Section 3.1, |
+    | Protected Decision (Section 5.1) |               | Section 3.2, |
+    |                                  |               | Section 3.4  |
+    +----------------------------------+---------------+--------------+
+    | Endpoint and Connection          | Section 4.3.2 | Section 3.1, |
+    | Association (Section 5.2)        |               | Section 3.2  |
+    +----------------------------------+---------------+--------------+
+    | Peer Identity Association        | -             | Section 3.1, |
+    | (Section 5.3)                    |               | Section 3.2  |
+    +----------------------------------+---------------+--------------+
+    | Authentication-Key Properties    | Section 4.4,  | Section 3.1  |
+    | (Section 5.4)                    | Section 4.8.1 |              |
+    +----------------------------------+---------------+--------------+
+    | Exchange Freshness (Section 5.5) | Section 4.3.1 | Section 3.4  |
+    +----------------------------------+---------------+--------------+
+    | Appraisal Lifetime and Re-       | Section 4.6   | Section 3.4  |
+    | Evaluation (Section 5.6)         |               |              |
+    +----------------------------------+---------------+--------------+
+    | Protected Negotiation            | Section 4.7   | -            |
+    | (Section 5.7)                    |               |              |
+    +----------------------------------+---------------+--------------+
+    | Independent Attestation          | -             | Section 3.3  |
+    | Directions (Section 5.8)         |               |              |
+    +----------------------------------+---------------+--------------+
+    | Endpoint and Origin Boundaries   | -             | Section 3.5  |
+    | (Section 5.9)                    |               |              |
+    +----------------------------------+---------------+--------------+
+    | Confidentiality and Disclosure   | Section       | -            |
+    | (Section 5.10)                   | 4.5.1,        |              |
+    |                                  | Section 4.5.2 |              |
+    +----------------------------------+---------------+--------------+
+
+                     Table 1: Origin of the Properties
 
 5.1.  Attestation Status Before a Protected Decision
 
