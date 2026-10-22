@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-18T03:54:52.443775+00:00",
+  "timestamp": "2026-10-22T04:05:38.930281+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -8763,20 +8763,56 @@
       "id": "PR_kwDOP_9tTM8AAAABIqrhYQ",
       "title": "Fixes for a number of recent issues",
       "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/73",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ionut-arm",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "cc @yaronf - each commit identifies and addresses a specific issue, please have a look",
       "createdAt": "2026-10-15T16:34:51Z",
-      "updatedAt": "2026-10-15T16:34:51Z",
+      "updatedAt": "2026-10-21T09:16:44Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "2c3d2d701dec2ad7989440f9fb4e25975ff179dd",
       "headRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "headRefName": "fixes",
       "headRefOid": "715e41ba652da95c37ed154c5e4025e52757951f",
+      "closedAt": "2026-10-21T09:16:43Z",
+      "mergedAt": "2026-10-21T09:16:43Z",
+      "mergedBy": "ionut-arm",
+      "mergeCommit": {
+        "oid": "454c7a6d913c8a11b479d47a0e02095ef7cfcee5"
+      },
+      "comments": [
+        {
+          "author": "ionut-arm",
+          "authorAssociation": "COLLABORATOR",
+          "body": "Merging as-is for now, will address residual changes after the next release.",
+          "createdAt": "2026-10-21T09:16:35Z",
+          "updatedAt": "2026-10-21T09:16:35Z"
+        }
+      ],
+      "reviews": []
+    },
+    {
+      "number": 74,
+      "id": "PR_kwDOP_9tTM8AAAABJwvLBQ",
+      "title": "Large update",
+      "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/74",
+      "state": "OPEN",
+      "author": "ionut-arm",
+      "authorAssociation": "COLLABORATOR",
+      "assignees": [],
+      "labels": [],
+      "body": "* Reorganise the draft to make the flow more sensible.\n* Insert reference points where needed for precise pointers.\n* Rewrite the properties with solution designers in mind, referencing the use-cases and attacks.\n* Adjust the rest of the doc based off of the properties rewrite.",
+      "createdAt": "2026-10-21T10:23:35Z",
+      "updatedAt": "2026-10-21T10:23:35Z",
+      "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
+      "baseRefName": "main",
+      "baseRefOid": "454c7a6d913c8a11b479d47a0e02095ef7cfcee5",
+      "headRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
+      "headRefName": "properties",
+      "headRefOid": "89b1139a76f04aefe887f70ce61e8462dd2ae728",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
