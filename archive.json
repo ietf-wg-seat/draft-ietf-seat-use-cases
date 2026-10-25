@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-22T04:05:38.930281+00:00",
+  "timestamp": "2026-10-25T04:02:45.951055+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -8806,13 +8806,13 @@
       "labels": [],
       "body": "* Reorganise the draft to make the flow more sensible.\n* Insert reference points where needed for precise pointers.\n* Rewrite the properties with solution designers in mind, referencing the use-cases and attacks.\n* Adjust the rest of the doc based off of the properties rewrite.",
       "createdAt": "2026-10-21T10:23:35Z",
-      "updatedAt": "2026-10-21T10:23:35Z",
+      "updatedAt": "2026-10-22T10:52:15Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "454c7a6d913c8a11b479d47a0e02095ef7cfcee5",
       "headRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "headRefName": "properties",
-      "headRefOid": "89b1139a76f04aefe887f70ce61e8462dd2ae728",
+      "headRefOid": "5569bf0e96579329644f277a81c7632b428a0eda",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
