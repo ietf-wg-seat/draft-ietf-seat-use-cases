@@ -31,10 +31,13 @@ author:
 normative:
 
 informative:
+    RFC3552: int-threat-model
+    RFC3579:
+    RFC4949:
+    RFC9190:
     RFC9334: rats-arch
     RFC9397: teep-arch
-    RFC4949:
-    RFC3552: int-threat-model
+    RFC9525:
     RFC9846: tls
     I-D.draft-ietf-rats-eat-measured-component: rats-measured
     MigTD:
@@ -48,8 +51,6 @@ informative:
     I-D.draft-reddy-rats-key-binding:
     I-D.jiang-seat-dynamic-attestation:
     I-D.ayerbe-trip-protocol:
-    RFC9190:
-    RFC3579:
     CoCo-Trustee:
      title: Trustee
      target: https://github.com/confidential-containers/trustee
@@ -126,6 +127,11 @@ The properties are agnostic to attestation technology. Protocol mechanisms and
 the contents of appraisal policies ({{Section 8.5 of -rats-arch}}) are outside
 this document's scope.
 
+This document aims to guide protocol designers at a security design principle
+level, agnostic of the operational considerations required to enforce such
+principles, and without prescribing any specific mechanisms or deployment
+patterns.
+
 # Terminology
 
 This document uses the terminology defined in the RATS Architecture {{RFC9334}},
@@ -143,6 +149,11 @@ using an LLM or other model.
 * Credential: as defined in {{RFC4949}}.
 * Solution: used in this document to generically reference proposed protocol
 designs which aim to fulfill the SEAT WG charter.
+* Authenticated identity: the identity of a peer as established by the secure
+channel establishment protocol's authentication (for example, TLS handshake
+authentication, see {{Appendix F.1 of -tls}}), i.e., an identifier
+cryptographically bound to the key or credential the peer authenticates with (for
+example, a certificate subject as in {{RFC9525}}).
 
 # Use Cases
 {: #use-cases }
@@ -173,7 +184,7 @@ Sharing or coordinating them is a deployment choice.
 
 **TLS and RATS roles:** The server is the Attester, the client is the Relying Party, and the Verifier can be separate.
 
-**Existing TLS authentication:** TLS authenticates the server's network identity; RA adds information about its Target Environment.
+**Existing TLS authentication:** TLS authenticates the server's identity; RA adds information about its Target Environment.
 
 **Attestation scope:** For endpoint attestation, the Target Environment contains the TLS endpoint.
 The key-component example below has a narrower scope.
@@ -224,7 +235,7 @@ A separate Verifier can appraise the Evidence, and a separate component can enfo
 The service and Verifier can belong to different administrative domains and use different trust anchors.
 
 **Required security outcome:** The Relying Party associates the acceptable state with the client receiving access or the asset.
-If client identity is used, both inputs refer to the same endpoint.
+If client authentication is used, both inputs refer to the same endpoint.
 
 **Limitations:** Attestation does not guarantee the client's future state or use of granted access.
 Acceptable measurements and credential issuance are outside this profile.
@@ -235,7 +246,7 @@ Acceptable measurements and credential issuance are outside this profile.
   {: #uc-provisioning }
 
   A workload or device obtains the secrets, configuration, credentials, or policy needed to become operational only after its state is appraised.
-  This includes runtime secret provisioning for an attested workload and onboarding an IoT device without a pre-provisioned PKI identity.
+  This includes runtime secret provisioning for an attested workload and onboarding an IoT device without a pre-provisioned authentication credential.
 
   For example, a Confidential Container can obtain configuration data or disk keys from a Key Broker Service or Trustee {{CoCo-Trustee}} after appraisal of its TEE claims and software measurements.
   The workload is the Attester; the Trustee is the Relying Party and can also be the Verifier.
@@ -325,7 +336,7 @@ Operations requiring that assurance wait for the necessary checks, including on 
 * **Actor Identity Continuity via Longitudinal Trajectory Attestation**
   {: #sec-actor-identity-continuity }
 
-  A TLS peer presents Evidence about the trajectory of an actor whose identity persists across platforms.
+  A TLS peer presents Evidence about the trajectory of an actor whose authenticated identity persists across platforms.
   The Relying Party attributes the trajectory to that identity and uses each policy-defined interval for a separate authorization decision.
   The actor is not tied to a particular machine.
   TRIP {{I-D.ayerbe-trip-protocol}} provides one example.
@@ -338,7 +349,7 @@ The Relying Party needs assurance about the intermediary or an origin behind it.
 
 **TLS and RATS roles:** The Attester can be an endpoint or intermediary, in either attestation direction.
 
-**Existing TLS authentication:** TLS authenticates the terminating peer using its presented identity.
+**Existing TLS authentication:** The TLS authenticated identity represents the connection-terminating peer.
 That identity alone need not distinguish a proxy from the origin.
 
 **Attestation scope:** The intermediary can be the appraised service boundary.
@@ -668,7 +679,7 @@ acceptable environment, establishes a new connection using that key, and present
 fresh Evidence bound to both its connection and the corresponding authentication
 public key. The Relying Party then authenticates the attacker as the holder of
 the stolen identity and accepts the attacker's environment as an authorized host
-for that identity.
+for that authenticated identity.
 
 **Why validation succeeds:** Proof of possession succeeds because the attacker
 has the authentication private key. The connection binding and public-key
@@ -684,7 +695,7 @@ outside the scope of solution documents.
 **Why optional:** For class-based appraisal (i.e., where the Target Environment
 is not restricted to a set of known platforms or workload instances), this attack
 is out of scope as the attacker's posture (acceptable Target Environment that
-proves ownership of some network identity) is what the RP expects to see.
+provides an authenticated identity) is what the RP expects to see.
 
 ### Attestation Key Compromise
 {: #attack-attestation-key-compromise }
@@ -797,11 +808,11 @@ behind a separate terminator uses {{property-intermediary}}.
 ## Association with Authenticated Peer Identity
 {: #property-peer-identity }
 
-When a protected decision relies on TLS peer identity, a solution specifies how
-the authenticated identity and appraised state are associated with the same peer
-endpoint and connection ({{uc-server}} and {{uc-client}}). It preserves the
-configured TLS authentication; attestation does not satisfy a separate
-requirement for identity authentication.
+When a protected decision relies on authenticated peer identity, a solution
+specifies how the authenticated identity and appraised state are associated with
+the same peer endpoint and connection ({{uc-server}} and {{uc-client}}). It
+preserves the configured TLS authentication; attestation does not satisfy a
+separate requirement for identity authentication.
 
 Solutions supporting client attestation should permit it with and without TLS
 client authentication.
