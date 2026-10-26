@@ -4,8 +4,8 @@
 
 SEAT Working Group                                      I. Mihalcea, Ed.
 Internet-Draft                                                       Arm
-Intended status: Informational                           22 October 2026
-Expires: 25 April 2027
+Intended status: Informational                           26 October 2026
+Expires: 29 April 2027
 
 
   Security Goals and Use Cases for Integrating Remote Attestation with
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 25 April 2027.
+   This Internet-Draft will expire on 29 April 2027.
 
 Copyright Notice
 
@@ -168,6 +168,11 @@ Table of Contents
    mechanisms and the contents of appraisal policies (Section 8.5 of
    [RFC9334]) are outside this document's scope.
 
+   This document aims to guide protocol designers at a security design
+   principle level, agnostic of the operational considerations required
+   to enforce such principles, and without prescribing any specific
+   mechanisms or deployment patterns.
+
 2.  Terminology
 
    This document uses the terminology defined in the RATS Architecture
@@ -193,6 +198,13 @@ Table of Contents
 
    *  Solution: used in this document to generically reference proposed
       protocol designs which aim to fulfill the SEAT WG charter.
+
+   *  Authenticated identity: the identity of a peer as established by
+      the secure channel establishment protocol's authentication (for
+      example, TLS handshake authentication, see Appendix F.1 of
+      [RFC9846]), i.e., an identifier cryptographically bound to the key
+      or credential the peer authenticates with (for example, a
+      certificate subject as in [RFC9525]).
 
 3.  Use Cases
 
@@ -228,7 +240,7 @@ Table of Contents
    *TLS and RATS roles:* The server is the Attester, the client is the
    Relying Party, and the Verifier can be separate.
 
-   *Existing TLS authentication:* TLS authenticates the server's network
+   *Existing TLS authentication:* TLS authenticates the server's
    identity; RA adds information about its Target Environment.
 
    *Attestation scope:* For endpoint attestation, the Target Environment
@@ -301,7 +313,8 @@ Table of Contents
 
    *Required security outcome:* The Relying Party associates the
    acceptable state with the client receiving access or the asset.  If
-   client identity is used, both inputs refer to the same endpoint.
+   client authentication is used, both inputs refer to the same
+   endpoint.
 
    *Limitations:* Attestation does not guarantee the client's future
    state or use of granted access.  Acceptable measurements and
@@ -315,7 +328,7 @@ Table of Contents
       credentials, or policy needed to become operational only after its
       state is appraised.  This includes runtime secret provisioning for
       an attested workload and onboarding an IoT device without a pre-
-      provisioned PKI identity.
+      provisioned authentication credential.
 
       For example, a Confidential Container can obtain configuration
       data or disk keys from a Key Broker Service or Trustee
@@ -439,10 +452,10 @@ Table of Contents
       Attestation*
 
       A TLS peer presents Evidence about the trajectory of an actor
-      whose identity persists across platforms.  The Relying Party
-      attributes the trajectory to that identity and uses each policy-
-      defined interval for a separate authorization decision.  The actor
-      is not tied to a particular machine.  TRIP
+      whose authenticated identity persists across platforms.  The
+      Relying Party attributes the trajectory to that identity and uses
+      each policy-defined interval for a separate authorization
+      decision.  The actor is not tied to a particular machine.  TRIP
       [I-D.ayerbe-trip-protocol] provides one example.
 
 3.5.  Intermediary-Aware Deployment
@@ -455,9 +468,9 @@ Table of Contents
    *TLS and RATS roles:* The Attester can be an endpoint or
    intermediary, in either attestation direction.
 
-   *Existing TLS authentication:* TLS authenticates the terminating peer
-   using its presented identity.  That identity alone need not
-   distinguish a proxy from the origin.
+   *Existing TLS authentication:* The TLS authenticated identity
+   represents the connection-terminating peer.  That identity alone need
+   not distinguish a proxy from the origin.
 
    *Attestation scope:* The intermediary can be the appraised service
    boundary.  Assurance about an origin behind a separate terminator
@@ -827,7 +840,8 @@ Table of Contents
    Evidence bound to both its connection and the corresponding
    authentication public key.  The Relying Party then authenticates the
    attacker as the holder of the stolen identity and accepts the
-   attacker's environment as an authorized host for that identity.
+   attacker's environment as an authorized host for that authenticated
+   identity.
 
    *Why validation succeeds:* Proof of possession succeeds because the
    attacker has the authentication private key.  The connection binding
@@ -844,7 +858,7 @@ Table of Contents
    *Why optional:* For class-based appraisal (i.e., where the Target
    Environment is not restricted to a set of known platforms or workload
    instances), this attack is out of scope as the attacker's posture
-   (acceptable Target Environment that proves ownership of some network
+   (acceptable Target Environment that provides an authenticated
    identity) is what the RP expects to see.
 
 4.8.2.  Attestation Key Compromise
@@ -986,12 +1000,12 @@ Table of Contents
 
 5.3.  Association with Authenticated Peer Identity
 
-   When a protected decision relies on TLS peer identity, a solution
-   specifies how the authenticated identity and appraised state are
-   associated with the same peer endpoint and connection (Section 3.1
-   and Section 3.2).  It preserves the configured TLS authentication;
-   attestation does not satisfy a separate requirement for identity
-   authentication.
+   When a protected decision relies on authenticated peer identity, a
+   solution specifies how the authenticated identity and appraised state
+   are associated with the same peer endpoint and connection
+   (Section 3.1 and Section 3.2).  It preserves the configured TLS
+   authentication; attestation does not satisfy a separate requirement
+   for identity authentication.
 
    Solutions supporting client attestation should permit it with and
    without TLS client authentication.
@@ -1254,6 +1268,10 @@ Table of Contents
               "Trusted Execution Environment Provisioning (TEEP)
               Architecture", RFC 9397, DOI 10.17487/RFC9397, July 2023,
               <https://www.rfc-editor.org/rfc/rfc9397>.
+
+   [RFC9525]  Saint-Andre, P. and R. Salz, "Service Identity in TLS",
+              RFC 9525, DOI 10.17487/RFC9525, November 2023,
+              <https://www.rfc-editor.org/rfc/rfc9525>.
 
    [RFC9846]  Rescorla, E., "The Transport Layer Security (TLS) Protocol
               Version 1.3", RFC 9846, DOI 10.17487/RFC9846, July 2026,
