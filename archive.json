@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-27T04:27:01.144212+00:00",
+  "timestamp": "2026-11-01T05:22:58.583118+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -8696,25 +8696,33 @@
       "id": "PR_kwDOP_9tTM8AAAABIPDnZg",
       "title": "Add envelope substitution attack",
       "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/72",
-      "state": "OPEN",
+      "state": "CLOSED",
       "author": "telephonicrobotics",
       "authorAssociation": "NONE",
       "assignees": [],
       "labels": [],
       "body": "Added section covering encrypted evidence and blind envelope substitution attacks against blind-forwarding relying parties.",
       "createdAt": "2026-10-13T18:24:05Z",
-      "updatedAt": "2026-10-13T19:50:47Z",
+      "updatedAt": "2026-10-29T16:00:09Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "2c3d2d701dec2ad7989440f9fb4e25975ff179dd",
       "headRepository": "telephonicrobotics/draft-ietf-seat-use-cases",
       "headRefName": "nr-encrypted-evidence",
       "headRefOid": "0bea85b4873fe7fd53b460809d67812cc5cb4ce7",
-      "closedAt": null,
+      "closedAt": "2026-10-29T16:00:09Z",
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "telephonicrobotics",
+          "authorAssociation": "NONE",
+          "body": "Closing this, as I've integrated the specific proposed text to a separate draft for now. ",
+          "createdAt": "2026-10-29T16:00:09Z",
+          "updatedAt": "2026-10-29T16:00:09Z"
+        }
+      ],
       "reviews": [
         {
           "id": "PRR_kwDOP_9tTM8AAAABSFTBuw",
@@ -8806,7 +8814,7 @@
       "labels": [],
       "body": "* Reorganise the draft to make the flow more sensible.\n* Insert reference points where needed for precise pointers.\n* Rewrite the properties with solution designers in mind, referencing the use-cases and attacks.\n* Adjust the rest of the doc based off of the properties rewrite.",
       "createdAt": "2026-10-21T10:23:35Z",
-      "updatedAt": "2026-10-26T14:20:55Z",
+      "updatedAt": "2026-10-31T22:03:38Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "454c7a6d913c8a11b479d47a0e02095ef7cfcee5",
@@ -8818,7 +8826,28 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOP_9tTM8AAAABVT6oRg",
+          "commit": {
+            "abbreviatedOid": "1b5f1d3"
+          },
+          "author": "telephonicrobotics",
+          "authorAssociation": "NONE",
+          "state": "COMMENTED",
+          "body": "Late notice, but this LGTM. I think this also puts another PR into 'close-candidate' status.",
+          "createdAt": "2026-10-31T22:01:24Z",
+          "updatedAt": "2026-10-31T22:03:38Z",
+          "comments": [
+            {
+              "originalPosition": 230,
+              "body": "Is it me, or does this effectively actually cover PR https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/56? Also it seems like \"Credential issuance remains outside SEAT.\" covers the 'non-confidential/confidential' question. ",
+              "createdAt": "2026-10-31T22:01:24Z",
+              "updatedAt": "2026-10-31T22:03:38Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
