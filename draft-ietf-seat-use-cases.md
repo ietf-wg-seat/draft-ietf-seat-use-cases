@@ -770,13 +770,10 @@ a solution specifies:
 Completion of TLS alone does not establish successful attestation.
 
 Failure to complete a check required for the decision leaves it indeterminate.
-This can result from missing or unusable material, a required Verifier being
-unavailable, or a timeout. A usable Attestation Result need not require Evidence
-delivery to the Relying Party or contact with a live Verifier. Result reuse
-follows {{property-appraisal-lifetime}}. Neither rejection nor an indeterminate
-decision permits an operation requiring attestation; any fallback to operations
-without attestation is explicit and policy-permitted, as described in
-{{property-negotiation}}.
+Result reuse follows {{property-appraisal-lifetime}}. Neither rejection nor an
+indeterminate decision permits an operation requiring attestation; any fallback
+to operations without attestation is explicit and policy-permitted, as described
+in {{property-negotiation}}.
 
 ## Association of Attested State with the TLS Endpoint and Connection
 {: #property-endpoint-association }
@@ -840,10 +837,7 @@ A solution specifies how Evidence or an Attestation Result conveyed in an
 attestation exchange satisfies its freshness
 requirements ({{attack-evidence-replay}} and {{uc-reevaluation}}). If an exchange
 requires Evidence generated after its initiation, neither earlier Evidence nor
-an Attestation Result based on earlier Evidence satisfies that requirement. A
-unique but predictable challenge is insufficient to establish this ordering;
-the nonce-based method in {{Section 10.2 of -rats-arch}} uses an unpredictable
-nonce.
+an Attestation Result based on earlier Evidence satisfies that requirement.
 
 Solutions specify the context and acceptance rules for their chosen freshness
 mechanism. A valid connection binding alone may not establish freshness.
@@ -914,11 +908,12 @@ not required.
 ## Confidentiality and Disclosure of Attestation Material
 {: #property-attestation-confidentiality }
 
-A solution conveys Evidence and Attestation Results under confidentiality
-protection and specifies the protection used, when they are sent, who can read
-them, and what recipient authentication or attestation has completed before
-disclosure. This covers initial and post-handshake exchanges, terminators, and
-separate Verifiers. It also identifies disclosures from negotiation data.
+When restricted disclosure is supported, the solution specifies how disclosure is
+limited to authorized recipients, including any recipient authentication or
+attestation required before disclosure, and identifies the mechanisms and
+recipient-key trust assumptions on which this protection depends. This covers
+initial and post-handshake exchanges, terminators, and separate Verifiers. It
+also identifies disclosures from negotiation data.
 
 The solution states the limits of its protection, including disclosure to
 unauthenticated peers and active attackers before later validation fails.
@@ -927,9 +922,10 @@ from redistributing Claims.
 
 If restricted disclosure is supported, the solution specifies or references the
 mechanisms and recipient-key trust assumptions
-({{Sections 4.2, 4.3, 4.4 and 4.5 of -rats-privacy}}). Where Evidence is opaque to
-the Relying Party, it specifies how required connection and key bindings are
-checked by the Verifier and confirmed in authenticated Attestation Results.
+({{Sections 4.2, 4.3, 4.4 and 4.5 of -rats-privacy}}). Where Evidence is opaque
+to the Relying Party, the solution specifies how the Relying Party obtains
+authenticated assurance that the required connection and key bindings have been
+validated.
 
 Any recovery claim under {{attack-ephemeral-key-privacy}} or
 {{attack-traffic-secret-privacy}} specifies the protection mechanism, the
