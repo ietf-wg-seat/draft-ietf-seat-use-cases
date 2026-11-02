@@ -4,8 +4,8 @@
 
 SEAT Working Group                                      I. Mihalcea, Ed.
 Internet-Draft                                                       Arm
-Intended status: Informational                           26 October 2026
-Expires: 29 April 2027
+Intended status: Informational                           2 November 2026
+Expires: 6 May 2027
 
 
   Security Goals and Use Cases for Integrating Remote Attestation with
@@ -39,7 +39,7 @@ Status of This Memo
    time.  It is inappropriate to use Internet-Drafts as reference
    material or to cite them other than as "work in progress."
 
-   This Internet-Draft will expire on 29 April 2027.
+   This Internet-Draft will expire on 6 May 2027.
 
 Copyright Notice
 
@@ -960,14 +960,10 @@ Table of Contents
    Completion of TLS alone does not establish successful attestation.
 
    Failure to complete a check required for the decision leaves it
-   indeterminate.  This can result from missing or unusable material, a
-   required Verifier being unavailable, or a timeout.  A usable
-   Attestation Result need not require Evidence delivery to the Relying
-   Party or contact with a live Verifier.  Result reuse follows
-   Section 5.6.  Neither rejection nor an indeterminate decision permits
-   an operation requiring attestation; any fallback to operations
-   without attestation is explicit and policy-permitted, as described in
-   Section 5.7.
+   indeterminate.  Result reuse follows Section 5.6.  Neither rejection
+   nor an indeterminate decision permits an operation requiring
+   attestation; any fallback to operations without attestation is
+   explicit and policy-permitted, as described in Section 5.7.
 
 5.2.  Association of Attested State with the TLS Endpoint and Connection
 
@@ -1034,9 +1030,7 @@ Table of Contents
    (Section 4.3.1 and Section 3.4).  If an exchange requires Evidence
    generated after its initiation, neither earlier Evidence nor an
    Attestation Result based on earlier Evidence satisfies that
-   requirement.  A unique but predictable challenge is insufficient to
-   establish this ordering; the nonce-based method in Section 10.2 of
-   [RFC9334] uses an unpredictable nonce.
+   requirement.
 
    Solutions specify the context and acceptance rules for their chosen
    freshness mechanism.  A valid connection binding alone may not
@@ -1106,12 +1100,13 @@ Table of Contents
 
 5.10.  Confidentiality and Disclosure of Attestation Material
 
-   A solution conveys Evidence and Attestation Results under
-   confidentiality protection and specifies the protection used, when
-   they are sent, who can read them, and what recipient authentication
-   or attestation has completed before disclosure.  This covers initial
-   and post-handshake exchanges, terminators, and separate Verifiers.
-   It also identifies disclosures from negotiation data.
+   When restricted disclosure is supported, the solution specifies how
+   disclosure is limited to authorized recipients, including any
+   recipient authentication or attestation required before disclosure,
+   and identifies the mechanisms and recipient-key trust assumptions on
+   which this protection depends.  This covers initial and post-
+   handshake exchanges, terminators, and separate Verifiers.  It also
+   identifies disclosures from negotiation data.
 
    The solution states the limits of its protection, including
    disclosure to unauthenticated peers and active attackers before later
@@ -1122,9 +1117,9 @@ Table of Contents
    references the mechanisms and recipient-key trust assumptions
    (Sections 4.2, 4.3, 4.4 and 4.5 of
    [I-D.ounsworth-rats-privacy-framework]).  Where Evidence is opaque to
-   the Relying Party, it specifies how required connection and key
-   bindings are checked by the Verifier and confirmed in authenticated
-   Attestation Results.
+   the Relying Party, the solution specifies how the Relying Party
+   obtains authenticated assurance that the required connection and key
+   bindings have been validated.
 
    Any recovery claim under Section 4.5.1 or Section 4.5.2 specifies the
    protection mechanism, the attackers it covers, and which checks
@@ -1168,11 +1163,11 @@ Table of Contents
               <https://github.com/confidential-containers/trustee>.
 
    [I-D.ayerbe-trip-protocol]
-              Posada, C. A. and M. U. Sardar, "TRIP: Trajectory-based
-              Recognition of Identity Proof", Work in Progress,
-              Internet-Draft, draft-ayerbe-trip-protocol-04, 8 May 2026,
-              <https://datatracker.ietf.org/doc/html/draft-ayerbe-trip-
-              protocol-04>.
+              Posada, C. A., Sardar, M. U., and S. Nikolaichuk, "TRIP:
+              Trajectory-based Recognition of Identity Proof", Work in
+              Progress, Internet-Draft, draft-ayerbe-trip-protocol-05,
+              29 October 2026, <https://datatracker.ietf.org/doc/html/
+              draft-ayerbe-trip-protocol-05>.
 
    [I-D.aylward-aiga-2]
               Aylward, E. R., "AI Governance and Accountability Protocol
@@ -1193,9 +1188,9 @@ Table of Contents
               Fiset, J., Ounsworth, M., Tschofenig, H., Birkholz, H.,
               Wiseman, M., and N. Smith, "Evidence Encoding for Hardware
               Security Modules", Work in Progress, Internet-Draft,
-              draft-ietf-rats-pkix-key-attestation-07, 5 July 2026,
+              draft-ietf-rats-pkix-key-attestation-08, 30 October 2026,
               <https://datatracker.ietf.org/doc/html/draft-ietf-rats-
-              pkix-key-attestation-07>.
+              pkix-key-attestation-08>.
 
    [I-D.draft-reddy-rats-key-binding]
               Reddy.K, T., Tschofenig, H., Fossati, T., Mihalcea, I.,
