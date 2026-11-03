@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-01T05:22:58.583118+00:00",
+  "timestamp": "2026-11-03T06:00:40.707050+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -8807,24 +8807,26 @@
       "id": "PR_kwDOP_9tTM8AAAABJwvLBQ",
       "title": "Large update",
       "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/74",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "ionut-arm",
       "authorAssociation": "COLLABORATOR",
       "assignees": [],
       "labels": [],
       "body": "* Reorganise the draft to make the flow more sensible.\n* Insert reference points where needed for precise pointers.\n* Rewrite the properties with solution designers in mind, referencing the use-cases and attacks.\n* Adjust the rest of the doc based off of the properties rewrite.",
       "createdAt": "2026-10-21T10:23:35Z",
-      "updatedAt": "2026-10-31T22:03:38Z",
+      "updatedAt": "2026-11-02T17:19:44Z",
       "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "baseRefName": "main",
       "baseRefOid": "454c7a6d913c8a11b479d47a0e02095ef7cfcee5",
       "headRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
       "headRefName": "properties",
-      "headRefOid": "1b5f1d33d4335d775994eb3ca076c4d16d3b5e1d",
-      "closedAt": null,
-      "mergedAt": null,
-      "mergedBy": null,
-      "mergeCommit": null,
+      "headRefOid": "73fbb15e599eb7a847c2e71842b7955eabc114bc",
+      "closedAt": "2026-11-02T17:19:35Z",
+      "mergedAt": "2026-11-02T17:19:35Z",
+      "mergedBy": "ionut-arm",
+      "mergeCommit": {
+        "oid": "e74430e982f6968306728e4b78321a89ca5275fa"
+      },
       "comments": [],
       "reviews": [
         {
@@ -8844,6 +8846,26 @@
               "body": "Is it me, or does this effectively actually cover PR https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/56? Also it seems like \"Credential issuance remains outside SEAT.\" covers the 'non-confidential/confidential' question. ",
               "createdAt": "2026-10-31T22:01:24Z",
               "updatedAt": "2026-10-31T22:03:38Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOP_9tTM8AAAABVd4PpA",
+          "commit": {
+            "abbreviatedOid": "1b5f1d3"
+          },
+          "author": "ionut-arm",
+          "authorAssociation": "COLLABORATOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-02T11:04:05Z",
+          "updatedAt": "2026-11-02T11:04:05Z",
+          "comments": [
+            {
+              "originalPosition": 230,
+              "body": "That text does, or should do, but note that it is already included in the editor's draft: https://ietf-wg-seat.github.io/draft-ietf-seat-use-cases/draft-ietf-seat-use-cases.html#section-5.2-10.1.1 - as part of the use-cases rewrite I tried to fold all existing proposals as examples under the generic use-cases currently documented.",
+              "createdAt": "2026-11-02T11:04:05Z",
+              "updatedAt": "2026-11-02T11:27:25Z"
             }
           ]
         }
