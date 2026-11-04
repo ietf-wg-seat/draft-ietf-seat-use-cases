@@ -28,6 +28,18 @@ author:
     email: ionut.mihalcea@arm.com
     role: editor
 
+contributor:
+  - name: Muhammad Usama Sardar
+    email: muhammad_usama.sardar@tu-dresden.de
+  - name: Thomas Fossati
+    email: tfossati@nvidia.com
+  - name: Tirumaleswar Reddy
+    email: kondtir@gmail.com
+  - name: Yuning Jiang
+    email: jiangyuning2@h-partners.com
+  - name: Meiling Chen
+    email: chenmeiling@chinamobile.com
+
 normative:
 
 informative:
