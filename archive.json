@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-03T06:00:40.707050+00:00",
+  "timestamp": "2026-11-05T05:57:56.590186+00:00",
   "repo": "ietf-wg-seat/draft-ietf-seat-use-cases",
   "labels": [
     {
@@ -8870,6 +8870,32 @@
           ]
         }
       ]
+    },
+    {
+      "number": 75,
+      "id": "PR_kwDOP_9tTM8AAAABMwF1NA",
+      "title": "Add YAML metadata for `contributor:` ",
+      "url": "https://github.com/ietf-wg-seat/draft-ietf-seat-use-cases/pull/75",
+      "state": "OPEN",
+      "author": "telephonicrobotics",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Replaces PR #58 \r\n\r\nI noticed that the RATS Architecture I-D uses a dedicated [contributor:](https://github.com/ietf-rats-wg/architecture/blob/master/draft-ietf-rats-architecture.md?plain=1#L58\r\n) field in the YAML metadata, which I understand is standard practice.",
+      "createdAt": "2026-11-04T07:36:29Z",
+      "updatedAt": "2026-11-04T07:41:38Z",
+      "baseRepository": "ietf-wg-seat/draft-ietf-seat-use-cases",
+      "baseRefName": "main",
+      "baseRefOid": "e74430e982f6968306728e4b78321a89ca5275fa",
+      "headRepository": "telephonicrobotics/draft-ietf-seat-use-cases",
+      "headRefName": "contributors",
+      "headRefOid": "b49f42631d651d0becec42aac9fc91017b50806d",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
     }
   ]
 }
